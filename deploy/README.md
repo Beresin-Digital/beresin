@@ -5,7 +5,7 @@ mengirim image Docker lewat SSH. PR hanya menjalankan build dan smoke test.
 `workflow_dispatch` juga tersedia untuk deploy ulang `master`.
 
 ```text
-Internet -> Nginx Proxy Manager (TLS) -> beresin-app:4321 -> Postgres
+Internet -> Cloudflare -> Nginx Proxy Manager (TLS) -> beresin-app:4321 -> Postgres
 ```
 
 NPM tetap memakai jaringan eksternal `proxy-tier`. App dan database tidak
@@ -30,22 +30,13 @@ Proxy Host untuk `beresindigital.id` dan `www.beresindigital.id`:
 - Forward Hostname: `beresin-app`
 - Forward Port: `4321`
 - SSL: pertahankan sertifikat dan Force SSL yang sudah ada.
-- Advanced: isi konfigurasi berikut. Ini mengganti header IP dari pengunjung
-  dengan alamat koneksi yang diterima NPM, dan meneruskan HTTPS ke Astro.
+- Advanced: salin isi `deploy/npm-advanced.conf`. Konfigurasi ini sudah
+  dipasang saat provisioning; deploy app berikutnya tidak mengubah NPM.
 
-```nginx
-location / {
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_pass $forward_scheme://$server:$port$request_uri;
-}
-```
-
-Jika menambahkan CDN di depan NPM, konfigurasi trusted real-IP CDN dulu;
-tanpa itu rate limit akan memakai IP CDN.
+NPM hanya mempercayai `CF-Connecting-IP` dari range Cloudflare, lalu menimpa
+header IP yang diteruskan ke Astro. Akses langsung ke origin memakai IP koneksi.
+Perbarui daftar dari https://www.cloudflare.com/ips/ jika Cloudflare mengubah
+range-nya. Jika mengganti CDN, sesuaikan trust real-IP dulu.
 
 ## Operasional
 
