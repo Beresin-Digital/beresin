@@ -1,0 +1,72 @@
+# ---------------------------------------------------------------------------
+# Postgres for LOCAL DEVELOPMENT only.
+#
+# This file is never used in production — there the app runs next to a managed
+# Postgres instance.
+#
+#   pnpm db:up            # start (waits until healthy)
+#   pnpm db:down          # stop, keep data
+#   docker compose down -v && pnpm db:up   # wipe the volume and start clean
+#
+# ONE ROLE. The official image creates the role and the database from the
+# POSTGRES_* variables below, and those are fed from the SAME DB_* variables the
+# app uses. There is therefore exactly one place a credential lives, and no way
+# for the app and the container to disagree about a password.
+#
+# This replaces an earlier two-role setup (an owner that ran migrations plus a
+# least-privilege runtime role) driven by a shell script in ./docker/initdb. That
+# split is the right call for a production database, but for a throwaway dev
+# container it bought nothing and cost plenty: the script only runs while the
+# volume is empty, so a boot interrupted mid-init left a cluster with no roles
+# that `restart: unless-stopped` would then restart over forever, never
+# re-running the script. The failure mode was silent and looked like a bad
+# password.
+#
+# Consequence to be honest about: in dev the app connects as the database owner
+# (a superuser, in fact). It can run DDL and read the migration ledger. That is
+# acceptable for a local container that holds no real data — and it is the thing
+# to revisit when the production database is set up.
+#
+# The image tag is pinned to the patch. A floating `17` lets dev and prod drift
+# apart a minor version at a time, and Postgres refuses to start on a data
+# directory written by a newer major.
+#
+# Debian, not Alpine: musl changes collation behaviour, and the production image
+# will be Debian too — the two must sort and compare strings identically.
+# ---------------------------------------------------------------------------
+services:
+  db:
+    image: postgres:17.6-bookworm
+    container_name: beresin-db
+    restart: unless-stopped
+    environment:
+      # Same variables the app reads from .env — one source of truth.
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: ${DB_NAME:?DB_NAME is required}
+      # Deterministic collation, same on every machine.
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8
+    ports:
+      # 5433 on the host, deliberately not 5432. A developer machine very often
+      # already has its own Postgres on 5432, and binding there silently sends
+      # psql and the app to the wrong server — which looks like a data bug.
+      - '${DB_PORT:-5433}:5432'
+    volumes:
+      - beresin_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # `pg_isready` alone only proves the server is accepting connections — it
+      # does not authenticate and does not care whether the database exists, so
+      # it reports healthy against a half-built cluster. The follow-up query
+      # actually connects, which is the thing worth waiting for.
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -q -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" &&
+          psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -tAc 'SELECT 1' | grep -q 1
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  beresin_pgdata:

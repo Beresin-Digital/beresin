@@ -1,0 +1,62 @@
+---
+import { principles } from '../../data/principles';
+
+/**
+ * "Prinsip & cara kerja" for /tentang.
+ *
+ * Rendered as an editorial numbered index — hairline rules and display
+ * numerals, no card chrome — which is the same language the homepage Insight
+ * index uses. A grid of six equal cards would read as filler; numbered rows
+ * read as a position statement.
+ *
+ * The heading column is sticky on lg so the section title stays with the reader
+ * while they scan the list. `self-start` is required for that to work inside a
+ * grid (otherwise the item stretches to full height and sticky has no room).
+ */
+---
+
+<section id="prinsip" class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark sm:py-20">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
+        <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+          <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+            Prinsip &amp; Cara Kerja
+          </span>
+        </p>
+        <h2
+          class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+        >
+          Cara kami bekerja.
+        </h2>
+        <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+          Enam hal yang berlaku di setiap proyek, apa pun ukurannya. Ini bukan nilai-nilai di
+          poster kantor — semuanya bisa Anda tagih ke kami.
+        </p>
+      </div>
+
+      <ol class="lg:col-span-8">
+        {
+          principles.map((principle, i) => (
+            <li class="grid grid-cols-[auto_1fr] gap-x-5 border-t border-gray-300 py-6 first:border-t-0 first:pt-0 sm:gap-x-6">
+              <span
+                class="font-display text-2xl font-black tabular-nums leading-none text-gray-500 sm:text-3xl"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h3 class="font-display text-base font-black uppercase leading-snug tracking-tight text-brand-dark sm:text-lg">
+                  {principle.title}
+                </h3>
+                <p class="mt-2 text-xs font-medium leading-relaxed text-gray-700 sm:text-sm">
+                  {principle.description}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

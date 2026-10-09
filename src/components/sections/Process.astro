@@ -1,0 +1,71 @@
+---
+import { processSteps } from '../../data/process';
+
+/**
+ * Five-step engagement flow.
+ *
+ * Pure CSS, no JavaScript: the connector is a single absolutely-positioned rule
+ * (horizontal on desktop, per-item on mobile) and the numbered circles sit on
+ * top of it with `z-10`. Because the numerals come from the array index, adding
+ * a sixth step to `process.ts` needs no markup change.
+ */
+---
+
+<section id="proses" class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-12 max-w-2xl">
+      <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+        <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+          Proses Kerja
+        </span>
+      </p>
+      <h2
+        class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+      >
+        Lima langkah, tanpa kejutan.
+      </h2>
+      <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+        Alur kerja yang sama kami pakai untuk proyek satu halaman maupun sistem akademik terpadu.
+        Anda tahu apa yang sedang dikerjakan dan apa yang akan Anda terima di tiap tahap.
+      </p>
+    </div>
+
+    <div class="relative">
+      <!-- Desktop connector: spans the centre of the first to the last circle. -->
+      <div
+        class="absolute left-[10%] right-[10%] top-7 hidden h-0.5 bg-gray-300 lg:block"
+        aria-hidden="true"
+      >
+      </div>
+
+      <ol class="relative grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-6">
+        {
+          processSteps.map((step, i) => (
+            <li
+              class="relative flex gap-5 after:absolute after:left-[27px] after:top-14 after:h-[calc(100%-1rem)] after:w-0.5 after:bg-gray-300 after:content-[''] last:after:hidden lg:flex-col lg:items-center lg:gap-5 lg:text-center lg:after:hidden"
+            >
+              <span
+                class="font-display relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-black bg-brand-lime text-lg font-black tabular-nums text-black shadow-[3px_3px_0px_#0D0F12]"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+
+              <div class="min-w-0 flex-1 lg:flex-none">
+                <h3 class="font-display text-lg font-black uppercase leading-tight tracking-tight text-brand-dark">
+                  {step.title}
+                </h3>
+                <p class="mt-2 text-xs font-medium leading-relaxed text-gray-700 sm:text-sm">
+                  {step.description}
+                </p>
+                <p class="font-mono mt-3 inline-flex rounded-lg border border-gray-300 bg-brand-surface px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-gray-600">
+                  {step.output}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

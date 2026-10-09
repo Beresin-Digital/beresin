@@ -1,0 +1,42 @@
+# Build output
+dist/
+.astro/
+
+# Lighthouse reports (local QA output, regenerated on demand)
+.lighthouse/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Local uploads (production lives at /srv/beresin/uploads)
+uploads/
+
+# Local runtime data (e.g. the contact-form NDJSON fallback when the DB is down)
+.data/
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test output
+coverage/
+lighthouse-report.*
+
+# debug
+preview/
+design-reference/

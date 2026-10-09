@@ -1,0 +1,40 @@
+---
+/**
+ * Shared header block for inner pages. Keeps the h1 → h2 order valid and gives
+ * every subpage the same eyebrow/title/lead rhythm as the homepage sections.
+ *
+ * The default slot renders under the lead, for page-specific extras such as the
+ * anchor jump nav on /layanan. Pages that pass nothing render nothing.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+}
+
+const { eyebrow, title, lead } = Astro.props;
+const hasSlot = Astro.slots.has('default');
+---
+
+<section class="bg-grid-light border-b border-gray-200 bg-white py-14 lg:py-20">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <p class="mb-4 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+      <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+        {eyebrow}
+      </span>
+    </p>
+    <h1
+      class="font-display max-w-4xl text-4xl font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-6xl"
+    >
+      {title}
+    </h1>
+    {
+      lead && (
+        <p class="mt-5 max-w-2xl text-sm font-semibold leading-relaxed text-gray-700 sm:text-base">
+          {lead}
+        </p>
+      )
+    }
+    {hasSlot && <slot />}
+  </div>
+</section>

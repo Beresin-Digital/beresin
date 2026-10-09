@@ -1,0 +1,41 @@
+---
+import { marqueeItems } from '../../data/services';
+
+/**
+ * The track holds two identical halves and animates to translateX(-50%), so one
+ * half is always on screen. Each half carries its own trailing padding, which
+ * makes the wrap-around seamless (a plain flex `gap` would leave a half-gap
+ * jump at the loop point).
+ *
+ * The wrapper exists to clip horizontally: the band is full-bleed and rotated,
+ * so its axis-aligned bounding box is a hair wider than the viewport (~1px at
+ * 768), which was enough to give every page a 1px horizontal scroll. The
+ * wrapper clips that without touching vertical overflow, so the skewed edges
+ * still bleed off the top and bottom exactly as designed.
+ */
+const half = [...marqueeItems];
+---
+
+<div class="overflow-x-clip">
+  <section
+    class="my-2 -rotate-1 scale-100 overflow-hidden border-y-2 border-black bg-brand-lime py-4 font-display text-xl font-black uppercase tracking-wider text-black sm:text-2xl"
+    aria-hidden="true"
+  >
+    <div class="animate-marquee will-change-transform flex w-max">
+      {
+        [0, 1].map(() => (
+          <div class="flex shrink-0 items-center gap-8 pr-8">
+            {half.map((item) => (
+              <>
+                <span>{item}</span>
+                <svg class="inline h-5 w-5 fill-black" viewBox="0 0 24 24" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              </>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</div>

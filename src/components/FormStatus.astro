@@ -1,0 +1,54 @@
+---
+/**
+ * Success / validation banner shown after a contact-form POST redirect.
+ *
+ * The form is a plain POST with no JavaScript, so the endpoint reports the
+ * outcome back through the query string (`?terkirim=1` or `?gagal=<field>`).
+ * Both the homepage and /kontak render this, so the copy lives in one place.
+ */
+const submitted = Astro.url.searchParams.get('terkirim') === '1';
+const failedField = Astro.url.searchParams.get('gagal');
+
+const fieldLabels: Record<string, string> = {
+  nama: 'Nama lengkap',
+  telepon: 'Nomor WhatsApp / telepon',
+  email: 'Alamat email',
+  pesan: 'Kebutuhan proyek',
+};
+
+/**
+ * Reasons that are not about one specific field. `terlalu-sering` is the rate
+ * limiter and `sistem` is the one genuinely unrecoverable case — the database
+ * was down *and* the on-disk fallback could not be written.
+ */
+const reasons: Record<string, string> = {
+  'terlalu-sering':
+    'Terlalu banyak percobaan dari jaringan ini. Mohon coba lagi beberapa menit lagi, atau hubungi kami langsung lewat WhatsApp.',
+  sistem:
+    'Maaf, pesan Anda gagal kami simpan karena gangguan teknis. Mohon coba lagi sebentar lagi, atau hubungi kami langsung lewat WhatsApp.',
+};
+
+const reason = failedField ? reasons[failedField] : undefined;
+const visible = submitted || Boolean(failedField);
+---
+
+{
+  visible && (
+    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" role="status" aria-live="polite">
+      {submitted ? (
+        <p class="rounded-2xl border-2 border-black bg-brand-lime px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
+          Terima kasih! Pesan Anda sudah kami terima. Tim Beresin Digital akan menghubungi Anda.
+        </p>
+      ) : reason ? (
+        <p class="rounded-2xl border-2 border-black bg-white px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
+          {reason}
+        </p>
+      ) : (
+        <p class="rounded-2xl border-2 border-black bg-white px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
+          Mohon periksa kembali kolom{' '}
+          <strong>{fieldLabels[failedField!] ?? 'yang wajib diisi'}</strong> sebelum mengirim.
+        </p>
+      )}
+    </div>
+  )
+}

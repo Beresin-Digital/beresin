@@ -1,0 +1,211 @@
+---
+import { LEAD_STATUSES, type LeadStatus } from '../../../db/schema';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { parseLeadQuery, queryString } from '../../../lib/admin-query';
+import { formatWib } from '../../../lib/datetime';
+import { PAGE_SIZE, countLeads, listLeads, unreadCount } from '../../../lib/leads';
+
+export const prerender = false;
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const query = parseLeadQuery(Astro.url);
+
+const [rows, total, unread] = await Promise.all([
+  listLeads(query, query.page),
+  countLeads(query),
+  unreadCount(),
+]);
+
+const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+// A `?page=99` past the end would otherwise render an empty table with a
+// "page 99 of 3" label. Clamp the display to the last real page.
+const page = Math.min(query.page, pageCount);
+
+const STATUS_LABELS: Record<LeadStatus, string> = {
+  new: 'Baru',
+  contacted: 'Dihubungi',
+  won: 'Menang',
+  spam: 'Spam',
+};
+
+const STATUS_CLASS: Record<LeadStatus, string> = {
+  new: 'bg-black text-brand-lime',
+  contacted: 'border border-black bg-white text-brand-dark',
+  won: 'bg-brand-lime text-black',
+  spam: 'bg-gray-200 text-gray-600',
+};
+
+const filters = [
+  { label: 'Semua', status: null as LeadStatus | null },
+  ...LEAD_STATUSES.map((status) => ({ label: STATUS_LABELS[status], status })),
+];
+
+const exportHref = `/admin/leads/export.csv${queryString(query, { page: 1 })}`;
+const isUnread = (seenAt: Date | null, status: LeadStatus) => !seenAt && status !== 'spam';
+---
+
+<AdminLayout title="Leads" adminName={admin.name} unread={unread}>
+  <div class="mb-5 flex flex-wrap items-center gap-2">
+    {
+      filters.map((filter) => {
+        const active = query.status === filter.status;
+        return (
+          <a
+            href={`/admin/leads${queryString(query, { status: filter.status, page: 1 })}`}
+            aria-current={active ? 'page' : undefined}
+            class:list={[
+              'font-mono rounded-full border-2 border-black px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest transition-colors',
+              active ? 'bg-black text-brand-lime' : 'bg-white text-brand-dark hover:bg-brand-lime',
+            ]}
+          >
+            {filter.label}
+          </a>
+        );
+      })
+    }
+
+    <form method="get" action="/admin/leads" class="ml-auto flex items-center gap-2">
+      {query.status && <input type="hidden" name="status" value={query.status} />}
+      <input
+        type="search"
+        name="q"
+        value={query.q ?? ''}
+        placeholder="Cari nama, telepon, email…"
+        class="w-48 rounded-lg border-2 border-black bg-white px-3 py-1.5 text-xs font-medium text-brand-dark outline-none focus:ring-2 focus:ring-brand-lime"
+      />
+      <button
+        type="submit"
+        class="font-mono rounded-lg border-2 border-black bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-lime"
+      >
+        Cari
+      </button>
+    </form>
+  </div>
+
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+      {total} lead
+      {query.status && ` · status ${STATUS_LABELS[query.status]}`}
+      {query.q && ` · “${query.q}”`}
+    </p>
+    {
+      total > 0 && (
+        <a
+          href={exportHref}
+          class="font-mono rounded-lg border-2 border-black bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-lime"
+        >
+          Ekspor CSV
+        </a>
+      )
+    }
+  </div>
+
+  {
+    rows.length === 0 ? (
+      <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white px-6 py-16 text-center">
+        <p class="font-display text-sm font-black uppercase tracking-tight text-brand-dark">
+          Belum ada lead
+        </p>
+        <p class="mt-1 text-xs font-medium text-gray-500">
+          {query.status || query.q
+            ? 'Tidak ada lead yang cocok dengan filter ini.'
+            : 'Lead dari formulir kontak akan muncul di sini.'}
+        </p>
+      </div>
+    ) : (
+      <div class="overflow-x-auto rounded-2xl border-2 border-black bg-white shadow-[4px_4px_0px_#0D0F12]">
+        <table class="w-full min-w-[52rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-black bg-brand-surface">
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Waktu</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Nama</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Kontak</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Sumber</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Pesan</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((lead) => (
+              <tr class="border-b border-gray-200 last:border-b-0 hover:bg-brand-surface">
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-gray-500">
+                  {formatWib(lead.createdAt)}
+                </td>
+                <td class="px-3 py-2.5">
+                  <a
+                    href={`/admin/leads/${lead.id}`}
+                    class:list={[
+                      'flex items-center gap-2 font-medium text-brand-dark hover:underline',
+                      isUnread(lead.seenAt, lead.status) && 'font-bold',
+                    ]}
+                  >
+                    {isUnread(lead.seenAt, lead.status) && (
+                      <span class="h-2 w-2 shrink-0 rounded-full bg-brand-lime ring-1 ring-black" aria-label="Belum dibaca" />
+                    )}
+                    {lead.name}
+                  </a>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-brand-dark">
+                  <span class="block">{lead.phone}</span>
+                  {lead.email && <span class="block text-gray-500">{lead.email}</span>}
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-gray-500">{lead.source}</td>
+                <td class="max-w-[16rem] px-3 py-2.5 text-xs text-gray-500">
+                  <span class="block truncate">{lead.message || '—'}</span>
+                </td>
+                <td class="px-3 py-2.5">
+                  <span
+                    class:list={[
+                      'font-mono inline-block rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest',
+                      STATUS_CLASS[lead.status],
+                    ]}
+                  >
+                    {STATUS_LABELS[lead.status]}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    pageCount > 1 && (
+      <nav aria-label="Navigasi halaman" class="mt-5 flex items-center justify-between gap-3">
+        <a
+          href={`/admin/leads${queryString(query, { page: page - 1 })}`}
+          aria-disabled={page <= 1}
+          class:list={[
+            'font-mono rounded-lg border-2 border-black px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest transition-colors',
+            page <= 1
+              ? 'pointer-events-none border-gray-300 text-gray-400'
+              : 'bg-white text-brand-dark hover:bg-brand-lime',
+          ]}
+        >
+          &larr; Sebelumnya
+        </a>
+
+        <span class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+          Halaman {page} / {pageCount}
+        </span>
+
+        <a
+          href={`/admin/leads${queryString(query, { page: page + 1 })}`}
+          aria-disabled={page >= pageCount}
+          class:list={[
+            'font-mono rounded-lg border-2 border-black px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest transition-colors',
+            page >= pageCount
+              ? 'pointer-events-none border-gray-300 text-gray-400'
+              : 'bg-white text-brand-dark hover:bg-brand-lime',
+          ]}
+        >
+          Berikutnya &rarr;
+        </a>
+      </nav>
+    )
+  }
+</AdminLayout>

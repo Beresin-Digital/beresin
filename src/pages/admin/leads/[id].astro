@@ -1,0 +1,227 @@
+---
+import { actions } from 'astro:actions';
+import { LEAD_STATUSES, type LeadStatus } from '../../../db/schema';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { formatWib } from '../../../lib/datetime';
+import { getLead, markSeen, unreadCount } from '../../../lib/leads';
+
+export const prerender = false;
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const id = Number.parseInt(Astro.params.id ?? '', 10);
+const lead = Number.isInteger(id) && id > 0 ? await getLead(id) : null;
+
+if (!lead) {
+  Astro.response.status = 404;
+} else {
+  // Opening a lead is a read, not a business decision — it clears the unread
+  // badge and nothing else. Status stays whatever the team set it to.
+  await markSeen(lead.id);
+}
+
+const unread = await unreadCount();
+
+const STATUS_LABELS: Record<LeadStatus, string> = {
+  new: 'Baru',
+  contacted: 'Dihubungi',
+  won: 'Menang',
+  spam: 'Spam',
+};
+
+const statusResult = Astro.getActionResult(actions.updateLeadStatus);
+const noteResult = Astro.getActionResult(actions.updateLeadNote);
+const actionError = statusResult?.error?.message ?? noteResult?.error?.message ?? null;
+
+/**
+ * Deep link to the *submitter*, not to our own number. `wa.me` wants an
+ * international number, and the form collects the local `08…` form, so the
+ * leading zero is rewritten to Indonesia's `62` country code.
+ */
+function waHref(phone: string, name: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const intl = digits.startsWith('0') ? `62${digits.slice(1)}` : digits;
+  const text = `Halo ${name}, terima kasih sudah menghubungi Beresin Digital.`;
+  return `https://wa.me/${intl}?text=${encodeURIComponent(text)}`;
+}
+
+const rowClass = 'flex flex-col gap-1 border-b border-gray-200 py-3 last:border-b-0 sm:flex-row sm:items-baseline sm:gap-4';
+const dtClass = 'font-mono w-40 shrink-0 text-[10px] font-extrabold uppercase tracking-widest text-gray-500';
+const ddClass = 'text-sm font-medium text-brand-dark';
+---
+
+<AdminLayout title="Detail Lead" adminName={admin.name} unread={unread}>
+  <p class="mb-4">
+    <a
+      href="/admin/leads"
+      class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500 hover:text-brand-dark"
+    >
+      &larr; Semua lead
+    </a>
+  </p>
+
+  {
+    !lead ? (
+      <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white px-6 py-16 text-center">
+        <p class="font-display text-sm font-black uppercase tracking-tight text-brand-dark">
+          Lead tidak ditemukan
+        </p>
+        <p class="mt-1 text-xs font-medium text-gray-500">
+          Lead ini mungkin sudah dihapus, atau tautannya salah.
+        </p>
+      </div>
+    ) : (
+      <>
+        {actionError && (
+          <p role="alert" class="mb-4 rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-xs font-extrabold text-black">
+            {actionError}
+          </p>
+        )}
+
+        <div class="grid gap-6 lg:grid-cols-[1fr_20rem]">
+          <section class="rounded-2xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_#0D0F12]">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 class="font-display text-xl font-black uppercase tracking-tight text-brand-dark">
+                  {lead.name}
+                </h2>
+                <p class="font-mono mt-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                  #{lead.id} · {lead.source}
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <a
+                  href={waHref(lead.phone, lead.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-mono rounded-lg border-2 border-black bg-brand-lime px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+                >
+                  Chat WhatsApp
+                </a>
+                {lead.email && (
+                  <a
+                    href={`mailto:${lead.email}`}
+                    class="font-mono rounded-lg border-2 border-black bg-white px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-lime"
+                  >
+                    Email
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <dl class="mt-4">
+              <div class={rowClass}>
+                <dt class={dtClass}>Telepon</dt>
+                <dd class={ddClass}>{lead.phone}</dd>
+              </div>
+              <div class={rowClass}>
+                <dt class={dtClass}>Email</dt>
+                <dd class={ddClass}>{lead.email ?? '—'}</dd>
+              </div>
+              <div class={rowClass}>
+                <dt class={dtClass}>Pesan</dt>
+                <dd class="text-sm leading-relaxed whitespace-pre-wrap text-brand-dark">
+                  {lead.message || '—'}
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          <aside class="space-y-4">
+            <div class="rounded-2xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_#0D0F12]">
+              <h3 class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                Status
+              </h3>
+              <form method="post" action={actions.updateLeadStatus} class="mt-2 space-y-2">
+                <input type="hidden" name="id" value={lead.id} />
+                <select
+                  name="status"
+                  class="w-full rounded-lg border-2 border-black bg-white px-3 py-2 text-sm font-medium text-brand-dark outline-none focus:ring-2 focus:ring-brand-lime"
+                >
+                  {LEAD_STATUSES.map((status) => (
+                    <option value={status} selected={status === lead.status}>
+                      {STATUS_LABELS[status]}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  class="font-mono w-full rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+                >
+                  Simpan status
+                </button>
+              </form>
+              {statusResult?.data && (
+                <p role="status" class="mt-2 text-[11px] font-bold text-brand-dark">
+                  Status diperbarui.
+                </p>
+              )}
+            </div>
+
+            <div class="rounded-2xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_#0D0F12]">
+              <h3 class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                Catatan internal
+              </h3>
+              <p class="mt-1 text-[11px] font-medium text-gray-500">
+                Hanya terlihat oleh tim. Tidak pernah dikirim ke pengunjung.
+              </p>
+              <form method="post" action={actions.updateLeadNote} class="mt-2 space-y-2">
+                <input type="hidden" name="id" value={lead.id} />
+                <textarea
+                  name="note"
+                  rows="4"
+                  maxlength="2000"
+                  class="w-full rounded-lg border-2 border-black bg-white px-3 py-2 text-sm font-medium text-brand-dark outline-none focus:ring-2 focus:ring-brand-lime"
+                >{lead.note ?? ''}</textarea>
+                <button
+                  type="submit"
+                  class="font-mono w-full rounded-lg border-2 border-black bg-white px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-lime"
+                >
+                  Simpan catatan
+                </button>
+              </form>
+              {noteResult?.data && (
+                <p role="status" class="mt-2 text-[11px] font-bold text-brand-dark">
+                  Catatan disimpan.
+                </p>
+              )}
+            </div>
+
+            <div class="rounded-2xl border-2 border-black bg-brand-surface p-5">
+              <h3 class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                Jejak
+              </h3>
+              <dl class="mt-2 space-y-2 text-xs">
+                <div>
+                  <dt class="text-gray-500">Masuk</dt>
+                  <dd class="font-medium text-brand-dark">{formatWib(lead.createdAt)}</dd>
+                </div>
+                <div>
+                  <dt class="text-gray-500">Pertama dibuka</dt>
+                  <dd class="font-medium text-brand-dark">
+                    {lead.seenAt ? formatWib(lead.seenAt) : 'baru saja'}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-gray-500">Halaman asal</dt>
+                  <dd class="font-medium break-all text-brand-dark">{lead.pageUrl || '—'}</dd>
+                </div>
+                <div>
+                  <dt class="text-gray-500">ip_hash</dt>
+                  <dd class="font-mono break-all text-[11px] font-medium text-brand-dark">
+                    {lead.ipHash ? `${lead.ipHash.slice(0, 16)}…` : '—'}
+                  </dd>
+                  <p class="mt-1 text-[10px] leading-snug text-gray-500">
+                    Ini HMAC-SHA256, bukan alamat IP. IP mentah tidak pernah disimpan.
+                  </p>
+                </div>
+              </dl>
+            </div>
+          </aside>
+        </div>
+      </>
+    )
+  }
+</AdminLayout>

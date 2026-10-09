@@ -1,0 +1,197 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../data/site';
+
+const title = 'Kebijakan Privasi | Beresin Digital';
+const description =
+  'Kebijakan Privasi Beresin Digital: data apa yang kami kumpulkan, bagaimana kami menggunakannya, pihak ketiga yang memprosesnya, dan hak Anda sebagai subjek data sesuai UU PDP No. 27/2022.';
+---
+
+<LegalLayout
+  title={title}
+  description={description}
+  eyebrow="Legal"
+  heading="Kebijakan Privasi"
+  lead="Dokumen ini menjelaskan data pribadi apa yang kami kumpulkan melalui situs ini, untuk apa data tersebut digunakan, dan hak Anda atas data tersebut."
+  updated="6 Oktober 2026"
+>
+  <p>
+    Kebijakan Privasi ini berlaku untuk situs <strong>{site.domain}</strong>, yang dikelola oleh
+    <strong>{site.legalName}</strong> ("kami") selaku pengendali data pribadi, berkedudukan di
+    {site.address.city}, {site.address.countryName}. Kami memproses data pribadi sesuai
+    Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi ("UU PDP") dan peraturan
+    pelaksanaannya.
+  </p>
+
+  <h2>1. Data yang kami kumpulkan</h2>
+
+  <h3>a. Data yang Anda kirimkan sendiri</h3>
+  <p>
+    Saat Anda mengisi formulir konsultasi atau formulir kontak, kami mengumpulkan nama lengkap,
+    nomor WhatsApp/telepon, alamat email (opsional), dan uraian kebutuhan proyek. Kami juga mencatat
+    dari halaman mana formulir dikirim.
+  </p>
+
+  <h3>b. Data teknis</h3>
+  <p>
+    Server kami mencatat alamat IP, jenis perangkat, dan waktu akses untuk keperluan keamanan,
+    pencegahan penyalahgunaan, dan penegakan pembatasan laju permintaan (rate limiting). Untuk
+    pengiriman formulir, alamat IP disimpan dalam bentuk <strong>hash ber-salt (HMAC)</strong>,
+    bukan alamat IP mentah, sesuai asas minimalisasi data.
+  </p>
+
+  <h2>2. Dasar dan tujuan pemrosesan</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tujuan</th>
+        <th>Dasar pemrosesan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Menanggapi permintaan konsultasi dan penawaran proyek</td>
+        <td>Persetujuan Anda; pelaksanaan perjanjian</td>
+      </tr>
+      <tr>
+        <td>Pencegahan spam, penyalahgunaan, dan serangan keamanan</td>
+        <td>Kepentingan sah kami</td>
+      </tr>
+      <tr>
+        <td>Analitik kunjungan situs (statistik agregat)</td>
+        <td>Persetujuan Anda (cookie analitik)</td>
+      </tr>
+      <tr>
+        <td>Pemenuhan kewajiban hukum dan administrasi</td>
+        <td>Kewajiban hukum</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Kami tidak menggunakan data Anda untuk iklan bertarget dan tidak menjual data pribadi.</p>
+
+  <h2>3. Cookie dan teknologi sejenis</h2>
+  <p>
+    Situs ini menggunakan dua jenis pengukuran yang berbeda, dan keduanya kami bedakan secara
+    transparan:
+  </p>
+  <ul>
+    <li>
+      <strong>Cloudflare Web Analytics</strong> — pengukuran tanpa cookie dan tanpa identifikasi
+      personal. Data bersifat agregat (jumlah kunjungan, halaman populer, sumber rujukan). Karena
+      tidak memproses data pribadi, teknologi ini tidak memerlukan persetujuan, namun tetap kami
+      ungkapkan di sini.
+    </li>
+    <li>
+      <strong>Google Analytics 4 (GA4)</strong> — menggunakan cookie dan dapat mengidentifikasi
+      perangkat. Cookie GA4 <strong>hanya dimuat setelah Anda memberikan persetujuan</strong> melalui
+      banner yang muncul saat kunjungan pertama. Jika Anda menolak, skrip GA4 tidak dijalankan sama
+      sekali. Kami juga mengaktifkan Google Consent Mode v2 dengan status awal seluruhnya
+      <em>denied</em>.
+    </li>
+  </ul>
+  <p>
+    Anda dapat mengubah atau mencabut pilihan Anda kapan saja melalui tautan "Preferensi Cookie" di
+    banner maupun di footer situs.
+  </p>
+
+  <h2>4. Pihak ketiga yang memproses data</h2>
+  <p>
+    Kami menggunakan sejumlah penyedia layanan yang memproses data atas nama kami berdasarkan
+    perjanjian pemrosesan data:
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Penyedia</th>
+        <th>Peran</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cloudflare, Inc.</td>
+        <td>CDN, keamanan, dan analitik web</td>
+        <td>Metadata permintaan; statistik agregat tanpa cookie</td>
+      </tr>
+      <tr>
+        <td>Google (GA4)</td>
+        <td>Analitik kunjungan</td>
+        <td>Data perangkat dan interaksi — hanya setelah persetujuan</td>
+      </tr>
+      <tr>
+        <td>Brevo (Sendinblue)</td>
+        <td>Pengiriman email notifikasi</td>
+        <td>Isi pesan dan alamat email tujuan</td>
+      </tr>
+      <tr>
+        <td>Penyedia VPS di Indonesia</td>
+        <td>Penyimpanan basis data dan berkas situs</td>
+        <td>Seluruh data aplikasi</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Data aplikasi (basis data dan berkas) disimpan pada infrastruktur server yang berlokasi di
+    Indonesia. Layanan CDN Cloudflare melakukan terminasi TLS di titik terdekat dari lokasi Anda,
+    sehingga sebagian metadata permintaan dapat melewati infrastruktur Cloudflare di luar wilayah
+    Indonesia. Kami telah menandatangani perjanjian pemrosesan data dengan penyedia tersebut.
+  </p>
+
+  <h2>5. Retensi data</h2>
+  <ul>
+    <li>Data prospek (lead) dari formulir: maksimal <strong>24 bulan</strong> sejak kontak terakhir.</li>
+    <li>Log keamanan dan rate limit: maksimal <strong>90 hari</strong>.</li>
+    <li>Data analitik agregat: sesuai konfigurasi retensi penyedia (maksimal 14 bulan untuk GA4).</li>
+    <li>Dokumen kontrak dan administrasi: sesuai kewajiban hukum yang berlaku.</li>
+  </ul>
+  <p>Setelah masa retensi berakhir, data dihapus atau dianonimkan secara permanen.</p>
+
+  <h2>6. Keamanan</h2>
+  <p>
+    Kami menerapkan langkah teknis dan organisasi yang wajar, termasuk enkripsi TLS pada seluruh
+    lalu lintas situs, penyimpanan kata sandi administrator dengan algoritma
+    <strong>argon2id</strong>, pembatasan akses ke panel administrasi, pencatatan audit, serta
+    pencadangan basis data secara berkala. Meskipun demikian, tidak ada metode transmisi atau
+    penyimpanan yang sepenuhnya bebas risiko.
+  </p>
+
+  <h2>7. Hak Anda sebagai subjek data</h2>
+  <p>Sesuai UU PDP, Anda berhak untuk:</p>
+  <ul>
+    <li>memperoleh informasi mengenai identitas kami, dasar, dan tujuan pemrosesan data Anda;</li>
+    <li>mengakses dan memperoleh salinan data pribadi Anda yang kami simpan;</li>
+    <li>meminta pembaruan atau perbaikan data yang tidak akurat;</li>
+    <li>meminta penghapusan data pribadi Anda;</li>
+    <li>menarik kembali persetujuan pemrosesan data;</li>
+    <li>mengajukan keberatan atas pemrosesan tertentu;</li>
+    <li>meminta pembatasan pemrosesan data;</li>
+    <li>mengajukan gugatan dan/atau menerima ganti rugi atas pelanggaran hak Anda.</li>
+  </ul>
+  <p>
+    Permintaan dapat diajukan melalui email ke
+    <a href={`mailto:${site.emailProcurement}`}>{site.emailProcurement}</a>. Kami akan memverifikasi
+    identitas Anda dan menanggapi dalam waktu <strong>3×24 jam</strong> sesuai ketentuan UU PDP.
+  </p>
+
+  <h2>8. Anak di bawah umur</h2>
+  <p>
+    Situs ini ditujukan untuk pelaku usaha dan institusi, bukan untuk anak di bawah usia 18 tahun.
+    Kami tidak dengan sengaja mengumpulkan data pribadi anak. Jika Anda mengetahui adanya data
+    tersebut, hubungi kami untuk kami hapus.
+  </p>
+
+  <h2>9. Perubahan kebijakan</h2>
+  <p>
+    Kami dapat memperbarui Kebijakan Privasi ini sewaktu-waktu. Versi terbaru selalu ditandai
+    dengan tanggal "Terakhir diperbarui" di bagian atas halaman. Perubahan material akan kami
+    sampaikan melalui pemberitahuan di situs.
+  </p>
+
+  <h2>10. Kontak</h2>
+  <p>
+    Pertanyaan mengenai Kebijakan Privasi ini dapat disampaikan kepada:<br />
+    <strong>{site.legalName}</strong><br />
+    {site.address.city}, {site.address.countryName}<br />
+    Email: <a href={`mailto:${site.emailProcurement}`}>{site.emailProcurement}</a>
+  </p>
+</LegalLayout>

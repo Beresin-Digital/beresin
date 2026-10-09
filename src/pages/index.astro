@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import Marquee from '../components/sections/Marquee.astro';
+import Services from '../components/sections/Services.astro';
+import Clients from '../components/sections/Clients.astro';
+import About from '../components/sections/About.astro';
+import Articles from '../components/sections/Articles.astro';
+import FormStatus from '../components/FormStatus.astro';
+
+const title = 'Jasa Pembuatan Website, Aplikasi & IoT | Beresin Digital';
+const description =
+  'Agensi digital di Depok & Jabodetabek untuk pembuatan website, aplikasi custom, SIAKAD sekolah, portal pemerintah, sistem IoT & smart home, dan desain grafis. Melayani korporasi, yayasan, dan instansi.';
+---
+
+<BaseLayout title={title} description={description}>
+  <Hero />
+  <Marquee />
+  <FormStatus />
+  <Services />
+  <Clients />
+  <About />
+  <Articles />
+</BaseLayout>

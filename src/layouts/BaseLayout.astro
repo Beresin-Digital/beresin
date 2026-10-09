@@ -1,0 +1,59 @@
+---
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ConsultModal from '../components/ConsultModal.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: object[];
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {/*
+      Preload only the face used by the LCP element (the hero heading).
+      The mono font loads naturally — it is used on small labels only, and
+      font-display: swap means neither font blocks first paint.
+    */}
+    <link
+      rel="preload"
+      href="/fonts/plus-jakarta-sans-400-800-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <SEO {...props} />
+  </head>
+
+  <body class="bg-white text-brand-dark antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:border focus:border-black focus:bg-brand-lime focus:px-4 focus:py-2 focus:text-xs focus:font-black focus:uppercase focus:tracking-wider"
+    >
+      Lewati ke konten utama
+    </a>
+
+    <Header />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+    <ConsultModal />
+  </body>
+</html>

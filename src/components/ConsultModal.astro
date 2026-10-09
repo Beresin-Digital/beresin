@@ -1,0 +1,85 @@
+---
+/**
+ * Consultation modal.
+ *
+ * Uses the native <dialog> element: `showModal()` gives us focus trapping,
+ * Esc-to-close, inert background content, and the ::backdrop pseudo-element for
+ * free. The only JavaScript is the ~15 lines below that wires up open/close.
+ */
+import ContactForm from './ContactForm.astro';
+---
+
+<dialog
+  id="consult-modal"
+  class="consult-dialog m-auto w-full max-w-md rounded-3xl border-2 border-black bg-white p-0 text-brand-dark shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+  aria-labelledby="consult-modal-title"
+>
+  <div class="relative p-6 sm:p-8">
+    <button
+      type="button"
+      data-close-modal
+      class="absolute right-5 top-5 text-gray-500 transition-colors hover:text-black"
+      aria-label="Tutup dialog"
+    >
+      <svg
+        class="h-6 w-6"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="mb-6">
+      <span
+        class="rounded border border-black bg-brand-lime px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-black"
+      >
+        Propose Project
+      </span>
+      <h2
+        id="consult-modal-title"
+        data-modal-title
+        class="font-display mt-2 text-2xl font-black uppercase tracking-tight"
+      >
+        Konsultasi Proyek
+      </h2>
+      <p class="mt-1 text-xs font-medium text-gray-600">
+        Tim Beresin Digital siap memberikan estimasi penawaran terbaik.
+      </p>
+    </div>
+
+    <ContactForm idPrefix="modal" source="consult-modal" compact />
+  </div>
+</dialog>
+
+<script is:inline>
+  (function () {
+    var dlg = document.getElementById('consult-modal');
+    if (!dlg || typeof dlg.showModal !== 'function') return;
+
+    var titleEl = dlg.querySelector('[data-modal-title]');
+
+    document.addEventListener('click', function (event) {
+      var trigger = event.target.closest('[data-open-modal]');
+      if (trigger) {
+        var subject = trigger.getAttribute('data-open-modal');
+        if (subject && titleEl) titleEl.textContent = subject.toUpperCase();
+        dlg.showModal();
+        return;
+      }
+
+      if (event.target.closest('[data-close-modal]')) {
+        dlg.close();
+        return;
+      }
+
+      // Click on the dialog element itself (i.e. the backdrop) closes it.
+      if (event.target === dlg) dlg.close();
+    });
+  })();
+</script>

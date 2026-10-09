@@ -1,0 +1,96 @@
+---
+import { site, whatsappLink } from '../data/site';
+
+const year = new Date().getFullYear();
+
+const menuLinks = [
+  { label: 'Beranda', href: '/' },
+  { label: 'Layanan Digital', href: '/layanan' },
+  { label: 'Klien Partner', href: '/#clients' },
+  { label: 'Artikel', href: '/artikel' },
+  { label: 'Tentang Kami', href: '/tentang' },
+];
+
+const legalLinks = [
+  { label: 'Kebijakan Privasi', href: '/kebijakan-privasi' },
+  { label: 'Syarat & Ketentuan', href: '/syarat-ketentuan' },
+];
+---
+
+<footer class="border-t border-black bg-brand-dark pt-16 pb-12 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-8 border-b border-white/10 pb-12 md:grid-cols-12">
+      <div class="space-y-4 md:col-span-6">
+        <span class="font-display text-3xl font-black tracking-tighter text-white">
+          beresin<span class="text-brand-lime">digital</span><span
+          class="ml-0.5 inline-block h-2.5 w-2.5 rounded-full bg-white"></span>
+        </span>
+        <p class="max-w-sm text-xs font-medium leading-relaxed text-gray-400">
+          Agensi Jasa Pembuatan Website, Aplikasi Custom, SIAKAD Sekolah, Portal Pemerintah, Sistem
+          IoT &amp; Smart Home, dan Desain Grafis Profesional.
+        </p>
+      </div>
+
+      <nav class="space-y-3 md:col-span-3" aria-labelledby="footer-menu-heading">
+        <h2
+          id="footer-menu-heading"
+          class="font-mono text-xs font-extrabold uppercase tracking-wider text-brand-lime"
+        >
+          Menu Navigasi
+        </h2>
+        <ul class="space-y-2 text-xs font-medium text-gray-400">
+          {
+            menuLinks.map((link) => (
+              <li>
+                <a href={link.href} class="hover:text-white">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="space-y-3 md:col-span-3">
+        <h2
+          class="font-mono text-xs font-extrabold uppercase tracking-wider text-brand-lime"
+        >
+          Kontak Official
+        </h2>
+        <address class="space-y-1 font-mono text-xs not-italic text-gray-400 [overflow-wrap:anywhere]">
+          <p>{site.legalName}</p>
+          <p>{site.address.city}, {site.address.countryName}</p>
+          <p class="pt-2">
+            Email: <a href={`mailto:${site.emailProcurement}`} class="hover:text-white">
+              {site.emailProcurement}
+            </a>
+          </p>
+          <p>
+            WA: <a
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-white">{site.whatsappDisplay}</a>
+          </p>
+        </address>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col items-center justify-between gap-4 pt-8 font-mono text-[11px] text-gray-400 sm:flex-row"
+    >
+      <p>© {year} {site.legalName}. All rights reserved.</p>
+      <ul class="flex items-center gap-4">
+        {
+          legalLinks.map((link) => (
+            <li>
+              <a href={link.href} class="hover:text-gray-300">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

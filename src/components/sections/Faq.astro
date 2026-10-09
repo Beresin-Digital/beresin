@@ -1,0 +1,71 @@
+---
+import { Plus } from '@lucide/astro';
+import { faqItems, type FaqItem } from '../../data/faq';
+
+/**
+ * Procurement FAQ.
+ *
+ * Uses native `<details>`/`<summary>`, so it opens and closes with JavaScript
+ * disabled — which matters for the government and school audiences this page
+ * targets, where JS is sometimes stripped by policy. `global.css` already
+ * removes the default disclosure marker; the plus/minus toggle below replaces
+ * it and rotates on `group-open`.
+ *
+ * Desktop lays each row out on a 12-column grid: the question occupies the left
+ * five columns and the answer opens into the right six, so the pair reads as a
+ * two-column Q&A rather than a stack of accordions. Below `lg` it collapses to
+ * question-then-answer, which is the only sane ordering on a phone.
+ */
+interface Props {
+  items?: FaqItem[];
+}
+
+const { items = faqItems } = Astro.props;
+---
+
+<section id="faq" class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark sm:py-20">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-10 max-w-2xl">
+      <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+        <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+          FAQ
+        </span>
+      </p>
+      <h2
+        class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+      >
+        Pertanyaan yang sering diajukan.
+      </h2>
+      <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+        Hal-hal yang paling sering ditanyakan tim pengadaan, yayasan, dan instansi sebelum memulai
+        proyek.
+      </p>
+    </div>
+
+    <div class="border-t border-gray-200">
+      {
+        items.map((item) => (
+          <details class="group border-b border-gray-200">
+            <summary class="flex cursor-pointer items-start justify-between gap-6 py-6 lg:grid lg:grid-cols-12 lg:gap-8">
+              <h3 class="font-display text-base font-black uppercase leading-snug tracking-tight text-brand-dark lg:col-span-5 lg:text-lg">
+                {item.question}
+              </h3>
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black bg-white text-brand-dark transition-transform duration-300 group-open:rotate-45 lg:col-span-1 lg:col-start-12 lg:justify-self-end"
+                aria-hidden="true"
+              >
+                <Plus class="h-4 w-4" stroke-width={2.5} />
+              </span>
+            </summary>
+
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+              <p class="pb-6 text-xs font-medium leading-relaxed text-gray-700 sm:text-sm lg:col-span-6 lg:col-start-6 lg:pb-8">
+                {item.answer}
+              </p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,93 @@
+---
+import {
+  Briefcase,
+  Building2,
+  CreditCard,
+  Globe,
+  GraduationCap,
+  Landmark,
+  School,
+  ShieldCheck,
+} from '@lucide/astro';
+import { placeholderClients, type ClientBadge } from '../../data/clients';
+
+/**
+ * Phase 4 replaces this static list with a query against the `clients` table,
+ * populated through /admin/klien. The badge already supports an uploaded logo —
+ * when `client.logo` is set the icon+text fallback is skipped.
+ */
+const clients = placeholderClients;
+
+const icons = {
+  'building-2': Building2,
+  'graduation-cap': GraduationCap,
+  landmark: Landmark,
+  briefcase: Briefcase,
+  school: School,
+  'shield-check': ShieldCheck,
+  globe: Globe,
+  'credit-card': CreditCard,
+} as const;
+
+/** Rotating icon-chip colours, mirroring the original mockup. */
+const chipStyles = [
+  'bg-brand-dark text-brand-lime',
+  'bg-brand-lime text-black',
+  'bg-brand-dark text-white',
+  'bg-gray-200 text-brand-dark',
+] as const;
+
+function iconFor(client: ClientBadge) {
+  return icons[client.icon as keyof typeof icons] ?? Building2;
+}
+
+const half = [...clients];
+---
+
+<section id="clients" class="overflow-hidden border-b border-gray-200 bg-white py-16 text-brand-dark">
+  <div class="mx-auto mb-10 max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+    <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+      <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+        Trusted Partners
+      </span>
+    </p>
+    <h2 class="font-display text-3xl font-black uppercase tracking-tight text-brand-dark sm:text-4xl">
+      Dipercaya oleh 10+ klien &amp; instansi
+    </h2>
+    <p class="mx-auto mt-2 max-w-2xl text-xs font-medium text-gray-600 sm:text-sm">
+      Mitra pengadaan IT, Website &amp; Desain Grafis untuk Perusahaan Swasta, Yayasan Pendidikan,
+      dan Instansi Pemerintah.
+    </p>
+  </div>
+
+  <div class="relative w-full overflow-hidden py-3">
+    <div class="animate-marquee will-change-transform flex w-max">
+      {
+        [0, 1].map(() => (
+          <div class="flex shrink-0 items-center gap-6 pr-6">
+            {half.map((client, i) => {
+              const Icon = iconFor(client);
+              return (
+                <div class="inline-flex shrink-0 items-center gap-3 rounded-2xl border border-gray-200 bg-brand-surface px-6 py-4 transition-all hover:border-black">
+                  <span
+                    class:list={[
+                      'flex h-8 w-8 items-center justify-center rounded-lg font-bold',
+                      chipStyles[i % chipStyles.length],
+                    ]}
+                    aria-hidden="true"
+                  >
+                    <Icon class="h-4 w-4" stroke-width={2.25} />
+                  </span>
+                  <div class="text-left">
+                    <p class="text-xs font-extrabold text-brand-dark">{client.name}</p>
+                    <p class="font-mono text-[9px] uppercase text-gray-600">{client.category}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

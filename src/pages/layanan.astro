@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ServiceDetail from '../components/sections/ServiceDetail.astro';
+import Process from '../components/sections/Process.astro';
+import Faq from '../components/sections/Faq.astro';
+import { ArrowUpRight, Mail } from '@lucide/astro';
+import { services } from '../data/services';
+import { faqItems } from '../data/faq';
+import { site } from '../data/site';
+import { faqPage, serviceCatalog } from '../lib/seo';
+
+const title = 'Layanan — Website, Aplikasi, SIAKAD, IoT & Desain | Beresin Digital';
+const description =
+  'Layanan Beresin Digital: website dan aplikasi custom, sistem akademik SIAKAD sekolah, portal e-government, sistem IoT & smart home, serta desain grafis dan branding — lengkap dengan alur kerja dan jawaban pertanyaan pengadaan.';
+
+const pageUrl = `${site.url}/layanan`;
+
+/**
+ * Structured data for this page: the three pillars as `Service` nodes behind an
+ * `ItemList`, plus a `FAQPage` mirroring the visible accordion below.
+ */
+const jsonLd = [
+  ...serviceCatalog({
+    url: pageUrl,
+    services: services.map((s) => ({ id: s.id, title: s.title, description: s.description })),
+  }),
+  faqPage(faqItems),
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Layanan"
+    title="Yang kami kerjakan"
+    lead="Tiga pilar layanan kami, dijabarkan sampai ke detailnya — apa saja yang Anda terima, siapa yang paling cocok, dan bagaimana prosesnya dari diskusi pertama sampai sistem live."
+  >
+    <!-- Jump nav. Plain anchors, no JavaScript — the pillar sections carry the
+         matching ids and inherit `scroll-margin-top` from global.css. -->
+    <nav aria-label="Lompat ke pilar layanan" class="mt-8 flex flex-wrap gap-2">
+      {
+        services.map((service, i) => (
+          <a
+            href={`#${service.id}`}
+            class="font-mono inline-flex items-center gap-2 rounded-full border border-black bg-white px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-brand-dark shadow-[2px_2px_0px_#0D0F12] transition-colors hover:bg-brand-lime"
+          >
+            <span class="tabular-nums text-gray-600" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            {service.title}
+          </a>
+        ))
+      }
+    </nav>
+  </PageHeader>
+
+  {services.map((service, i) => <ServiceDetail service={service} index={i} />)}
+
+  <Process />
+  <Faq />
+
+  <!-- Closing CTA. Dark, to echo the homepage Services band and give the page a
+       definite end. Deliberately not the old "Punya kebutuhan yang belum
+       tercantum?" copy — this is a next step, not a repeat of the pitch. -->
+  <section class="border-b border-black bg-brand-dark py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
+            Langkah berikutnya
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          >
+            Belum yakin mulai dari mana?
+          </h2>
+          <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+            Ceritakan kondisi Anda sekarang. Kami bantu tentukan pilar yang paling relevan, ruang
+            lingkupnya, dan langkah pertamanya — tanpa biaya dan tanpa komitmen.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 lg:col-span-4">
+          <button
+            type="button"
+            data-open-modal="Konsultasi Layanan"
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
+          >
+            Konsultasi gratis
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </button>
+
+          <a
+            href={`mailto:${site.emailProcurement}`}
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
+          >
+            <Mail class="h-4 w-4" stroke-width={2.25} />
+            Email tim pengadaan
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

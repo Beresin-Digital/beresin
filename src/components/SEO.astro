@@ -1,0 +1,69 @@
+---
+import { site } from '../data/site';
+import * as ld from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path or absolute URL of the OG image. Defaults to the site-wide one. */
+  ogImage?: string;
+  /** 'website' for marketing pages, 'article' for blog posts. */
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  /** Extra JSON-LD nodes appended to the page graph. */
+  jsonLd?: object[];
+}
+
+const {
+  title,
+  description,
+  ogImage = site.defaultOgImage,
+  type = 'website',
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
+
+// Astro.url is absolute here because `site` is configured in astro.config.mjs.
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site.url).href;
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site.url).href;
+
+const graphJson = ld.graph(
+  ld.organization(),
+  ld.website(),
+  ld.webPage({ url: canonical, name: title, description }),
+  ...jsonLd
+);
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.displayName} />
+<meta property="og:locale" content="id_ID" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<!-- Icons. PNG/ICO only — the hand-drawn favicon.svg was dropped because it
+     drifted from the real logo mark. -->
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#0D0F12" />
+
+<meta name="generator" content={Astro.generator} />
+
+<script type="application/ld+json" set:html={graphJson} is:inline />

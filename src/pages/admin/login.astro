@@ -1,0 +1,122 @@
+---
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { ADMIN_SESSION_KEY } from '../../lib/auth';
+
+export const prerender = false;
+
+/** Rejects anything that could turn `?next=` into an open redirect. */
+function safeNext(value: string | null): string | null {
+  if (!value) return null;
+  const ok =
+    value.startsWith('/admin') &&
+    !value.startsWith('//') &&
+    !value.includes('\\') &&
+    !/[\u0000-\u001f\u007f]/.test(value);
+  return ok ? value : null;
+}
+
+const next = safeNext(Astro.url.searchParams.get('next')) ?? '/admin/leads';
+
+// Already signed in: no reason to show the form again. This reads the session
+// without a database round-trip — a stale cookie bounces once through /admin,
+// whose middleware destroys it, and then lands back here with no session.
+//
+// Reading the session still goes through the driver, so a database that is down
+// would throw here. Swallowed on purpose: the form is the one thing that should
+// still render, and a 500 tells the operator nothing they cannot see in logs.
+let alreadySignedIn = false;
+try {
+  alreadySignedIn = Boolean(await Astro.session?.get(ADMIN_SESSION_KEY));
+} catch {
+  /* database unreachable — show the form anyway */
+}
+
+if (alreadySignedIn) {
+  return Astro.redirect(next);
+}
+
+const result = Astro.getActionResult(actions.login);
+
+// Success is a server-side redirect — no JavaScript needed to move the browser.
+if (result?.data) {
+  return Astro.redirect(next);
+}
+
+const error = result?.error;
+const message = error
+  ? isInputError(error)
+    ? 'Mohon periksa kembali email dan kata sandi Anda.'
+    : error.message
+  : null;
+
+// The form posts back to this same URL, and a relative action URL replaces the
+// whole query string — so `next` has to ride along explicitly or it is lost on
+// the first failed attempt.
+const formAction = `?${new URLSearchParams({ next, _action: 'login' })}`;
+
+const fieldClass =
+  'mt-1 w-full rounded-lg border-2 border-black bg-white px-3 py-2 text-sm font-medium text-brand-dark outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-lime';
+const labelClass = 'font-mono block text-[10px] font-extrabold uppercase tracking-widest text-gray-500';
+---
+
+<AdminLayout title="Masuk" variant="bare">
+  <div class="rounded-2xl border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#0D0F12]">
+    <h1 class="font-display text-lg font-black uppercase tracking-tight text-brand-dark">
+      Masuk
+    </h1>
+    <p class="mt-1 text-xs font-medium text-gray-500">
+      Area internal Beresin Digital. Hanya untuk tim.
+    </p>
+
+    {
+      message && (
+        <p
+          role="alert"
+          class="mt-4 rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-xs font-extrabold text-black"
+        >
+          {message}
+        </p>
+      )
+    }
+
+    <form method="post" action={formAction} class="mt-5 space-y-4">
+      <label class="block">
+        <span class={labelClass}>Email</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          class={fieldClass}
+        />
+      </label>
+
+      <label class="block">
+        <span class={labelClass}>Kata sandi</span>
+        <input
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          class={fieldClass}
+        />
+      </label>
+
+      <button
+        type="submit"
+        class="font-mono w-full rounded-lg border-2 border-black bg-brand-lime px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+      >
+        Masuk
+      </button>
+    </form>
+  </div>
+
+  <p class="mt-6 text-center">
+    <a href="/" class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500 hover:text-brand-dark">
+      &larr; Kembali ke situs
+    </a>
+  </p>
+</AdminLayout>

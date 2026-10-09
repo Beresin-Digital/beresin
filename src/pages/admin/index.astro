@@ -1,0 +1,6 @@
+---
+export const prerender = false;
+
+// /admin has no page of its own; the inbox is the landing surface.
+return Astro.redirect('/admin/leads', 302);
+---

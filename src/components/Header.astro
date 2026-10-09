@@ -1,0 +1,123 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { whatsappLink } from '../data/site';
+
+const navItems = [
+  { label: 'Beranda', href: '/' },
+  { label: 'Layanan', href: '/layanan' },
+  { label: 'Tentang Kami', href: '/tentang' },
+  { label: 'Artikel', href: '/artikel' },
+  { label: 'Kontak', href: '/kontak' },
+];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
+---
+
+<header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
+  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <!-- Brand. No aria-label: WCAG 2.5.3 requires the accessible name to contain
+         the visible text, so the "— beranda" hint is a real (screen-reader-only)
+         text node rather than an overriding label. The mark is the real logo PNG
+         (generated from the source file by scripts/make-icons.mjs) — a hand-drawn
+         SVG drifted from the actual mark, so we ship the bitmap instead. -->
+    <a href="/" class="group flex items-center gap-3">
+      <span class="relative h-9 w-9 shrink-0 sm:h-10 sm:w-10">
+        <img
+          src="/logo-mark.png"
+          alt=""
+          width="96"
+          height="96"
+          loading="eager"
+          decoding="async"
+          class="h-full w-full object-contain"
+        />
+      </span>
+      <span class="font-display text-2xl font-black tracking-tighter text-brand-dark">
+        beresin<span>digital</span><span
+          class="ml-0.5 inline-block h-2.5 w-2.5 rounded-full bg-brand-lime"></span>
+      </span>
+      <span class="sr-only">— beranda</span>
+    </a>
+
+    <!-- Desktop nav. The gap is tighter at `md` than at `lg` on purpose: five
+         items plus the wordmark and the CTA do not fit on one line at 768px, and
+         at the full gap the row pushed 2px past the viewport edge, which is
+         enough to make the whole page scroll sideways on a tablet. -->
+    <nav
+      class="hidden items-center gap-6 text-xs font-black uppercase tracking-wider text-gray-700 md:flex lg:gap-8"
+      aria-label="Navigasi utama"
+    >
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class="transition-colors hover:text-black"
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Desktop CTA. Points at /kontak rather than straight into WhatsApp: the
+         contact page is where the form, the email, and the WhatsApp link all
+         live, so a visitor who is not ready to chat in an app still has a path.
+         The mobile menu below keeps its direct WhatsApp button — on a phone
+         that one tap is the fastest route, and the menu already lists Kontak. -->
+    <div class="hidden items-center gap-3 sm:flex">
+      <a
+        href="/kontak"
+        class="flex items-center gap-2 rounded-full border border-black bg-brand-lime px-5 py-2.5 text-xs font-extrabold text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
+      >
+        Hubungi Kami
+        <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+      </a>
+    </div>
+
+    <!-- Mobile menu: CSS-only via <details>, no JS -->
+    <details class="mobile-menu relative md:hidden">
+      <summary
+        class="cursor-pointer list-none p-2 text-brand-dark"
+        aria-label="Buka menu navigasi"
+      >
+        <svg
+          class="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </summary>
+
+      <div
+        class="absolute left-0 right-0 top-full space-y-4 border-b border-gray-200 bg-white px-6 py-6 shadow-lg"
+      >
+        <nav class="flex flex-col gap-4 text-xs font-extrabold uppercase" aria-label="Navigasi mobile">
+          {
+            navItems.map((item) => (
+              <a href={item.href} class="text-left text-gray-600 hover:text-black">
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        <a
+          href={whatsappLink('Halo Beresin Digital, saya ingin berkonsultasi soal proyek digital.')}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="block w-full rounded-xl border border-black bg-brand-lime py-3 text-center text-xs font-extrabold uppercase text-black"
+        >
+          Chat WhatsApp
+        </a>
+      </div>
+    </details>
+  </div>
+</header>
