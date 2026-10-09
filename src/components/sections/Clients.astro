@@ -1,93 +1,75 @@
 ---
-import {
-  Briefcase,
-  Building2,
-  CreditCard,
-  Globe,
-  GraduationCap,
-  Landmark,
-  School,
-  ShieldCheck,
-} from '@lucide/astro';
-import { placeholderClients, type ClientBadge } from '../../data/clients';
+import ClientChip from '../ClientChip.astro';
+import type { Client } from '../../db/schema';
 
 /**
- * Phase 4 replaces this static list with a query against the `clients` table,
- * populated through /admin/klien. The badge already supports an uploaded logo —
- * when `client.logo` is set the icon+text fallback is skipped.
+ * Trusted-partners section.
+ *
+ * `clients` is passed in by the page (active rows from the DB, in the owner's
+ * order). The display gate is `isActive` alone — `isRealEngagement` is advisory
+ * and deliberately not consulted here (see the clients schema for why). The
+ * section renders nothing when the list is empty.
+ *
+ * Two layouts, chosen by list length. A marquee only reads as intentional when
+ * one pass of the row is at least as wide as the viewport: below that the track
+ * is narrower than the screen, so the -50% loop reveals empty space and the same
+ * two or three chips slide past on repeat. With a short list the chips are
+ * simply centred instead, which stays clean at any count.
  */
-const clients = placeholderClients;
-
-const icons = {
-  'building-2': Building2,
-  'graduation-cap': GraduationCap,
-  landmark: Landmark,
-  briefcase: Briefcase,
-  school: School,
-  'shield-check': ShieldCheck,
-  globe: Globe,
-  'credit-card': CreditCard,
-} as const;
-
-/** Rotating icon-chip colours, mirroring the original mockup. */
-const chipStyles = [
-  'bg-brand-dark text-brand-lime',
-  'bg-brand-lime text-black',
-  'bg-brand-dark text-white',
-  'bg-gray-200 text-brand-dark',
-] as const;
-
-function iconFor(client: ClientBadge) {
-  return icons[client.icon as keyof typeof icons] ?? Building2;
+interface Props {
+  clients: Client[];
 }
 
-const half = [...clients];
+const { clients } = Astro.props;
+
+/** Below this, one pass of the row does not fill a desktop viewport. */
+const MARQUEE_MIN = 8;
+const useMarquee = clients.length >= MARQUEE_MIN;
 ---
 
-<section id="clients" class="overflow-hidden border-b border-gray-200 bg-white py-16 text-brand-dark">
-  <div class="mx-auto mb-10 max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-    <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
-      <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-        Trusted Partners
-      </span>
-    </p>
-    <h2 class="font-display text-3xl font-black uppercase tracking-tight text-brand-dark sm:text-4xl">
-      Dipercaya oleh 10+ klien &amp; instansi
-    </h2>
-    <p class="mx-auto mt-2 max-w-2xl text-xs font-medium text-gray-600 sm:text-sm">
-      Mitra pengadaan IT, Website &amp; Desain Grafis untuk Perusahaan Swasta, Yayasan Pendidikan,
-      dan Instansi Pemerintah.
-    </p>
-  </div>
+{
+  clients.length > 0 && (
+    <section
+      id="clients"
+      class="overflow-hidden border-b border-gray-200 bg-white py-16 text-brand-dark"
+    >
+      <div class="mx-auto mb-10 max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+          <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+            Trusted Partners
+          </span>
+        </p>
+        <h2 class="font-display text-3xl font-black uppercase tracking-tight text-brand-dark sm:text-4xl">
+          Trusted by businesses &amp; teams
+        </h2>
+        <p class="mx-auto mt-2 max-w-2xl text-xs font-medium text-gray-600 sm:text-sm">
+          A development and design partner for companies, education foundations, and agencies.
+        </p>
+      </div>
 
-  <div class="relative w-full overflow-hidden py-3">
-    <div class="animate-marquee will-change-transform flex w-max">
-      {
-        [0, 1].map(() => (
-          <div class="flex shrink-0 items-center gap-6 pr-6">
-            {half.map((client, i) => {
-              const Icon = iconFor(client);
-              return (
-                <div class="inline-flex shrink-0 items-center gap-3 rounded-2xl border border-gray-200 bg-brand-surface px-6 py-4 transition-all hover:border-black">
-                  <span
-                    class:list={[
-                      'flex h-8 w-8 items-center justify-center rounded-lg font-bold',
-                      chipStyles[i % chipStyles.length],
-                    ]}
-                    aria-hidden="true"
-                  >
-                    <Icon class="h-4 w-4" stroke-width={2.25} />
-                  </span>
-                  <div class="text-left">
-                    <p class="text-xs font-extrabold text-brand-dark">{client.name}</p>
-                    <p class="font-mono text-[9px] uppercase text-gray-600">{client.category}</p>
-                  </div>
-                </div>
-              );
-            })}
+      {useMarquee ? (
+        <div class="relative w-full overflow-hidden py-3">
+          <div class="animate-marquee will-change-transform flex w-max">
+            {[0, 1].map(() => (
+              <div class="flex shrink-0 items-center gap-7 pr-7">
+                {clients.map((client, i) => (
+                  <ClientChip client={client} index={i} />
+                ))}
+              </div>
+            ))}
           </div>
-        ))
-      }
-    </div>
-  </div>
-</section>
+        </div>
+      ) : (
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ul class="flex flex-wrap items-center justify-center gap-1 sm:gap-5">
+            {clients.map((client, i) => (
+              <li>
+                <ClientChip client={client} index={i} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  )
+}

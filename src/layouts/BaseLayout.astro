@@ -9,6 +9,8 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   type?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: object[];
@@ -18,7 +20,7 @@ const props = Astro.props;
 ---
 
 <!doctype html>
-<html lang="id">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,7 +46,7 @@ const props = Astro.props;
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:border focus:border-black focus:bg-brand-lime focus:px-4 focus:py-2 focus:text-xs focus:font-black focus:uppercase focus:tracking-wider"
     >
-      Lewati ke konten utama
+      Skip to main content
     </a>
 
     <Header />

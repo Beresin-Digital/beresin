@@ -1,11 +1,8 @@
 ---
-import { Picture } from 'astro:assets';
 import { ArrowUpRight } from '@lucide/astro';
-import {
-  placeholderArticles,
-  formatDateId,
-  type Article,
-} from '../../data/articles';
+import ContentImage from '../ContentImage.astro';
+import { formatDate, isoDate, readingMinutes } from '../../lib/format';
+import type { Article } from '../../db/schema';
 
 /**
  * Homepage "Insight" section — the last block before the footer.
@@ -17,24 +14,32 @@ import {
  * card chrome at all — just hairline rules and display numerals — so the
  * section reads as a publication rather than a card dump.
  *
- * Phase 4 swaps `placeholderArticles` for a DB query. The section renders
- * nothing when the list is empty, so an empty articles table degrades cleanly
- * instead of leaving an orphaned heading.
+ * `articles` is passed in by the page (published rows from the DB, newest
+ * first). The section renders nothing when the list is empty, so an empty table
+ * degrades cleanly instead of leaving an orphaned heading.
  */
-const articles = placeholderArticles;
+interface Props {
+  articles: Article[];
+}
+
+const { articles } = Astro.props;
 
 const [featured, ...rest] = articles;
 
 /** h2 heading for the section, kept here so the copy sits with the markup. */
-const heading = 'Catatan & panduan dari tim kami.';
+const heading = 'Notes & guides from our team.';
 
 /** Two-digit index numeral, offset so the featured piece reads as 01. */
 const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
+
+const publishedOn = (article: Article) => article.publishedAt ?? article.createdAt;
+const hasCover = (article: Article) =>
+  Boolean(article.coverImage && article.coverWidth && article.coverHeight);
 ---
 
 {
   featured && (
-    <section id="artikel" class="border-b border-gray-200 bg-white py-20 text-brand-dark">
+    <section id="articles" class="border-b border-gray-200 bg-white py-20 text-brand-dark">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Header: same eyebrow + title + trailing pill rhythm as Services/Clients -->
         <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -50,10 +55,10 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
           </div>
 
           <a
-            href="/artikel"
+            href="/articles"
             class="font-mono shrink-0 rounded-full border border-black bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-surface"
           >
-            Semua artikel &rarr;
+            All articles &rarr;
           </a>
         </div>
 
@@ -61,20 +66,17 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
           <!-- Featured cover story -->
           <article class="lg:col-span-7">
             <a
-              href={featured.href}
+              href={`/articles/${featured.slug}`}
               class="group block overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[8px_8px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1"
             >
-              {featured.image && (
+              {hasCover(featured) && (
                 <div class="relative aspect-[16/10] overflow-hidden border-b-2 border-black">
-                  <Picture
-                    src={featured.image.src}
-                    formats={['avif', 'webp']}
-                    fallbackFormat="webp"
-                    widths={[480, 700, 1000]}
+                  <ContentImage
+                    src={featured.coverImage!}
+                    alt={featured.coverAlt}
+                    width={featured.coverWidth!}
+                    height={featured.coverHeight!}
                     sizes="(min-width: 1024px) 58vw, 100vw"
-                    alt={featured.image.alt}
-                    loading="lazy"
-                    decoding="async"
                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <span class="font-mono absolute left-4 top-4 rounded border border-black bg-brand-lime px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black shadow-[2px_2px_0px_#0D0F12]">
@@ -85,9 +87,11 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
 
               <div class="p-6 sm:p-8">
                 <p class="font-mono flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
-                  <time datetime={featured.publishedAt}>{formatDateId(featured.publishedAt)}</time>
+                  <time datetime={isoDate(publishedOn(featured))}>
+                    {formatDate(publishedOn(featured))}
+                  </time>
                   <span aria-hidden="true">&middot;</span>
-                  <span>{featured.readingMinutes} menit baca</span>
+                  <span>{readingMinutes(featured.body)} min read</span>
                 </p>
 
                 <h3 class="font-display mt-3 text-2xl font-black uppercase leading-tight tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline sm:text-3xl">
@@ -99,7 +103,7 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
                 </p>
 
                 <span class="font-mono mt-6 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-dark">
-                  Baca selengkapnya
+                  Read more
                   <ArrowUpRight
                     class="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                     stroke-width={2.5}
@@ -112,13 +116,13 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
           <!-- Typographic index: no card chrome, just rules and numerals -->
           <div class="lg:col-span-5">
             <h3 class="font-mono border-b-2 border-black pb-3 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
-              Artikel lainnya
+              More articles
             </h3>
 
             <ul>
-              {rest.map((article: Article, i) => (
+              {rest.map((article, i) => (
                 <li class="border-b border-gray-200">
-                  <a href={article.href} class="group flex items-start gap-4 py-5 sm:gap-5">
+                  <a href={`/articles/${article.slug}`} class="group flex items-start gap-4 py-5 sm:gap-5">
                     <span
                       class="font-display shrink-0 text-2xl font-black tabular-nums leading-none text-gray-500 transition-colors group-hover:text-brand-dark"
                       aria-hidden="true"
@@ -134,11 +138,11 @@ const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
                         {article.title}
                       </span>
                       <span class="font-mono mt-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        <time datetime={article.publishedAt}>
-                          {formatDateId(article.publishedAt)}
+                        <time datetime={isoDate(publishedOn(article))}>
+                          {formatDate(publishedOn(article))}
                         </time>
                         <span aria-hidden="true"> &middot; </span>
-                        {article.readingMinutes} menit
+                        {readingMinutes(article.body)} min
                       </span>
                     </span>
 

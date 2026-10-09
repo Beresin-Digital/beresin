@@ -1,0 +1,107 @@
+---
+import { ArrowUpRight, Image as ImageIcon } from '@lucide/astro';
+import ClientBadge from './ClientBadge.astro';
+import ContentImage from './ContentImage.astro';
+import type { Project } from '../db/schema';
+
+/**
+ * A single project card. Shared by the homepage "Selected Work" section and the
+ * /portfolio page so the two cannot drift apart.
+ *
+ * The whole card is a click target: a transparent <button> overlays it and opens
+ * the matching panel in `PortfolioModal` (keyed by `data-project-id`). The card
+ * is rendered as an <article> rather than a <button> so its headings stay in the
+ * document outline; the overlay carries the accessible name instead.
+ *
+ * A `status: 'concept'` row renders with its visible "Concept Project" label.
+ * That label is enforced server-side on save (`src/lib/projects.ts`), so it
+ * cannot be dropped by a crafted form post.
+ */
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+
+// Both halves of the pair are written together on upload; require both so the
+// srcset ladder is never built from a missing width.
+const hasImage = Boolean(project.image && project.imageWidth && project.imageHeight);
+---
+
+<article
+  class="group relative flex flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1 focus-within:-translate-y-1"
+>
+  <!-- Full-card click target. Transparent; the visible content sits beneath it. -->
+  <button
+    type="button"
+    data-project-id={project.id}
+    class="absolute inset-0 z-10 cursor-pointer rounded-3xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-lime"
+    aria-label={`View details: ${project.title}`}></button>
+
+  <div class="relative aspect-[16/10] overflow-hidden border-b-2 border-black">
+    {
+      hasImage ? (
+        <ContentImage
+          src={project.image!}
+          alt={project.title}
+          width={project.imageWidth!}
+          height={project.imageHeight!}
+          sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 90vw"
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <div class="flex h-full w-full items-center justify-center bg-brand-surface text-gray-400">
+          <ImageIcon class="h-8 w-8" stroke-width={1.75} aria-hidden="true" />
+        </div>
+      )
+    }
+    <span
+      class:list={[
+        'font-mono absolute left-4 top-4 rounded border border-black px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black shadow-[2px_2px_0px_#0D0F12]',
+        project.status === 'delivered' ? 'bg-brand-lime' : 'bg-white',
+      ]}
+    >
+      {project.statusLabel}
+    </span>
+  </div>
+
+  <div class="flex flex-1 flex-col p-6">
+    {
+      project.clientName && (
+        <div class="mb-4 border-b border-gray-100 pb-4">
+          <ClientBadge name={project.clientName} logo={project.clientLogo} />
+        </div>
+      )
+    }
+    <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+      {project.category}
+    </p>
+    <h3 class="font-display mt-2 text-xl font-black uppercase leading-tight tracking-tight text-brand-dark">
+      {project.title}
+    </h3>
+    <p class="mt-3 text-xs font-medium leading-relaxed text-gray-600">
+      {project.summary}
+    </p>
+
+    <ul class="mt-5 flex flex-wrap gap-2 pt-1">
+      {
+        project.highlights.map((tag) => (
+          <li class="rounded-full border border-black bg-brand-surface px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-brand-dark">
+            {tag}
+          </li>
+        ))
+      }
+    </ul>
+
+    <span
+      class="font-mono mt-5 inline-flex items-center gap-2 pt-1 text-[11px] font-black uppercase tracking-wider text-brand-dark group-hover:text-black"
+      aria-hidden="true"
+    >
+      View details
+      <ArrowUpRight
+        class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        stroke-width={2.5}
+      />
+    </span>
+  </div>
+</article>

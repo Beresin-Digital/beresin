@@ -1,0 +1,30 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ArticleForm from '../../../components/admin/ArticleForm.astro';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+// A successful save redirects to the list; the form only renders on a GET or a
+// failed POST (where ArticleForm repopulates the submitted values).
+const result = Astro.getActionResult(actions.saveArticle);
+if (result?.data) return Astro.redirect('/admin/articles');
+
+const error = result?.error
+  ? isInputError(result.error)
+    ? 'Mohon periksa kembali isian formulir.'
+    : result.error.message
+  : null;
+
+const unread = await unreadCount();
+---
+
+<AdminLayout title="Artikel baru" adminName={admin.name} unread={unread}>
+  <div class="mx-auto max-w-3xl">
+    <ArticleForm error={error} />
+  </div>
+</AdminLayout>

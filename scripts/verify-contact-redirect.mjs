@@ -2,10 +2,10 @@
 const B = 'http://localhost:4321/api/contact';
 
 const cases = [
-  ['valid from /kontak', { name: 'Andi', phone: '08123456789', email: 'a@b.com', message: 'x', page_url: '/kontak' }],
+  ['valid from /contact', { name: 'Andi', phone: '08123456789', email: 'a@b.com', message: 'x', page_url: '/contact' }],
   ['valid from /', { name: 'Andi', phone: '08123456789', message: 'x', page_url: '/' }],
-  ['missing name', { name: '', phone: '08123', page_url: '/kontak' }],
-  ['honeypot filled', { name: 'Bot', phone: '08123', company_website: 'spam', page_url: '/kontak' }],
+  ['missing name', { name: '', phone: '08123', page_url: '/contact' }],
+  ['honeypot filled', { name: 'Bot', phone: '08123', company_website: 'spam', page_url: '/contact' }],
   ['protocol-relative //evil.com', { name: 'A', phone: '08123', page_url: '//evil.com' }],
   ['absolute https://evil.com', { name: 'A', phone: '08123', page_url: 'https://evil.com' }],
   ['backslash /\\evil.com', { name: 'A', phone: '08123', page_url: '/' + '\\' + 'evil.com' }],

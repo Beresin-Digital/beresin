@@ -52,8 +52,8 @@ function ogSvg(logoDataUri) {
   <rect x="0" y="0" width="1200" height="12" fill="${BRAND_LIME}"/>
   <image href="${logoDataUri}" x="96" y="180" width="160" height="160"/>
   <text x="96" y="430" font-family="Arial, Helvetica, sans-serif" font-size="86" font-weight="bold" fill="#FFFFFF" letter-spacing="-3">beresin<tspan fill="${BRAND_LIME}">digital</tspan></text>
-  <text x="96" y="490" font-family="Arial, Helvetica, sans-serif" font-size="27" fill="#A1A1AA">Website · Aplikasi Custom · SIAKAD Sekolah · Portal Pemerintah · Desain Grafis</text>
-  <text x="96" y="560" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#71717A">beresindigital.id — Jakarta, Indonesia</text>
+  <text x="96" y="490" font-family="Arial, Helvetica, sans-serif" font-size="27" fill="#A1A1AA">Websites · Mobile Apps · IoT · System Integration · Graphic Design</text>
+  <text x="96" y="560" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#71717A">beresindigital.id — Depok, West Java, Indonesia</text>
 </svg>
 `;
 }
@@ -119,12 +119,12 @@ async function main() {
     name: 'PT Beresin Urusan Digital',
     short_name: 'Beresin Digital',
     description:
-      'Agensi jasa pembuatan website, aplikasi custom, SIAKAD sekolah, portal pemerintah, dan desain grafis.',
+      'Digital solutions and development partner for websites, mobile apps, custom web applications, IoT solutions, system integration, and graphic design.',
     start_url: '/',
     display: 'standalone',
     background_color: '#FFFFFF',
     theme_color: BRAND_DARK,
-    lang: 'id',
+    lang: 'en',
     icons: [
       { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
       { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },

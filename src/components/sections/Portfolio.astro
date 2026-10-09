@@ -1,0 +1,61 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import ProjectCard from '../ProjectCard.astro';
+import type { Project } from '../../db/schema';
+
+/**
+ * "Selected Work" — the homepage portfolio teaser.
+ *
+ * The full set lives on /portfolio; this section shows the same cards and links
+ * there. Anything marked as a concept carries a visible label (enforced in
+ * `src/lib/projects.ts` before the row is written).
+ *
+ * `projects` is passed in by the page (published rows from the DB). The section
+ * renders nothing when the list is empty, so an empty table degrades cleanly.
+ */
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+{
+  projects.length > 0 && (
+    <section id="portfolio" class="border-b border-gray-200 bg-white py-20 text-brand-dark">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+              <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+                Selected Work
+              </span>
+            </p>
+            <h2
+              class="font-display max-w-2xl text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+            >
+              Work we can show.
+            </h2>
+          </div>
+          <div class="max-w-sm space-y-4">
+            <p class="text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
+              A sample of the solutions we build. Concept work is labelled as such — we only present
+              delivered projects as delivered.
+            </p>
+            <a
+              href="/portfolio"
+              class="font-mono inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-dark underline decoration-brand-lime decoration-2 underline-offset-4 hover:text-black"
+            >
+              View all work
+              <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => <ProjectCard project={project} />)}
+        </div>
+      </div>
+    </section>
+  )
+}

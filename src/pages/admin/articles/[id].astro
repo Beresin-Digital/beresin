@@ -1,0 +1,35 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ArticleForm from '../../../components/admin/ArticleForm.astro';
+import { getArticle } from '../../../lib/articles';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const id = Number.parseInt(Astro.params.id ?? '', 10);
+if (!Number.isInteger(id) || id <= 0) return Astro.redirect('/admin/articles');
+
+const result = Astro.getActionResult(actions.saveArticle);
+if (result?.data) return Astro.redirect('/admin/articles');
+
+const article = await getArticle(id);
+if (!article) return Astro.redirect('/admin/articles');
+
+const error = result?.error
+  ? isInputError(result.error)
+    ? 'Mohon periksa kembali isian formulir.'
+    : result.error.message
+  : null;
+
+const unread = await unreadCount();
+---
+
+<AdminLayout title="Ubah artikel" adminName={admin.name} unread={unread}>
+  <div class="mx-auto max-w-3xl">
+    <ArticleForm article={article} error={error} />
+  </div>
+</AdminLayout>

@@ -1,12 +1,12 @@
 {
   "name": "PT Beresin Urusan Digital",
   "short_name": "Beresin Digital",
-  "description": "Agensi jasa pembuatan website, aplikasi custom, SIAKAD sekolah, portal pemerintah, dan desain grafis.",
+  "description": "Digital solutions and development partner for websites, mobile apps, custom web applications, IoT solutions, system integration, and graphic design.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#0D0F12",
-  "lang": "id",
+  "lang": "en",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

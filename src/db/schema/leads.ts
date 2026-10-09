@@ -38,7 +38,7 @@ export const leads = pgTable(
     email: varchar('email', { length: 254 }),
     message: text('message').notNull().default(''),
 
-    /** Which form sent it: e.g. 'home', 'kontak-page'. */
+    /** Which form sent it: e.g. 'home', 'contact-page'. */
     source: varchar('source', { length: 64 }).notNull().default(''),
     /** The path the visitor submitted from, for triage. */
     pageUrl: varchar('page_url', { length: 512 }).notNull().default(''),

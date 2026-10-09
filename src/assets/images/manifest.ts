@@ -13,7 +13,7 @@ import type { ImageMetadata } from 'astro';
 import heroTeam from './hero-team.webp';
 import aboutPortrait from './about-portrait.webp';
 import serviceWebApp from './service-web-app.webp';
-import serviceSiakad from './service-siakad.webp';
+import serviceCustomSystem from './service-custom-system.webp';
 import serviceDesign from './service-design.webp';
 import serviceIot from './service-iot.webp';
 import articleCover from './article-cover.webp';
@@ -29,31 +29,31 @@ export interface SiteImage {
 export const images = {
   heroTeam: {
     src: heroTeam,
-    alt: 'Tim Beresin Digital sedang berkolaborasi mengerjakan proyek digital',
+    alt: 'The Beresin Digital team collaborating on a digital project',
   },
   aboutPortrait: {
     src: aboutPortrait,
-    alt: 'Anggota tim Beresin Digital di ruang kerja',
+    alt: 'A Beresin Digital team member at the workspace',
   },
   serviceWebApp: {
     src: serviceWebApp,
-    alt: 'Kode program di layar untuk pengembangan website dan aplikasi',
+    alt: 'Code on screen for website and application development',
   },
-  serviceSiakad: {
-    src: serviceSiakad,
-    alt: 'Tampilan dashboard sistem informasi akademik',
+  serviceCustomSystem: {
+    src: serviceCustomSystem,
+    alt: 'A dashboard interface for a custom digital system',
   },
   serviceDesign: {
     src: serviceDesign,
-    alt: 'Peralatan desain grafis dan sketsa identitas brand',
+    alt: 'Graphic design tools and brand identity sketches',
   },
   serviceIot: {
     src: serviceIot,
-    alt: 'Termostat pintar di dinding untuk pengaturan suhu ruangan otomatis',
+    alt: 'A smart thermostat on a wall for automatic room temperature control',
   },
   articleCover: {
     src: articleCover,
-    alt: 'Meja kerja dengan laptop dan buku catatan',
+    alt: 'A desk with a laptop and a notebook',
   },
 } satisfies Record<string, SiteImage>;
 

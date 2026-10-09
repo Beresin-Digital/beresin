@@ -1,0 +1,137 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { listArticles } from '../../../lib/articles';
+import { formatWib } from '../../../lib/datetime';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+// A delete posts back to this page; the row is already gone by the time we get
+// here, so redirect to a clean GET rather than re-render a POST result.
+const deleted = Astro.getActionResult(actions.deleteArticle);
+if (deleted?.data) return Astro.redirect('/admin/articles');
+
+const deleteError = deleted?.error
+  ? isInputError(deleted.error)
+    ? 'Permintaan tidak valid.'
+    : deleted.error.message
+  : null;
+
+const [articles, unread] = await Promise.all([listArticles(), unreadCount()]);
+
+const STATUS_LABEL = { draft: 'Draf', published: 'Terbit' } as const;
+const STATUS_CLASS = {
+  draft: 'border border-black bg-white text-brand-dark',
+  published: 'bg-brand-lime text-black',
+} as const;
+---
+
+<AdminLayout title="Artikel" adminName={admin.name} unread={unread}>
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+      {articles.length} artikel
+    </p>
+    <a
+      href="/admin/articles/new"
+      class="font-mono rounded-lg border-2 border-black bg-brand-lime px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+    >
+      + Tulis artikel
+    </a>
+  </div>
+
+  {
+    deleteError && (
+      <p role="alert" class="mb-4 rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-xs font-extrabold text-black">
+        {deleteError}
+      </p>
+    )
+  }
+
+  {
+    articles.length === 0 ? (
+      <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white px-6 py-16 text-center">
+        <p class="font-display text-sm font-black uppercase tracking-tight text-brand-dark">
+          Belum ada artikel
+        </p>
+        <p class="mt-1 text-xs font-medium text-gray-500">
+          Artikel yang Anda tulis akan muncul di sini, dan di halaman publik setelah diterbitkan.
+        </p>
+      </div>
+    ) : (
+      <div class="overflow-x-auto rounded-2xl border-2 border-black bg-white shadow-[4px_4px_0px_#0D0F12]">
+        <table class="w-full min-w-[48rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-black bg-brand-surface">
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Judul</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Kategori</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Status</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Diperbarui</th>
+              <th scope="col" class="font-mono px-3 py-2 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {articles.map((article) => (
+              <tr class="border-b border-gray-200 last:border-b-0 hover:bg-brand-surface">
+                <td class="px-3 py-2.5">
+                  <a href={`/admin/articles/${article.id}`} class="font-medium text-brand-dark hover:underline">
+                    {article.title}
+                  </a>
+                  <span class="mt-0.5 block font-mono text-[10px] text-gray-400">/{article.slug}</span>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-gray-500">{article.category || '—'}</td>
+                <td class="whitespace-nowrap px-3 py-2.5">
+                  <span
+                    class:list={[
+                      'font-mono inline-block rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest',
+                      STATUS_CLASS[article.status as 'draft' | 'published'],
+                    ]}
+                  >
+                    {STATUS_LABEL[article.status as 'draft' | 'published']}
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-gray-500">
+                  {formatWib(article.updatedAt)}
+                </td>
+                <td class="px-3 py-2.5">
+                  <div class="flex items-center justify-end gap-3">
+                    <a
+                      href={`/admin/articles/${article.id}`}
+                      class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-brand-dark hover:underline"
+                    >
+                      Ubah
+                    </a>
+                    <details class="relative">
+                      <summary class="font-mono cursor-pointer list-none text-[10px] font-extrabold uppercase tracking-widest text-gray-500 hover:text-brand-dark">
+                        Hapus
+                      </summary>
+                      <form
+                        method="post"
+                        action="?_action=deleteArticle"
+                        class="absolute right-0 z-10 mt-2 w-56 rounded-xl border-2 border-black bg-white p-3 shadow-[4px_4px_0px_#0D0F12]"
+                      >
+                        <input type="hidden" name="id" value={article.id} />
+                        <p class="text-[11px] font-semibold text-brand-dark">
+                          Hapus “{article.title}” secara permanen?
+                        </p>
+                        <button
+                          type="submit"
+                          class="font-mono mt-3 w-full rounded-lg border-2 border-black bg-brand-dark px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-lime transition-colors hover:bg-black"
+                        >
+                          Ya, hapus
+                        </button>
+                      </form>
+                    </details>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</AdminLayout>

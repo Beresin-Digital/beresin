@@ -28,7 +28,7 @@ function walk(dir, out = []) {
   return out;
 }
 
-/** `dist/client/kontak/index.html` → `/kontak` */
+/** `dist/client/contact/index.html` → `/contact` */
 function routeOf(file) {
   const rel = relative(ROOT, file).split(sep).join('/');
   const stripped = rel.replace(/index\.html$/, '').replace(/\.html$/, '');

@@ -28,8 +28,19 @@ interface Props {
 const { title, variant = 'app', adminName = '', unread = 0 } = Astro.props;
 
 const path = Astro.url.pathname;
-const navItems = [{ href: '/admin/leads', label: 'Leads', badge: unread }];
-const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+
+const navItems: { href: string; label: string; badge?: number }[] = [
+  { href: '/admin', label: 'Dasbor' },
+  { href: '/admin/leads', label: 'Leads', badge: unread },
+  { href: '/admin/articles', label: 'Artikel' },
+  { href: '/admin/clients', label: 'Klien' },
+  { href: '/admin/portfolio', label: 'Portofolio' },
+];
+
+// `/admin` is the dashboard: an exact match, or it would light up on every
+// child route (they all start with `/admin/`).
+const isActive = (href: string) =>
+  href === '/admin' ? path === '/admin' : path === href || path.startsWith(`${href}/`);
 ---
 
 <!doctype html>
@@ -88,7 +99,7 @@ const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
                       ]}
                     >
                       {item.label}
-                      {item.badge > 0 && (
+                      {item.badge !== undefined && item.badge > 0 && (
                         <span
                           class:list={[
                             'rounded px-1.5 py-0.5 text-[10px] font-black tabular-nums',

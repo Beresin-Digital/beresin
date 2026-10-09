@@ -9,16 +9,15 @@ dist/
 node_modules/
 
 # Logs
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log
 
 # Environment
+# Ignore every env variant (`.env.development`, `.env.staging`, …), not just the
+# ones listed by hand — a forgotten variant is a committed credential. The
+# example is the one file meant to be tracked.
 .env
-.env.local
-.env.production
-.env.*.local
+.env.*
+!.env.example
 
 # Local uploads (production lives at /srv/beresin/uploads)
 uploads/
@@ -32,6 +31,7 @@ uploads/
 .idea/
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Test output
 coverage/

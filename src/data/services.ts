@@ -1,9 +1,12 @@
 /**
- * Static marketing copy for the three service pillars.
+ * Static marketing copy for the service catalogue.
  * This is editorial content, not CMS content — edit here and redeploy.
  *
- * `deliverables` and `audience` are only rendered on /layanan (the detailed page).
- * The homepage section keeps the compact `description`-only presentation.
+ * Four services, presented at the same level. `services` is the single display
+ * order used by the homepage card grid and by /services.
+ *
+ * `deliverables` and `audience` are only rendered on /services (the detailed
+ * page). The homepage section keeps the compact `description`-only presentation.
  */
 import type { SiteImage } from '../assets/images/manifest';
 import { images } from '../assets/images/manifest';
@@ -14,112 +17,90 @@ export interface Service {
   title: string;
   /** One-line summary — used by the compact homepage section. */
   description: string;
-  /** 2–3 sentence expansion — used by the detailed /layanan sections. */
+  /** 2–3 sentence expansion — used by the detailed /services sections. */
   longDescription: string;
   /** Concrete things the client receives. */
   deliverables: string[];
-  /** Who this pillar is for. */
+  /** Who this service is for. */
   audience: string[];
-  /** Renders the highlighted lime card in the middle of the grid. */
-  featured?: boolean;
   image: SiteImage;
 }
 
 export const services: Service[] = [
   {
-    id: 'web-app',
-    title: 'Web & App Development',
+    id: 'website-mobile-apps',
+    title: 'Website & Mobile Apps Development',
     description:
-      'Website perusahaan, aplikasi web custom, e-commerce, dan aplikasi mobile iOS/Android berkinerja tinggi.',
+      'Company websites, landing pages, custom web applications, and Android & iOS apps built around how your business works.',
     longDescription:
-      'Kami membangun website dan aplikasi yang cepat, aman, dan bisa dikelola tim Anda sendiri. Setiap proyek dimulai dari pemetaan proses bisnis, bukan dari template — supaya sistem yang jadi benar-benar mengikuti cara kerja Anda, bukan sebaliknya.',
+      'We design and build the digital products your business runs on and sells with — from a fast corporate website or landing page to a custom web application and a mobile app that share one backend. Every build starts from the goal rather than a template, so the result follows your process instead of forcing your process to fit the software.',
     deliverables: [
-      'Website company profile & landing page kampanye',
-      'Aplikasi web custom: panel admin & dashboard pengguna',
-      'E-commerce dan katalog produk online',
-      'Aplikasi mobile Android & iOS',
-      'Integrasi payment gateway, WhatsApp, dan API pihak ketiga',
-      'Optimasi kecepatan (Core Web Vitals) & SEO teknis',
-      'Panel admin agar tim Anda bisa mengubah konten sendiri',
-      'Dokumentasi teknis & pelatihan pengelolaan',
+      'Corporate websites & company profiles',
+      'Campaign & product landing pages',
+      'Custom web applications & admin panels',
+      'Android & iOS apps',
+      'Custom design matched to your brand',
+      'Admin panel so your team edits content itself',
+      'Core Web Vitals, SEO & analytics',
+      'Training & handover documentation',
     ],
-    audience: ['Korporasi', 'Yayasan & Sekolah', 'Instansi Pemerintah'],
+    audience: ['Corporates', 'Startups & SMEs', 'Marketing teams'],
     image: images.serviceWebApp,
   },
   {
-    id: 'siakad',
-    title: 'SIAKAD & E-Government',
+    id: 'iot-solutions',
+    title: 'IoT Solutions',
     description:
-      'Sistem Akademik Sekolah/Yayasan terpadu, portal PPDB online, dan aplikasi layanan publik instansi pemerintah.',
+      'Connected devices, sensors, and monitoring dashboards for buildings, facilities, and operations.',
     longDescription:
-      'Kami menyatukan data akademik dan layanan publik yang biasanya tersebar di banyak berkas dan aplikasi terpisah. Dirancang untuk dipakai staf non-teknis sehari-hari, dengan alur persetujuan dan laporan yang mengikuti prosedur lembaga Anda.',
+      'We connect sensors, controllers, and devices into one system you monitor from a single dashboard, so the data is actually used: lower energy use, faster alerts, and a clear record of what is happening on site.',
     deliverables: [
-      'SIAKAD terpadu: akademik, keuangan, dan rapor',
-      'PPDB / SPMB online dengan verifikasi berkas',
-      'Portal orang tua & siswa: nilai, absensi, tagihan',
-      'Aplikasi absensi guru & siswa',
-      'Dashboard pimpinan: rekap dan laporan berkala',
-      'Portal layanan publik & formulir pengajuan online',
-      'Integrasi data antar-unit atau antar-instansi',
-      'Migrasi data lama & pelatihan staf',
+      'Device & sensor installation',
+      'Central monitoring dashboard',
+      'Real-time alerts via email & WhatsApp',
+      'Automation rules for equipment',
+      'Integration with existing systems',
+      'Network documentation & training',
     ],
-    audience: ['Yayasan & Sekolah', 'Instansi Pemerintah'],
-    featured: true,
-    image: images.serviceSiakad,
-  },
-  {
-    id: 'design',
-    title: 'Graphic Design & Branding',
-    description:
-      'Desain identitas brand, panduan logo, laporan tahunan (Annual Report), dan materi promosi cetak/digital.',
-    longDescription:
-      'Kami menyusun identitas visual yang konsisten di semua titik sentuh — dari logo sampai laporan tahunan. Sasaran kami bukan sekadar tampilan yang menarik, tapi memastikan lembaga Anda dikenali dan dipercaya.',
-    deliverables: [
-      'Logo & identitas visual',
-      'Brand guideline: aturan warna, tipografi, penggunaan logo',
-      'Template sosial media & materi kampanye',
-      'Laporan tahunan (annual report) & company profile cetak',
-      'Desain presentasi & materi pitching',
-      'Kemasan, signage, dan materi cetak lain',
-      'Aset digital siap pakai (vektor & raster)',
-    ],
-    audience: ['Korporasi', 'Yayasan & Sekolah', 'Instansi Pemerintah'],
-    image: images.serviceDesign,
-  },
-  {
-    id: 'iot',
-    title: 'IoT & Smart Home',
-    description:
-      'Sistem IoT dan otomatisasi bangunan: kontrol perangkat, monitoring sensor, dan dashboard terpusat untuk hunian, kantor, sekolah, dan gedung.',
-    longDescription:
-      'Kami merangkai sensor, kontroler, dan perangkat pintar menjadi satu sistem yang dipantau dan dikendalikan dari satu dashboard — untuk hunian, kantor, sekolah, maupun gedung instansi. Fokus kami bukan sekadar memasang perangkat, tapi memastikan datanya terpakai: hemat energi, aman, dan bisa ditindaklanjuti.',
-    deliverables: [
-      'Instalasi & konfigurasi perangkat IoT (sensor, relay, kontroler)',
-      'Otomatisasi pencahayaan, pendingin, dan peralatan listrik',
-      'Dashboard monitoring terpusat (web & mobile)',
-      'Monitoring sensor: suhu, kelembapan, kualitas udara, dan gerak',
-      'Kontrol akses pintu & integrasi CCTV',
-      'Notifikasi real-time via WhatsApp & email saat ada anomali',
-      'Integrasi dengan sistem yang sudah berjalan (absensi, ERP, BMS)',
-      'Dokumentasi topologi jaringan & pelatihan pengelolaan',
-    ],
-    audience: ['Hunian & Perkantoran', 'Korporasi', 'Yayasan & Sekolah', 'Instansi Pemerintah'],
+    audience: ['Facilities & offices', 'Manufacturing', 'Property'],
     image: images.serviceIot,
   },
+  {
+    id: 'system-integration',
+    title: 'System Integration',
+    description:
+      'Connect the tools you already use so data stops being re-typed between systems.',
+    longDescription:
+      'Most businesses run on several tools that do not talk to each other. We connect them — payments, messaging, CRM, accounting, and internal systems — through well-documented APIs and integrations, so information moves automatically and reliably.',
+    deliverables: [
+      'REST & webhook integrations',
+      'Payment, messaging & CRM connections',
+      'API design & documentation',
+      'Data migration & scheduled sync',
+      'Single sign-on & access control',
+    ],
+    audience: ['Operations teams', 'Growing businesses', 'Agencies'],
+    image: images.serviceCustomSystem,
+  },
+  {
+    id: 'graphic-design',
+    title: 'Graphic Design',
+    description:
+      'UI/UX design, branding, and the visual assets that keep your product and your brand consistent.',
+    longDescription:
+      'Good design is what makes a system usable and a brand recognisable. We cover UI/UX for websites and applications, brand identity, and the day-to-day visual assets — logos, guidelines, and collateral — so everything you put out looks like it came from the same place.',
+    deliverables: [
+      'UI/UX design for websites & apps',
+      'Brand identity & logo design',
+      'Brand guidelines & visual systems',
+      'Social media & campaign assets',
+      'Print & digital collateral',
+      'Design handoff & component libraries',
+    ],
+    audience: ['Startups & SMEs', 'Marketing teams', 'Agencies'],
+    image: images.serviceDesign,
+  },
 ];
-
-/**
- * Headline stats shown in the hero's left column.
- *
- * These are the company's real figures. The original mockup carried inflated
- * placeholder numbers (150+ / 250+ / "8 years") which were replaced — publishing
- * unverifiable business claims is misleading advertising under UU 8/1999.
- */
-export const stats = [
-  { value: '10', suffix: '+', label: 'Happy Client' },
-  { value: '10', suffix: '+', label: 'Project Done' },
-  { value: '100', suffix: '%', label: 'SLA Guaranteed' },
-] as const;
 
 /**
  * What the studio covers, shown in the About column.
@@ -129,28 +110,29 @@ export const stats = [
  */
 export const coverage = [
   {
-    label: 'Website & aplikasi custom',
-    note: 'Company profile, e-commerce, aplikasi internal',
+    label: 'Website & mobile apps',
+    note: 'Company profiles, web apps, Android & iOS',
   },
   {
-    label: 'Sistem akademik & portal instansi',
-    note: 'SIAKAD, PPDB online, layanan publik',
+    label: 'IoT solutions',
+    note: 'Sensors, monitoring, central dashboards',
   },
   {
-    label: 'IoT & otomatisasi bangunan',
-    note: 'Sensor, kontrol perangkat, dashboard monitoring',
+    label: 'System integration',
+    note: 'APIs, payments, messaging, CRM connections',
   },
   {
-    label: 'Desain grafis & identitas brand',
-    note: 'Logo, brand guideline, laporan tahunan',
+    label: 'Graphic design',
+    note: 'UI/UX, branding, and visual identity',
   },
 ] as const;
 
 /** Scrolling banner items between the hero and the services section. */
 export const marqueeItems = [
-  'Web & App Development',
-  'Graphic Design & Branding',
-  'SIAKAD Sekolah & Yayasan',
-  'Portal E-Government',
-  'IoT & Smart Home',
+  'Website Development',
+  'Mobile Apps',
+  'IoT Solutions',
+  'System Integration',
+  'UI/UX Design',
+  'Branding',
 ] as const;

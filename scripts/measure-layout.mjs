@@ -9,7 +9,7 @@
  * Usage:
  *   node scripts/measure-layout.mjs <url> <viewportWidth> [height] [scopeSelector]
  *
- * `scopeSelector` defaults to `body` — pass e.g. `#artikel` to narrow the
+ * `scopeSelector` defaults to `body` — pass e.g. `#articles` to narrow the
  * overflow scan to one section. Requires Chrome already running with
  * `--remote-debugging-port=9333`.
  *
@@ -68,7 +68,7 @@ const expr = (scopeSelector) => `(() => {
   }));
 
   // Anything the document actually fetched from another origin. Used to prove
-  // that deferred third-party embeds (the click-to-load Google map on /kontak)
+  // that deferred third-party embeds (the click-to-load Google map on /contact)
   // really do stay unfetched until the visitor opens them — if one of these
   // shows up on load, the deferral is not working.
   const thirdParty = [...performance.getEntriesByType('resource')]
@@ -133,6 +133,21 @@ await send('Emulation.setDeviceMetricsOverride', {
   mobile: width < 700,
 });
 await send('Page.enable');
+
+// Optional session cookie, for pages behind the admin guard. `MEASURE_COOKIE`
+// takes a single `name=value` pair; the admin session cookie is scoped to
+// `/admin`, so the path is set to match or the browser will not send it.
+if (process.env.MEASURE_COOKIE) {
+  const eq = process.env.MEASURE_COOKIE.indexOf('=');
+  await send('Network.enable');
+  await send('Network.setCookie', {
+    name: process.env.MEASURE_COOKIE.slice(0, eq),
+    value: process.env.MEASURE_COOKIE.slice(eq + 1),
+    domain: target.hostname,
+    path: '/admin',
+  });
+}
+
 await send('Page.navigate', { url: target.href });
 await new Promise((r) => setTimeout(r, 2500));
 

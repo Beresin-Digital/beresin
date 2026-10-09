@@ -1,0 +1,223 @@
+---
+import { Image as ImageIcon } from '@lucide/astro';
+import type { Client } from '../../db/schema';
+import { canonicalSrc } from '../../lib/image-variants';
+
+/**
+ * Client create/edit form.
+ *
+ * The two booleans are not interchangeable and the labels say so:
+ *  - `isActive` is the display gate — off means the row disappears from the
+ *    public marquee immediately.
+ *  - `isRealEngagement` is advisory only; it records whether the row is a
+ *    verified, named engagement rather than a generic descriptor.
+ */
+interface Props {
+  client?: Client | null;
+  error?: string | null;
+}
+
+const { client = null, error = null } = Astro.props;
+
+let submitted: FormData | null = null;
+if (Astro.request.method === 'POST') {
+  try {
+    submitted = await Astro.request.formData();
+  } catch {
+    /* body already consumed — fall back to the stored values */
+  }
+}
+const field = (name: string, fallback = '') => {
+  const value = submitted?.get(name);
+  return typeof value === 'string' ? value : fallback;
+};
+const checked = (name: string, fallback: boolean) =>
+  submitted ? submitted.has(name) : fallback;
+
+/** Mirrors the icon set `sections/Clients.astro` can render. */
+const ICONS = [
+  ['building-2', 'Gedung (perusahaan)'],
+  ['briefcase', 'Tas kerja (jasa profesional)'],
+  ['graduation-cap', 'Topi wisuda (pendidikan)'],
+  ['truck', 'Truk (logistik)'],
+  ['shopping-bag', 'Tas belanja (ritel)'],
+  ['globe', 'Globe (properti/umum)'],
+  ['shield-check', 'Perisai (agensi/keamanan)'],
+  ['credit-card', 'Kartu (keuangan)'],
+] as const;
+
+const fieldClass =
+  'mt-1 w-full rounded-lg border-2 border-black bg-white px-3 py-2 text-sm font-medium text-brand-dark outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-lime';
+const labelClass =
+  'font-mono block text-[10px] font-extrabold uppercase tracking-widest text-gray-500';
+const helpClass = 'mt-1 block text-[10px] font-medium text-gray-400';
+---
+
+<form
+  method="post"
+  action="?_action=saveClient"
+  enctype="multipart/form-data"
+  class="space-y-6"
+>
+  {client && <input type="hidden" name="id" value={client.id} />}
+
+  {
+    error && (
+      <p
+        role="alert"
+        class="rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-xs font-extrabold text-black"
+      >
+        {error}
+      </p>
+    )
+  }
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <label class="block">
+      <span class={labelClass}>Nama tampilan</span>
+      <input
+        type="text"
+        name="name"
+        required
+        maxlength="120"
+        value={field('name', client?.name ?? '')}
+        placeholder="National Manufacturing Company"
+        class={fieldClass}
+      />
+      <span class={helpClass}>
+        Gunakan deskriptor generik kecuali Anda punya izin tertulis untuk menyebut nama klien.
+      </span>
+    </label>
+
+    <label class="block">
+      <span class={labelClass}>Kategori / jenis pekerjaan</span>
+      <input
+        type="text"
+        name="category"
+        maxlength="80"
+        value={field('category', client?.category ?? '')}
+        placeholder="Corporate Website"
+        class={fieldClass}
+      />
+    </label>
+
+    <label class="block">
+      <span class={labelClass}>Ikon (dipakai bila tanpa logo)</span>
+      <select name="icon" class={fieldClass}>
+        {
+          ICONS.map(([value, label]) => (
+            <option value={value} selected={field('icon', client?.icon ?? 'building-2') === value}>
+              {label}
+            </option>
+          ))
+        }
+      </select>
+    </label>
+
+    <label class="block">
+      <span class={labelClass}>Urutan</span>
+      <input
+        type="number"
+        name="sortOrder"
+        value={field('sortOrder', String(client?.sortOrder ?? 0))}
+        class={fieldClass}
+      />
+      <span class={helpClass}>Angka kecil tampil lebih dulu.</span>
+    </label>
+  </div>
+
+  <fieldset class="rounded-2xl border-2 border-black bg-white p-4">
+    <legend class={labelClass}>Logo</legend>
+
+    {
+      client?.logo && (
+        <div class="mb-3 flex items-center gap-3">
+          <img
+            src={canonicalSrc(client.logo)}
+            alt=""
+            width={64}
+            height={64}
+            class="h-16 w-16 rounded border border-gray-200 bg-white object-contain"
+          />
+          <label class="flex items-center gap-2 text-xs font-medium text-gray-600">
+            <input
+              type="checkbox"
+              name="removeLogo"
+              value="on"
+              checked={checked('removeLogo', false)}
+              class="h-4 w-4 accent-black"
+            />
+            Hapus logo saat ini
+          </label>
+        </div>
+      )
+    }
+
+    {
+      !client?.logo && (
+        <p class="mb-3 flex items-center gap-2 text-xs text-gray-400">
+          <ImageIcon class="h-4 w-4" stroke-width={2} aria-hidden="true" />
+          Belum ada logo — ikon di atas yang dipakai.
+        </p>
+      )
+    }
+
+    <input
+      type="file"
+      name="logo"
+      accept="image/*"
+      class="block w-full text-xs font-medium text-gray-600 file:mr-3 file:rounded-lg file:border-2 file:border-black file:bg-white file:px-3 file:py-1.5 file:text-[10px] file:font-extrabold file:uppercase file:tracking-widest file:text-brand-dark hover:file:bg-brand-lime"
+    />
+    <span class={helpClass}>Maks 8 MB. Dikompres otomatis ke WebP.</span>
+  </fieldset>
+
+  <fieldset class="space-y-3 rounded-2xl border-2 border-black bg-white p-4">
+    <legend class={labelClass}>Status tampil</legend>
+
+    <label class="flex items-start gap-3">
+      <input
+        type="checkbox"
+        name="isActive"
+        value="on"
+        checked={checked('isActive', client?.isActive ?? true)}
+        class="mt-0.5 h-4 w-4 accent-black"
+      />
+      <span>
+        <span class="block text-xs font-bold text-brand-dark">Tampilkan di situs</span>
+        <span class={helpClass}>Mematikan ini langsung menghapus baris dari marquee publik.</span>
+      </span>
+    </label>
+
+    <label class="flex items-start gap-3">
+      <input
+        type="checkbox"
+        name="isRealEngagement"
+        value="on"
+        checked={checked('isRealEngagement', client?.isRealEngagement ?? false)}
+        class="mt-0.5 h-4 w-4 accent-black"
+      />
+      <span>
+        <span class="block text-xs font-bold text-brand-dark">Keterlibatan nyata (terverifikasi)</span>
+        <span class={helpClass}>
+          Centang hanya untuk klien nyata yang boleh disebut. Biarkan kosong untuk deskriptor
+          generik — ini catatan internal, tidak mengubah tampilan situs.
+        </span>
+      </span>
+    </label>
+  </fieldset>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <button
+      type="submit"
+      class="font-mono rounded-lg border-2 border-black bg-brand-lime px-5 py-2.5 text-[11px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+    >
+      Simpan
+    </button>
+    <a
+      href="/admin/clients"
+      class="font-mono rounded-lg border-2 border-black bg-white px-5 py-2.5 text-[11px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-surface"
+    >
+      Batal
+    </a>
+  </div>
+</form>

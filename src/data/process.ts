@@ -1,5 +1,5 @@
 /**
- * The five-step engagement flow shown on /layanan.
+ * The five-step engagement flow shown on /services.
  *
  * Kept as data rather than markup so the numbering and the connector layout in
  * `Process.astro` can stay generic — reorder or add a step here and the section
@@ -7,7 +7,7 @@
  *
  * Each step carries an `output` line: the concrete artefact the client has in
  * hand when that step closes. It is what turns a generic agency flowchart into
- * something a procurement officer can point at.
+ * something a client can point at.
  */
 export interface ProcessStep {
   title: string;
@@ -18,33 +18,33 @@ export interface ProcessStep {
 
 export const processSteps: ProcessStep[] = [
   {
-    title: 'Diskusi & Pemetaan',
+    title: 'Discussion & Mapping',
     description:
-      'Kami dengar dulu: siapa penggunanya, proses bisnisnya bagaimana, dan bagian mana yang paling mengganggu hari ini. Tidak ada template yang dipaksakan.',
-    output: 'Catatan kebutuhan & daftar prioritas',
+      'We listen first: who the users are, how the business process runs, and which part hurts the most today. No template is forced on you.',
+    output: 'Needs summary & priority list',
   },
   {
-    title: 'Proposal & Ruang Lingkup',
+    title: 'Proposal & Scope',
     description:
-      'Ruang lingkup, urutan pengerjaan, dan rincian biaya dituangkan tertulis — supaya tidak ada kejutan di tengah jalan maupun saat serah terima.',
-    output: 'Proposal & penawaran resmi',
+      'The scope, the sequence of work, and the cost breakdown are put in writing — so there are no surprises midway or at handover.',
+    output: 'Proposal & formal quote',
   },
   {
-    title: 'Desain & Prototipe',
+    title: 'Design & Prototype',
     description:
-      'Alur dan tampilan dirancang dan disetujui lebih dulu, sebelum satu baris kode ditulis. Anda bisa mencoba prototipenya dan memberi masukan di tahap ini.',
-    output: 'Prototipe yang bisa diklik',
+      'Flows and screens are designed and approved first, before a line of code is written. You can try the prototype and give feedback at this stage.',
+    output: 'Clickable prototype',
   },
   {
-    title: 'Pengembangan & Pengujian',
+    title: 'Development & Testing',
     description:
-      'Sistem dibangun bertahap di lingkungan staging yang bisa Anda akses, diuji di berbagai ukuran layar, lalu diperiksa bersama sebelum naik ke produksi.',
-    output: 'Sistem siap uji & akses staging',
+      'The system is built in stages on a staging environment you can access, tested across screen sizes, and reviewed together before going live.',
+    output: 'Testable build & staging access',
   },
   {
-    title: 'Peluncuran & Pemeliharaan',
+    title: 'Launch & Maintenance',
     description:
-      'Sistem dipasang di server produksi, tim Anda dilatih memakainya, dan dokumentasi diserahkan. Dukungan lanjutan tersedia bila dibutuhkan.',
-    output: 'Sistem live, dokumentasi & pelatihan',
+      'The system is deployed to production, your team is trained to use it, and the documentation is handed over. Ongoing support is available if you need it.',
+    output: 'Live system, docs & training',
   },
 ];

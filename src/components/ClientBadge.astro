@@ -1,0 +1,48 @@
+---
+import { Image as ImageIcon } from '@lucide/astro';
+import { canonicalSrc } from '../lib/image-variants';
+
+/**
+ * Client logo + name, shown on a portfolio card and in the project modal.
+ *
+ * `logo` is a stored `/uploads/...` base path, or null. With no logo a neutral
+ * dashed tile stands in, so the slot is visibly a placeholder rather than a
+ * fabricated brand mark — the same honesty rule the clients table enforces.
+ *
+ * The logo is a fixed 28 px thumbnail, so it renders the canonical (unsuffixed)
+ * file rather than a `srcset`: responsive variants would be wasted here, and no
+ * width is stored for a project's `clientLogo` to build a ladder from.
+ */
+interface Props {
+  name: string;
+  logo?: string | null;
+}
+
+const { name, logo } = Astro.props;
+---
+
+<div class="flex items-center gap-2.5">
+  {
+    logo ? (
+      <img
+        src={canonicalSrc(logo)}
+        alt=""
+        width={28}
+        height={28}
+        loading="lazy"
+        decoding="async"
+        class="h-7 w-7 shrink-0 rounded border border-gray-200 bg-white object-contain"
+      />
+    ) : (
+      <span
+        class="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-dashed border-gray-400 bg-brand-surface text-gray-400"
+        aria-hidden="true"
+      >
+        <ImageIcon class="h-3.5 w-3.5" stroke-width={2.25} />
+      </span>
+    )
+  }
+  <span class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+    {name}
+  </span>
+</div>

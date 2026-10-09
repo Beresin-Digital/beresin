@@ -1,17 +1,30 @@
 ---
+export const prerender = false;
+
+/**
+ * Site 404 page.
+ *
+ * On-demand (`prerender = false`) rather than static on purpose: the article
+ * detail route is server-rendered and, on an unknown or unpublished slug, does
+ * `Astro.rewrite('/404')` to reuse this page. Astro forbids rewriting an
+ * on-demand route to a *prerendered* one (`ForbiddenRewrite`), because the
+ * prerendered page is compiled to an HTML file that is not retrievable at
+ * runtime. Keeping this route on-demand makes the rewrite legal, and the Node
+ * adapter still serves it for every unmatched path.
+ */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 
-const title = 'Halaman Tidak Ditemukan | Beresin Digital';
+const title = 'Page Not Found | Beresin Digital';
 const description =
-  'Halaman yang Anda cari tidak ditemukan. Kembali ke beranda atau hubungi tim Beresin Digital.';
+  'The page you are looking for could not be found. Return to the homepage or contact the Beresin Digital team.';
 
 const quickLinks = [
-  { label: 'Beranda', href: '/' },
-  { label: 'Layanan', href: '/layanan' },
-  { label: 'Tentang Kami', href: '/tentang' },
-  { label: 'Artikel', href: '/artikel' },
-  { label: 'Kontak', href: '/kontak' },
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'About', href: '/about' },
+  { label: 'Articles', href: '/articles' },
+  { label: 'Contact', href: '/contact' },
 ];
 ---
 
@@ -26,11 +39,11 @@ const quickLinks = [
       <h1
         class="font-display mt-6 text-5xl font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-7xl"
       >
-        Halaman tidak ditemukan
+        Page not found
       </h1>
       <p class="mx-auto mt-5 max-w-xl text-sm font-semibold leading-relaxed text-gray-700 sm:text-base">
-        Tautan yang Anda buka mungkin sudah dipindahkan atau tidak pernah ada. Silakan kembali ke
-        beranda, atau hubungi kami langsung bila Anda mencari informasi tertentu.
+        The link you followed may have been moved or may never have existed. Head back to the
+        homepage, or contact us directly if you are looking for something specific.
       </p>
 
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -38,20 +51,20 @@ const quickLinks = [
           href="/"
           class="font-mono rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime-hover"
         >
-          Kembali ke Beranda
+          Back to Home
         </a>
         <button
           type="button"
-          data-open-modal="Konsultasi Proyek"
+          data-open-modal="Discuss Your Project"
           class="font-mono rounded-full border border-black bg-white px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-gray-50"
         >
-          Hubungi Kami
+          Contact Us
         </button>
       </div>
 
-      <nav class="mt-10" aria-label="Tautan cepat">
+      <nav class="mt-10" aria-label="Quick links">
         <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
-          Tautan cepat
+          Quick links
         </p>
         <ul class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           {

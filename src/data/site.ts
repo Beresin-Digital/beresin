@@ -17,18 +17,18 @@ export const site = {
   url: 'https://beresindigital.id',
 
   // --- Contact -------------------------------------------------------------
-  whatsappNumber: '6281939774794',
-  whatsappDisplay: '+62 819-3977-4794',
+  whatsappNumber: '6281511112814',
+  whatsappDisplay: '+62 815-1111-2814',
 
   /**
    * The company runs a single monitored inbox. Both fields intentionally point
    * at the same address: publishing a `procurement@` that nobody reads is worse
    * than routing procurement enquiries to the shared inbox. If a dedicated
    * procurement address is created later, change only this one line — every
-   * consumer (footer, kontak, legal pages, /layanan CTA, JSON-LD) follows.
+   * consumer (footer, contact, legal pages, /services CTA, JSON-LD) follows.
    */
-  emailProcurement: 'hello@beresindigital.id',
-  emailGeneral: 'hello@beresindigital.id',
+  emailProcurement: 'halo@beresindigital.id',
+  emailGeneral: 'halo@beresindigital.id',
 
   /**
    * City-level only, by the owner's decision. The registered street address is
@@ -49,7 +49,7 @@ export const site = {
   address: {
     street: '',
     city: 'Depok',
-    region: 'Jawa Barat',
+    region: 'West Java',
     postalCode: '',
     country: 'ID',
     countryName: 'Indonesia',
@@ -59,8 +59,8 @@ export const site = {
   // Left empty on purpose — a wrong pin on a map is worse than no pin, and the
   // Organization node simply omits `geo` while these are blank.
   geo: {
-    latitude: '',
-    longitude: '',
+    latitude: '-6.375456548161099',
+    longitude: '106.7651002793675',
   },
 
   /**
@@ -82,7 +82,7 @@ export const site = {
   // display forms are kept side by side so the two cannot drift apart — edit
   // both together.
   openingHours: 'Mo-Fr 09:00-18:00',
-  openingHoursDisplay: 'Senin–Jumat, 09.00–18.00 WIB',
+  openingHoursDisplay: 'Monday–Friday, 09:00–18:00 WIB',
 
   defaultOgImage: '/og-default.png',
 } as const;
@@ -95,13 +95,17 @@ export function whatsappLink(message?: string): string {
 
 /** Social profile URLs that are actually filled in, for JSON-LD `sameAs`. */
 export function socialLinks(): string[] {
-  return Object.values(site.socials).filter((url): url is string => url.length > 0);
+  // `site` is `as const`, so the element type is the union of literal URLs
+  // (including `''`); a `url is string` predicate cannot narrow a literal union
+  // to `string`. Filtering by length and letting the literal union widen to
+  // `string[]` on return is equivalent and type-correct.
+  return Object.values(site.socials).filter((url) => url.length > 0);
 }
 
 /**
- * One-line postal address, for display and for a Maps search link. The country
- * is included because this is the full form; the footer and legal notices use a
- * deliberately shorter "city, country" instead.
+ * One-line postal address, for display. The country is included because this is
+ * the full form; the footer and legal notices use a deliberately shorter
+ * "city, country" instead.
  */
 export function addressLine(): string {
   const { street, city, region, postalCode, countryName } = site.address;

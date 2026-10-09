@@ -60,7 +60,7 @@ export function website(): Json {
     '@id': SITE_ID,
     url: site.url,
     name: site.displayName,
-    inLanguage: 'id-ID',
+    inLanguage: 'en',
     publisher: { '@id': ORG_ID },
   };
 }
@@ -73,12 +73,12 @@ export function webPage(opts: { url: string; name: string; description: string }
     name: opts.name,
     description: opts.description,
     isPartOf: { '@id': SITE_ID },
-    inLanguage: 'id-ID',
+    inLanguage: 'en',
   };
 }
 
 /**
- * ContactPage node for /kontak. `ContactPage` is a `WebPage` subtype, so this
+ * ContactPage node for /contact. `ContactPage` is a `WebPage` subtype, so this
  * enriches the existing page node rather than duplicating it: search engines
  * use it to know which URL is the canonical place to reach the business.
  * The `about` reference points back at the Organization node, which already
@@ -91,11 +91,12 @@ export function contactPage(opts: { url: string }): Json {
     url: opts.url,
     isPartOf: { '@id': SITE_ID },
     about: { '@id': ORG_ID },
-    inLanguage: 'id-ID',
+    inLanguage: 'en',
   };
 }
 
-export function breadcrumbs(items: { name: string; url: string }[]): Json {  return {
+export function breadcrumbs(items: { name: string; url: string }[]): Json {
+  return {
     '@type': 'BreadcrumbList',
     itemListElement: items.map((item, i) => ({
       '@type': 'ListItem',
@@ -126,10 +127,32 @@ export function article(opts: {
     datePublished: opts.datePublished,
     dateModified: opts.dateModified,
     articleSection: opts.category,
-    inLanguage: 'id-ID',
+    inLanguage: 'en',
     author: { '@type': 'Person', name: opts.authorName },
     publisher: { '@id': ORG_ID },
   });
+}
+
+/**
+ * A simple ordered `ItemList` of pages — used for the articles index so search
+ * engines can see the collection as a list rather than as loose links.
+ */
+export function itemList(opts: {
+  url: string;
+  name: string;
+  items: { url: string; name: string }[];
+}): Json {
+  return {
+    '@type': 'ItemList',
+    '@id': `${opts.url}#list`,
+    name: opts.name,
+    itemListElement: opts.items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: item.url,
+      name: item.name,
+    })),
+  };
 }
 
 /**
@@ -173,7 +196,7 @@ export function serviceCatalog(opts: {
   const list: Json = {
     '@type': 'ItemList',
     '@id': `${opts.url}#services`,
-    name: 'Layanan Beresin Digital',
+    name: 'Beresin Digital Services',
     itemListElement: nodes.map((node, i) => ({
       '@type': 'ListItem',
       position: i + 1,

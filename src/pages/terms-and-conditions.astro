@@ -1,0 +1,141 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../data/site';
+
+const title = 'Terms & Conditions | Beresin Digital';
+const description =
+  'Terms and Conditions for using the Beresin Digital site and services, including scope of services, intellectual property rights, limitation of liability, and governing law.';
+---
+
+<LegalLayout
+  title={title}
+  description={description}
+  eyebrow="Legal"
+  heading="Terms & Conditions"
+  lead="The terms for using this site and the general framework of the service relationship between you and Beresin Digital."
+  updated="October 6, 2026"
+>
+  <p>
+    These Terms and Conditions ("Terms") govern the use of the site <strong>{site.domain}</strong>
+    and the general framework of the services provided by <strong>{site.legalName}</strong> ("we").
+    By accessing this site or using our services, you are deemed to have read, understood, and
+    agreed to these Terms.
+  </p>
+
+  <h2>1. Definitions</h2>
+  <ul>
+    <li><strong>"Site"</strong> means {site.domain} and all its subdomains.</li>
+    <li><strong>"Services"</strong> means web, application, custom system, system integration, IoT, and related services we provide.</li>
+    <li><strong>"Client"</strong> means a party that signs a cooperation agreement with us.</li>
+  </ul>
+
+  <h2>2. Scope of services</h2>
+  <p>
+    Information shown on the Site is a general offer and does not constitute a binding agreement.
+    The binding scope of work, schedule, price, and deliverables are set out specifically in the
+    <strong>quotation and cooperation agreement</strong> signed by both parties. In the event of a
+    conflict between these Terms and that agreement, the agreement prevails.
+  </p>
+
+  <h2>3. Requests for proposals and communication</h2>
+  <p>
+    Submitting a form on the Site is a request for a proposal, not a binding order. We may decline a
+    request without obligation to give reasons. Time and cost estimates we provide before an
+    agreement exists are indicative.
+  </p>
+
+  <h2>4. Client obligations</h2>
+  <p>In carrying out a project, the Client is responsible for:</p>
+  <ul>
+    <li>providing the necessary materials, data, and access in a timely manner;</li>
+    <li>ensuring the materials submitted do not infringe third-party intellectual property rights;</li>
+    <li>appointing one party as the point of contact for communication and approvals;</li>
+    <li>meeting payment obligations per the agreed schedule.</li>
+  </ul>
+  <p>
+    Delays in providing materials or approvals may shift the completion schedule without reducing
+    the payment obligation.
+  </p>
+
+  <h2>5. Intellectual property</h2>
+  <h3>a. This site</h3>
+  <p>
+    All content on the Site — including text, layout, code, logos, and visual elements — is
+    protected by copyright and is owned by us or the parties who license it to us. You may not copy,
+    modify, or use the Site content for commercial purposes without our written permission.
+  </p>
+  <h3>b. Project deliverables</h3>
+  <p>
+    Ownership of the final project deliverables and the transfer of rights are governed by the
+    cooperation agreement. Generally, rights to the deliverables transfer to the Client after full
+    payment, while general-purpose libraries (open source), our internal frameworks, and supporting
+    tools remain ours or those of their third-party licensors.
+  </p>
+
+  <h2>6. Payment</h2>
+  <p>
+    Payment terms (amount, stages, and deadlines) are set out in the cooperation agreement. Late
+    payment may result in suspension of work, delay of go-live, or suspension of maintenance
+    services.
+  </p>
+
+  <h2>7. Warranty and support</h2>
+  <p>
+    We provide a warranty period for fixing functional defects (bugs) in the deliverables per the
+    period agreed in the agreement. The warranty does not cover:
+  </p>
+  <ul>
+    <li>requests for new features or scope changes;</li>
+    <li>damage caused by modifications made by others without our approval;</li>
+    <li>disruptions caused by third-party services beyond our control;</li>
+    <li>problems arising from failure to update the system or run backups.</li>
+  </ul>
+
+  <h2>8. Limitation of liability</h2>
+  <p>
+    To the extent permitted by applicable law, our liability for any losses arising from use of the
+    Site or Services is limited to the amount the Client has paid us for the work that is the basis
+    of the claim. We are not liable for indirect, incidental, special, or consequential losses,
+    including loss of profit, loss of data, or business interruption.
+  </p>
+
+  <h2>9. Confidentiality</h2>
+  <p>
+    Both parties must keep confidential non-public information obtained during the engagement and
+    use it only for the purposes of carrying out the project. This obligation survives the end of
+    the engagement.
+  </p>
+
+  <h2>10. Site availability</h2>
+  <p>
+    We strive to keep the Site available, but do not guarantee uninterrupted access. The Site may be
+    temporarily unavailable for maintenance, updates, or reasons beyond our control.
+  </p>
+
+  <h2>11. Third-party links</h2>
+  <p>
+    The Site may contain links to third-party sites. We do not control and are not responsible for
+    the content, privacy policies, or practices of those sites.
+  </p>
+
+  <h2>12. Changes to the Terms</h2>
+  <p>
+    We may change these Terms from time to time. The latest version applies from the "Last updated"
+    date at the top of the page. Using the Site after a change means you accept the updated Terms.
+  </p>
+
+  <h2>13. Governing law and dispute resolution</h2>
+  <p>
+    These Terms are governed by and construed in accordance with the laws of the Republic of
+    Indonesia. Any dispute will first be pursued through deliberation. If no agreement is reached,
+    the dispute will be resolved through the competent court in {site.address.city}.
+  </p>
+
+  <h2>14. Contact</h2>
+  <p>
+    Questions about these Terms can be sent to:<br />
+    <strong>{site.legalName}</strong><br />
+    {site.address.city}, {site.address.countryName}<br />
+    Email: <a href={`mailto:${site.emailProcurement}`}>{site.emailProcurement}</a>
+  </p>
+</LegalLayout>

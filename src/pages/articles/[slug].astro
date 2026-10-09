@@ -1,0 +1,257 @@
+---
+export const prerender = false;
+
+/**
+ * Article detail page — /articles/[slug].
+ *
+ * Reads one published row per request and 404s on anything else (unknown slug,
+ * or a row still in draft), so a draft can never be reached by guessing its URL.
+ * The Markdown body is rendered by `lib/markdown.ts`, which neutralises raw HTML
+ * and strips dangerous link schemes before the output reaches the page.
+ */
+import { ArrowLeft, ArrowUpRight, Phone } from '@lucide/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentImage from '../../components/ContentImage.astro';
+import { getPublishedArticleBySlug } from '../../lib/articles';
+import { canonicalSrc } from '../../lib/image-variants';
+import { formatDate, isoDate, isoDateTime, readingMinutes } from '../../lib/format';
+import { renderMarkdown } from '../../lib/markdown';
+import { article as articleLd, breadcrumbs } from '../../lib/seo';
+import { site, whatsappLink } from '../../data/site';
+
+const { slug } = Astro.params;
+
+const post = slug ? await getPublishedArticleBySlug(slug) : null;
+
+if (!post) {
+  // Render the site 404 page, but with a real 404 status so the route is not
+  // treated as a soft-404 by crawlers.
+  const notFound = await Astro.rewrite('/404');
+  return new Response(notFound.body, { status: 404, headers: notFound.headers });
+}
+
+const published = post.publishedAt ?? post.createdAt;
+const pageUrl = `${site.url}/articles/${post.slug}`;
+const hasCover = Boolean(post.coverImage && post.coverWidth && post.coverHeight);
+
+const jsonLd = [
+  breadcrumbs([
+    { name: 'Home', url: `${site.url}/` },
+    { name: 'Articles', url: `${site.url}/articles` },
+    { name: post.title, url: pageUrl },
+  ]),
+  articleLd({
+    url: pageUrl,
+    headline: post.title,
+    description: post.excerpt,
+    imageUrl: hasCover ? `${site.url}${canonicalSrc(post.coverImage!)}` : undefined,
+    datePublished: isoDateTime(published),
+    dateModified: isoDateTime(post.updatedAt),
+    authorName: site.displayName,
+    category: post.category,
+  }),
+];
+
+const bodyHtml = renderMarkdown(post.body);
+---
+
+<BaseLayout
+  title={`${post.title} | Beresin Digital`}
+  description={post.excerpt}
+  type="article"
+  ogImage={hasCover ? canonicalSrc(post.coverImage!) : undefined}
+  ogImageWidth={hasCover ? post.coverWidth! : undefined}
+  ogImageHeight={hasCover ? post.coverHeight! : undefined}
+  jsonLd={jsonLd}
+>
+  <article class="border-b border-gray-200 bg-white text-brand-dark">
+    <header class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 lg:px-8">
+      <a
+        href="/articles"
+        class="font-mono inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500 transition-colors hover:text-brand-dark"
+      >
+        <ArrowLeft class="h-3.5 w-3.5" stroke-width={2.5} />
+        All articles
+      </a>
+
+      <p class="font-mono mt-6 inline-block rounded border border-black bg-brand-lime px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[2px_2px_0px_#0D0F12]">
+        {post.category}
+      </p>
+
+      <h1
+        class="font-display mt-5 text-3xl font-black uppercase leading-[1.05] tracking-tight text-brand-dark sm:text-5xl"
+      >
+        {post.title}
+      </h1>
+
+      <p class="font-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+        <time datetime={isoDate(published)}>{formatDate(published)}</time>
+        <span aria-hidden="true">&middot;</span>
+        <span>{readingMinutes(post.body)} min read</span>
+      </p>
+
+      <p class="mt-6 text-sm font-semibold leading-relaxed text-gray-700 sm:text-base">
+        {post.excerpt}
+      </p>
+    </header>
+
+    {
+      hasCover && (
+        <div class="mx-auto mt-10 max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div class="overflow-hidden rounded-3xl border-2 border-black shadow-[8px_8px_0px_#0D0F12]">
+            <ContentImage
+              src={post.coverImage!}
+              alt={post.coverAlt}
+              width={post.coverWidth!}
+              height={post.coverHeight!}
+              sizes="(min-width: 896px) 56rem, 100vw"
+              loading="eager"
+              class="h-auto w-full object-cover"
+            />
+          </div>
+        </div>
+      )
+    }
+
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <div class="article-body" set:html={bodyHtml} />
+    </div>
+  </article>
+
+  <section class="border-b border-black bg-brand-dark py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
+            Next step
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          >
+            Have a project in mind?
+          </h2>
+          <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+            Tell us what you need to build. We will tell you plainly whether we are the right fit, and
+            what the first step would look like.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 lg:col-span-4">
+          <button
+            type="button"
+            data-open-modal="Discuss Your Project"
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
+          >
+            Discuss Your Project
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </button>
+
+          <a
+            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
+          >
+            <Phone class="h-4 w-4" stroke-width={2.25} />
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* No typography plugin in this project, so the Markdown output is styled by
+     hand. `:global()` is required because `set:html` content is not touched by
+     Astro's style scoping. */
+  .article-body :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .article-body :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 800;
+    font-size: 1.125rem;
+    line-height: 1.3;
+  }
+  .article-body :global(p) {
+    margin-bottom: 1.15rem;
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: #374151;
+  }
+  .article-body :global(a) {
+    color: #0d0f12;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: #d2eb1e;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin-bottom: 1.25rem;
+    padding-left: 1.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #374151;
+  }
+  .article-body :global(ul) {
+    list-style: disc;
+  }
+  .article-body :global(ol) {
+    list-style: decimal;
+  }
+  .article-body :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .article-body :global(blockquote) {
+    margin: 1.5rem 0;
+    border-left: 4px solid #d2eb1e;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #4b5563;
+  }
+  .article-body :global(code) {
+    border-radius: 0.25rem;
+    background: #f4f5f7;
+    padding: 0.15rem 0.35rem;
+    font-size: 0.85em;
+    font-family: ui-monospace, monospace;
+  }
+  .article-body :global(pre) {
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    border: 2px solid #0d0f12;
+    border-radius: 1rem;
+    background: #0d0f12;
+    padding: 1rem 1.25rem;
+    color: #f4f5f7;
+  }
+  .article-body :global(pre code) {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+  }
+  .article-body :global(img) {
+    margin: 1.5rem 0;
+    border-radius: 1rem;
+    border: 2px solid #0d0f12;
+  }
+  .article-body :global(hr) {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 2px solid #0d0f12;
+  }
+  .article-body :global(strong) {
+    font-weight: 800;
+    color: #0d0f12;
+  }
+</style>

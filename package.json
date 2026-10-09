@@ -14,6 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node scripts/seed-admin.mjs",
+    "db:seed-content": "node scripts/seed-content.mjs",
     "verify:admin": "node scripts/verify-admin.mjs"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.6",
     "drizzle-orm": "^0.45.3",
+    "marked": "^18.1.0",
     "postgres": "^3.4.9",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3"

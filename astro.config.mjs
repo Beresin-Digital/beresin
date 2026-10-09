@@ -56,6 +56,13 @@ export default defineConfig({
   security: {
     checkOrigin: true,
 
+    // Astro caps the body of an Action at 1 MiB by default, *independently* of
+    // the Node adapter's own limit. Admin saves carry an image upload, and
+    // `lib/uploads.ts` accepts up to 8 MB, so the default would reject every
+    // real photo with CONTENT_TOO_LARGE. 12 MB leaves headroom for multipart
+    // framing around an 8 MB file.
+    actionBodySizeLimit: 12 * 1024 * 1024,
+
     // PRODUCTION ONLY — leave unset in dev.
     //
     // Once the site sits behind Caddy, `X-Forwarded-For` is only honoured when
@@ -65,6 +72,7 @@ export default defineConfig({
     // useless. Set it to the real host before the first production deploy, e.g.
     //   allowedDomains: [{ protocol: 'https', hostname: 'beresindigital.id' }],
     // Setting it here now would break localhost during development.
+    allowedDomains: [{ protocol: 'https', hostname: 'blanch-estival-donny.ngrok-free.dev' }]
   },
 
   // Server-side sessions for the admin area, stored in Postgres.

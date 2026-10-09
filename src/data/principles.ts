@@ -1,5 +1,5 @@
 /**
- * "Prinsip & cara kerja" for /tentang.
+ * "Principles & how we work" for /about.
  *
  * Every line here restates something the site already commits to elsewhere —
  * `services.ts` (scope starts from process mapping, not a template), `process.ts`
@@ -17,33 +17,33 @@ export interface Principle {
 
 export const principles: Principle[] = [
   {
-    title: 'Mulai dari proses Anda, bukan template',
+    title: 'We start from your process, not a template',
     description:
-      'Setiap proyek dibuka dengan memetakan cara kerja Anda — siapa penggunanya, alurnya bagaimana, bagian mana yang paling mengganggu. Sistem yang jadi mengikuti lembaga Anda, bukan sebaliknya.',
+      'Every project opens by mapping how you actually work — who uses the system, how the flow runs, and which part hurts the most. What we build follows your business, not the other way around.',
   },
   {
-    title: 'Ruang lingkup & biaya tertulis di depan',
+    title: 'Scope and cost in writing up front',
     description:
-      'Cakupan pekerjaan, urutan tahap, dan rincian biaya dituangkan tertulis sebelum proyek dimulai, supaya tidak ada kejutan di tengah jalan maupun saat serah terima.',
+      'The scope of work, the sequence of stages, and the cost breakdown are put in writing before the project starts, so there are no surprises midway or at handover.',
   },
   {
-    title: 'Progres bisa Anda lihat kapan saja',
+    title: 'Progress you can see at any time',
     description:
-      'Pekerjaan berjalan bertahap di lingkungan staging yang bisa Anda akses dan nilai sendiri, bukan baru diperlihatkan sekali di akhir.',
+      'Work happens in stages on a staging environment you can access and judge for yourself, rather than being revealed once at the end.',
   },
   {
-    title: 'Anda bisa mengelola sistemnya sendiri',
+    title: 'You can run the system yourself',
     description:
-      'Panel admin dirancang untuk staf non-teknis, dan setiap proyek ditutup dengan pelatihan serta dokumentasi tertulis — supaya Anda tidak bergantung pada kami untuk hal-hal rutin.',
+      'Admin panels are designed for non-technical staff, and every project closes with training and written documentation — so you are not dependent on us for day-to-day tasks.',
   },
   {
-    title: 'Kode dan aset menjadi milik Anda',
+    title: 'The code and assets are yours',
     description:
-      'Setelah pelunasan, seluruh source code aplikasi dan aset desain menjadi milik Anda sepenuhnya. Kami tidak menahan sistem Anda sebagai sandera atau memasang kunci lisensi tersembunyi.',
+      'After final payment, all application source code and design assets belong to you outright. We do not hold your system hostage or install hidden license locks.',
   },
   {
-    title: 'Data Anda tinggal di Indonesia',
+    title: 'Your data stays in Indonesia',
     description:
-      'Sistem dan data disimpan di server dalam negeri. Kami juga tidak menyimpan alamat IP mentah pengunjung — hanya bentuk terenkripsinya untuk keperluan keamanan, sesuai prinsip minimalisasi data UU PDP.',
+      'Systems and data are stored on servers in the country. We also do not store visitors’ raw IP addresses — only an encrypted form, for security purposes, in line with the data-minimisation principle of the PDP Law.',
   },
 ];

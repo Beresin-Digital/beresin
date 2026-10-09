@@ -1,6 +1,165 @@
 ---
 export const prerender = false;
 
-// /admin has no page of its own; the inbox is the landing surface.
-return Astro.redirect('/admin/leads', 302);
+/**
+ * Admin dashboard.
+ *
+ * A read-only summary of everything the CMS manages, plus the five newest leads
+ * and a set of quick links. Every number comes from the same data-access module
+ * the corresponding list page uses, so the two cannot disagree.
+ */
+import { ArrowUpRight } from '@lucide/astro';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { articleCounts } from '../../lib/articles';
+import { clientCounts } from '../../lib/clients';
+import { formatWib } from '../../lib/datetime';
+import { countLeads, listLeads, unreadCount } from '../../lib/leads';
+import { projectCounts } from '../../lib/projects';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const [unread, totalLeads, recentLeads, articles, clients, projects] = await Promise.all([
+  unreadCount(),
+  countLeads({}),
+  listLeads({}, 1),
+  articleCounts(),
+  clientCounts(),
+  projectCounts(),
+]);
+
+const stats = [
+  {
+    label: 'Lead belum dibaca',
+    value: unread,
+    sub: `${totalLeads} lead total`,
+    href: '/admin/leads',
+  },
+  {
+    label: 'Artikel terbit',
+    value: articles.published,
+    sub: `${articles.draft} draf`,
+    href: '/admin/articles',
+  },
+  {
+    label: 'Klien tampil',
+    value: clients.active,
+    sub: `${clients.total} klien total`,
+    href: '/admin/clients',
+  },
+  {
+    label: 'Proyek portofolio',
+    value: projects.delivered + projects.concept,
+    sub: `${projects.delivered} delivered · ${projects.concept} konsep`,
+    href: '/admin/portfolio',
+  },
+];
+
+const quickLinks = [
+  { href: '/admin/articles/new', label: 'Tulis artikel' },
+  { href: '/admin/clients/new', label: 'Tambah klien' },
+  { href: '/admin/portfolio/new', label: 'Tambah proyek' },
+];
 ---
+
+<AdminLayout title="Dasbor" adminName={admin.name} unread={unread}>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {
+      stats.map((stat) => (
+        <a
+          href={stat.href}
+          class="group rounded-2xl border-2 border-black bg-white p-5 shadow-[4px_4px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+        >
+          <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+            {stat.label}
+          </p>
+          <p class="font-display mt-2 text-4xl font-black leading-none tracking-tight text-brand-dark">
+            {stat.value}
+          </p>
+          <p class="mt-2 text-[11px] font-medium text-gray-500">{stat.sub}</p>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
+    <section class="lg:col-span-8">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="font-display text-sm font-black uppercase tracking-tight text-brand-dark">
+          Lead terbaru
+        </h2>
+        <a
+          href="/admin/leads"
+          class="font-mono inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-500 hover:text-brand-dark"
+        >
+          Semua lead
+          <ArrowUpRight class="h-3.5 w-3.5" stroke-width={2.5} />
+        </a>
+      </div>
+
+      {
+        recentLeads.length === 0 ? (
+          <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white px-6 py-12 text-center">
+            <p class="text-xs font-medium text-gray-500">
+              Belum ada lead. Kiriman dari formulir kontak akan muncul di sini.
+            </p>
+          </div>
+        ) : (
+          <div class="overflow-hidden rounded-2xl border-2 border-black bg-white shadow-[4px_4px_0px_#0D0F12]">
+            <ul>
+              {recentLeads.map((lead) => (
+                <li class="border-b border-gray-200 last:border-b-0">
+                  <a
+                    href={`/admin/leads/${lead.id}`}
+                    class="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-brand-surface"
+                  >
+                    <span class="min-w-0">
+                      <span class="flex items-center gap-2">
+                        {!lead.seenAt && lead.status !== 'spam' && (
+                          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-lime ring-1 ring-black" aria-label="Belum dibaca" />
+                        )}
+                        <span class="truncate text-sm font-bold text-brand-dark">{lead.name}</span>
+                      </span>
+                      <span class="mt-0.5 block truncate text-xs text-gray-500">
+                        {lead.message || lead.phone}
+                      </span>
+                    </span>
+                    <span class="font-mono shrink-0 text-[10px] uppercase tracking-wider text-gray-400">
+                      {formatWib(lead.createdAt)}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </section>
+
+    <section class="lg:col-span-4">
+      <h2 class="font-display mb-3 text-sm font-black uppercase tracking-tight text-brand-dark">
+        Tindakan cepat
+      </h2>
+      <div class="space-y-2">
+        {
+          quickLinks.map((link) => (
+            <a
+              href={link.href}
+              class="font-mono flex items-center justify-between rounded-xl border-2 border-black bg-white px-4 py-3 text-[11px] font-extrabold uppercase tracking-widest text-brand-dark transition-colors hover:bg-brand-lime"
+            >
+              {link.label}
+              <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+            </a>
+          ))
+        }
+        <a
+          href="/"
+          class="font-mono flex items-center justify-between rounded-xl border-2 border-black bg-brand-dark px-4 py-3 text-[11px] font-extrabold uppercase tracking-widest text-white transition-colors hover:bg-black"
+        >
+          Lihat situs
+          <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+        </a>
+      </div>
+    </section>
+  </div>
+</AdminLayout>

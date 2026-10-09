@@ -1,0 +1,86 @@
+---
+import {
+  Briefcase,
+  Building2,
+  CreditCard,
+  Globe,
+  GraduationCap,
+  ShieldCheck,
+  ShoppingBag,
+  Truck,
+} from '@lucide/astro';
+import { canonicalSrc } from '../lib/image-variants';
+import type { Client } from '../db/schema';
+
+/**
+ * One "trusted partner" chip: the client's logo (or a lucide icon stand-in)
+ * beside its name.
+ *
+ * Defined once and shared by both layouts in `sections/Clients.astro` — the
+ * scrolling marquee when there are enough rows to fill it, and the centred
+ * static row when there are not.
+ *
+ * The category is deliberately not shown. With a short list the extra line made
+ * each chip read as two competing labels; the name alone carries it, and the
+ * chip can afford to be larger.
+ *
+ * A row with an uploaded `logo` shows it; otherwise `icon` names a lucide icon
+ * that stands in, so a chip is never a fabricated brand mark.
+ */
+interface Props {
+  client: Client;
+  /** Position in the list, for the rotating icon-chip colours. */
+  index: number;
+}
+
+const { client, index } = Astro.props;
+
+const icons = {
+  'building-2': Building2,
+  briefcase: Briefcase,
+  'graduation-cap': GraduationCap,
+  truck: Truck,
+  'shopping-bag': ShoppingBag,
+  globe: Globe,
+  'shield-check': ShieldCheck,
+  'credit-card': CreditCard,
+} as const;
+
+/** Rotating icon-chip colours, mirroring the original mockup. */
+const chipStyles = [
+  'bg-brand-dark text-brand-lime',
+  'bg-brand-lime text-black',
+  'bg-brand-dark text-white',
+  'bg-gray-200 text-brand-dark',
+] as const;
+
+const Icon = icons[client.icon as keyof typeof icons] ?? Building2;
+---
+
+<div
+  class="inline-flex shrink-0 items-center gap-2 rounded-2xl px-3 py-1 transition-all"
+>
+  {
+    client.logo ? (
+      <img
+        src={canonicalSrc(client.logo)}
+        alt=""
+        height={40}
+        loading="lazy"
+        decoding="async"
+        class="h-10 w-10 shrink-0 rounded-lg object-contain"
+      />
+    ) : (
+      <span
+        class:list={[
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold',
+          chipStyles[index % chipStyles.length],
+        ]}
+        aria-hidden="true"
+      >
+        <Icon class="h-5 w-5" stroke-width={2.25} />
+      </span>
+    )
+  }
+  <p class="text-sm font-extrabold text-brand-dark">{client.name}</p>
+</div>

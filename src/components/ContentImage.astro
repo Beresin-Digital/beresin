@@ -1,0 +1,54 @@
+---
+import { srcFor, srcSetFor } from '../lib/image-variants';
+
+/**
+ * Renders an uploaded CMS image.
+ *
+ * Uploads are not processed by `astro:assets` — that pipeline only sees images
+ * imported at build time, and these arrive at runtime — so this is the runtime
+ * equivalent of `<Picture>`: the variants were generated on upload
+ * (`lib/uploads.ts`) and this just wires up the `srcset`.
+ *
+ * `width`/`height` are the largest variant's dimensions. Every variant shares
+ * the aspect ratio, so the pair gives the browser the correct ratio to reserve
+ * space for and keeps CLS at zero.
+ */
+interface Props {
+  /** Stored base path, e.g. `/uploads/articles/1a2b3c4d5e6f7788`. */
+  src: string;
+  alt: string;
+  /** Intrinsic width of the largest variant. */
+  width: number;
+  /** Intrinsic height of the largest variant. */
+  height: number;
+  /** Layout `sizes` for the srcset, e.g. `(min-width: 1024px) 58vw, 100vw`. */
+  sizes: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  sizes,
+  class: className = '',
+  loading = 'lazy',
+} = Astro.props;
+
+const srcset = srcSetFor(src, width);
+const fallback = srcFor(src, width);
+---
+
+<img
+  src={fallback}
+  srcset={srcset}
+  sizes={sizes}
+  width={width}
+  height={height}
+  alt={alt}
+  loading={loading}
+  decoding="async"
+  class={className}
+/>

@@ -75,7 +75,12 @@ async function req(path, { method = 'GET', headers, body, auth = true } = {}) {
   const res = await fetch(`${BASE}${path}`, { method, headers: h, body, redirect: 'manual' });
   storeCookies(res);
 
-  return { status: res.status, headers: res.headers, body: await res.text() };
+  // `Response.text()` strips a leading UTF-8 BOM (per the fetch spec's
+  // "UTF-8 decode"), so keep the raw bytes as well — the CSV export's BOM can
+  // only be asserted on the bytes, never on the decoded string.
+  const raw = new Uint8Array(await res.arrayBuffer());
+
+  return { status: res.status, headers: res.headers, body: new TextDecoder().decode(raw), raw };
 }
 
 const form = (fields) => new URLSearchParams(fields).toString();
@@ -142,8 +147,31 @@ console.log('1. Tanpa sesi');
 
 check('dist/client/admin/ tidak ada', !existsSync('dist/client/admin'));
 
+/**
+ * Clears the contact rate-limit buckets so the assertions are deterministic: a
+ * previous run (or a manual poke) leaves the window spent, and the next valid
+ * POST would otherwise be reported as rate-limited. Only `contact:%` is touched
+ * — the login limiter is left alone. Called before section 2 (one valid POST
+ * must succeed) and again before section 3 (exactly five must).
+ */
+async function resetContactBuckets() {
+  if (missingDbVars().length > 0) return false;
+  const sql = postgres(dbConfig(), { max: 1, onnotice: () => {} });
+  try {
+    await sql`DELETE FROM rate_limits WHERE key LIKE 'contact:%'`;
+    return true;
+  } catch (err) {
+    console.log(`  (gagal mereset rate limit: ${err.message})`);
+    return false;
+  } finally {
+    await sql.end();
+  }
+}
+
+let canReset = await resetContactBuckets();
+
 // --- 2. contact endpoint ---------------------------------------------------
-console.log('\n2. Endpoint kontak');
+console.log('\n2. Endpoint contact');
 
 const unique = `Verify ${Date.now()}`;
 const submit = (fields) =>
@@ -156,21 +184,21 @@ const submit = (fields) =>
     email: 'verify@example.com',
     message: 'pesan verifikasi',
     source: 'verify',
-    page_url: '/kontak',
+    page_url: '/contact',
   });
   check('POST valid → 303', res.status === 303, String(res.status));
   check('redirect memuat terkirim=1', location(res).includes('terkirim=1'), location(res));
 }
 
-await submit({ name: '=1+1', phone: '08123', message: 'x', source: 'verify', page_url: '/kontak' });
+await submit({ name: '=1+1', phone: '08123', message: 'x', source: 'verify', page_url: '/contact' });
 
 {
-  const res = await submit({ name: '', phone: '08123', source: 'verify', page_url: '/kontak' });
+  const res = await submit({ name: '', phone: '08123', source: 'verify', page_url: '/contact' });
   check('nama kosong → gagal=nama', location(res).includes('gagal=nama'), location(res));
 }
 
 {
-  const res = await submit({ name: 'Bot', phone: '08123', company_website: 'spam', page_url: '/kontak' });
+  const res = await submit({ name: 'Bot', phone: '08123', company_website: 'spam', page_url: '/contact' });
   check('honeypot → terkirim=1 (ditolak diam-diam)', location(res).includes('terkirim=1'), location(res));
 }
 
@@ -183,22 +211,8 @@ await submit({ name: '=1+1', phone: '08123', message: 'x', source: 'verify', pag
 // --- 3. rate limit ---------------------------------------------------------
 console.log('\n3. Rate limit');
 
-let canReset = missingDbVars().length === 0;
-
-if (canReset) {
-  // This harness is a dev tool, and a previous run (or a manual poke) may have
-  // already spent the window. Clearing the contact buckets makes the assertion
-  // deterministic. Only `contact:%` is touched — the login limiter is left alone.
-  const sql = postgres(dbConfig(), { max: 1, onnotice: () => {} });
-  try {
-    await sql`DELETE FROM rate_limits WHERE key LIKE 'contact:%'`;
-  } catch (err) {
-    canReset = false;
-    console.log(`  (gagal mereset rate limit: ${err.message})`);
-  } finally {
-    await sql.end();
-  }
-}
+// Section 2 already spent some of the window; start this section clean.
+canReset = await resetContactBuckets();
 
 if (!canReset) {
   check('submission ke-6 ditolak', 'skip', 'butuh DB_* di .env');
@@ -210,7 +224,7 @@ if (!canReset) {
       phone: '08123',
       message: 'rate limit',
       source: 'verify',
-      page_url: '/kontak',
+      page_url: '/contact',
     });
     outcomes.push(location(res).includes('terlalu-sering') ? 'blocked' : 'ok');
   }
@@ -266,7 +280,11 @@ if (!email || !password) {
 
     const csv = await req('/admin/leads/export.csv');
     check('CSV → 200', csv.status === 200, String(csv.status));
-    check('CSV diawali BOM', csv.body.charCodeAt(0) === 0xfeff, `0x${csv.body.charCodeAt(0).toString(16)}`);
+    check(
+      'CSV diawali BOM',
+      csv.raw[0] === 0xef && csv.raw[1] === 0xbb && csv.raw[2] === 0xbf,
+      [...csv.raw.slice(0, 3)].map((b) => b.toString(16).padStart(2, '0')).join(' ') || '(kosong)'
+    );
     check(
       'CSV Content-Disposition attachment',
       /attachment; filename="leads-\d{4}-\d{2}-\d{2}\.csv"/.test(

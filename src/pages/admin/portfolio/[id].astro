@@ -1,0 +1,35 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ProjectForm from '../../../components/admin/ProjectForm.astro';
+import { getProject } from '../../../lib/projects';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const id = Number.parseInt(Astro.params.id ?? '', 10);
+if (!Number.isInteger(id) || id <= 0) return Astro.redirect('/admin/portfolio');
+
+const result = Astro.getActionResult(actions.saveProject);
+if (result?.data) return Astro.redirect('/admin/portfolio');
+
+const project = await getProject(id);
+if (!project) return Astro.redirect('/admin/portfolio');
+
+const error = result?.error
+  ? isInputError(result.error)
+    ? 'Mohon periksa kembali isian formulir.'
+    : result.error.message
+  : null;
+
+const unread = await unreadCount();
+---
+
+<AdminLayout title="Ubah proyek" adminName={admin.name} unread={unread}>
+  <div class="mx-auto max-w-3xl">
+    <ProjectForm project={project} error={error} />
+  </div>
+</AdminLayout>

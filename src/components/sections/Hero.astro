@@ -1,53 +1,14 @@
 ---
-import { Picture, Image } from 'astro:assets';
-import { ArrowRight, Play } from '@lucide/astro';
-import { images, teamAvatars } from '../../assets/images/manifest';
-import { stats } from '../../data/services';
+import { Picture } from 'astro:assets';
+import { ArrowRight, ArrowUpRight } from '@lucide/astro';
+import { images } from '../../assets/images/manifest';
 ---
 
 <section id="hero" class="bg-grid-light relative overflow-hidden border-b border-gray-200 bg-white py-12 lg:py-16">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
-      <!-- Left: team badge + stats -->
-      <div
-        class="order-2 space-y-6 border-t border-gray-200 pt-6 lg:order-1 lg:col-span-3 lg:border-r lg:border-t-0 lg:pr-8 lg:pt-0"
-      >
-        <div class="flex items-center gap-3">
-          <div class="flex -space-x-2">
-            {
-              teamAvatars.map((avatar) => (
-                <Image
-                  src={avatar.src}
-                  alt=""
-                  width={64}
-                  height={64}
-                  class="h-8 w-8 rounded-full border-2 border-white object-cover"
-                />
-              ))
-            }
-          </div>
-          <p class="text-[10px] font-bold uppercase leading-tight text-gray-500">
-            The expert team brings creativity to every project.
-          </p>
-        </div>
-
-        {
-          stats.map((stat, i) => (
-            <div class={i < stats.length - 1 ? 'border-b border-gray-200 pb-4' : ''}>
-              <p class="font-display text-4xl font-black tracking-tighter text-brand-dark sm:text-5xl">
-                {stat.value}
-                <span class="ml-1 rounded bg-black px-1.5 text-brand-lime">{stat.suffix}</span>
-              </p>
-              <p class="mt-1 text-[11px] font-extrabold uppercase tracking-widest text-gray-500">
-                {stat.label}
-              </p>
-            </div>
-          ))
-        }
-      </div>
-
-      <!-- Right: headline, subtext, featured photo -->
-      <div class="order-1 space-y-6 lg:order-2 lg:col-span-9">
+    <div class="grid grid-cols-1 items-center gap-8">
+      <!-- Headline, subtext, featured photo -->
+      <div class="space-y-6">
         <div class="relative">
           <div class="absolute -top-4 right-4 text-black sm:right-20">
             <svg
@@ -62,43 +23,40 @@ import { stats } from '../../data/services';
           </div>
 
           <h1
-            class="font-display text-5xl font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-7xl lg:text-8xl"
+            class="font-display text-4xl font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-6xl lg:text-7xl"
           >
             <span
               class="mb-1 inline-block border-2 border-black bg-brand-lime px-2 py-0.5 text-black shadow-[4px_4px_0px_#0D0F12]"
             >
-              DIGITAL
+              DIGITAL SOLUTIONS
             </span><br />
-            AGENCY<span class="text-brand-lime">.</span>
+            BUILT FOR YOUR BUSINESS<span class="text-brand-lime">.</span>
           </h1>
         </div>
 
         <div class="grid grid-cols-1 items-center gap-6 pt-2 md:grid-cols-12">
           <div class="space-y-4 md:col-span-6">
             <p class="text-sm font-semibold leading-relaxed text-gray-700">
-              Jasa Pembuatan Website, Aplikasi Web/Mobile Custom, SIAKAD Sekolah, Sistem IoT &amp;
-              Smart Home, hingga Desain Grafis &amp; Branding untuk <span
+              We design and develop <span
                 class="font-black text-black underline decoration-brand-lime decoration-4"
-                >Korporasi, Sekolah Swasta, dan Pemerintah</span
-              >.
+                >websites, applications, and custom digital solutions</span
+              > that help businesses work smarter and grow.
             </p>
 
-            <div class="flex items-center gap-3 pt-2">
+            <div class="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                data-open-modal="Mulai Proyek Digital"
+                data-open-modal="Discuss Your Project"
                 class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-dark px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-[3px_3px_0px_#D2EB1E] transition-all hover:bg-black"
               >
-                Get Started <ArrowRight class="h-4 w-4 text-brand-lime" stroke-width={2.5} />
+                Discuss Your Project <ArrowRight class="h-4 w-4 text-brand-lime" stroke-width={2.5} />
               </button>
-              <button
-                type="button"
-                data-open-modal="Lihat Demo Showreel"
-                class="flex h-11 w-11 items-center justify-center rounded-full border border-black bg-brand-lime text-black shadow-[2px_2px_0px_#0D0F12] transition-transform hover:scale-105"
-                aria-label="Lihat demo showreel"
+              <a
+                href="#portfolio"
+                class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:bg-brand-lime-hover"
               >
-                <Play class="h-5 w-5 fill-black" stroke-width={0} />
-              </button>
+                Explore Our Work <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+              </a>
             </div>
           </div>
 
@@ -123,7 +81,7 @@ import { stats } from '../../data/services';
                 class="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl border border-black bg-white/90 px-4 py-2 text-xs font-black shadow-md backdrop-blur-md"
               >
                 <span class="h-2.5 w-2.5 animate-pulse rounded-full bg-green-500"></span>
-                <span>READY FOR B2B &amp; GOV RFP</span>
+                <span>WEBSITES · APPS · CUSTOM SYSTEMS</span>
               </div>
             </div>
           </div>

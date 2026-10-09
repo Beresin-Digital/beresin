@@ -1,17 +1,17 @@
 ---
 import { Picture } from 'astro:assets';
-import { Award, Check, ShieldCheck } from '@lucide/astro';
+import { Check, ShieldCheck } from '@lucide/astro';
 import { images } from '../../assets/images/manifest';
 import { coverage } from '../../data/services';
 
 /**
- * Two short credibility badges. Both are factual statements, not metrics:
- * the studio has been operating for two years, and its client base is
- * corporations, schools and government agencies — not "global brands".
+ * Two short credibility badges. Both are factual statements, not metrics: how
+ * we run a project, and the kind of client base we work with — not "global
+ * brands" and not an unverifiable number.
  */
 const badges = [
-  { icon: Award, label: '2 years of experience', tone: 'lime' },
-  { icon: ShieldCheck, label: 'Dipercaya korporasi, sekolah & instansi', tone: 'dark' },
+  { icon: Check, label: 'Structured delivery & clear scope', tone: 'lime' },
+  { icon: ShieldCheck, label: 'Trusted by businesses, schools & agencies', tone: 'dark' },
 ] as const;
 ---
 
@@ -19,7 +19,7 @@ const badges = [
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
       <!-- Left: intro + badges -->
-      <div class="space-y-6 lg:col-span-4">
+      <div class="space-y-6 lg:col-span-8">
         <p class="inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
           <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
             Who we are
@@ -28,11 +28,12 @@ const badges = [
         <h2
           class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
-          Creativity meets strategy.
+          Digital solutions, built around your business.
         </h2>
         <p class="text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-          Beresin Digital menjembatani kebutuhan estetika desain modern dengan keandalan sistem
-          berskala enterprise untuk hasil proyek tepat waktu.
+          Beresin Digital helps businesses build and grow their digital solutions — from professional
+          websites to applications and custom systems. We pair clear design with dependable
+          engineering, and deliver on a structured timeline.
         </p>
 
         <ul class="space-y-4 pt-2">
@@ -55,37 +56,10 @@ const badges = [
         </ul>
       </div>
 
-      <!-- Center: portrait -->
-      <div class="relative flex justify-center lg:col-span-4">
-        <div
-          class="relative w-full max-w-sm overflow-hidden rounded-3xl border-2 border-black bg-brand-lime p-2 shadow-[8px_8px_0px_#0D0F12]"
-        >
-          <Picture
-            src={images.aboutPortrait.src}
-            formats={['avif', 'webp']}
-            fallbackFormat="webp"
-            widths={[320, 480, 640]}
-            sizes="(min-width: 1024px) 30vw, 90vw"
-            alt={images.aboutPortrait.alt}
-            loading="lazy"
-            decoding="async"
-            class="h-80 w-full rounded-2xl object-cover sm:h-96"
-          />
-          <div
-            class="absolute bottom-4 left-4 right-4 rounded-xl border border-black bg-white/95 p-3 text-center backdrop-blur-md"
-          >
-            <span class="block text-xs font-black uppercase tracking-wider">
-              100% Legal &amp; Dedicated Team
-            </span>
-            <span class="font-mono text-[10px] text-gray-500">PT BERESIN URUSAN DIGITAL</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Right: what the studio covers -->
       <div class="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-4">
         <h3 class="font-display border-b border-gray-100 pb-3 text-sm font-black uppercase text-brand-dark">
-          Cakupan Layanan
+          What we cover
         </h3>
 
         <ul class="space-y-4">
@@ -111,10 +85,10 @@ const badges = [
 
         <div class="pt-2">
           <a
-            href="/layanan"
+            href="/services"
             class="font-mono block w-full rounded-xl border border-gray-300 bg-brand-surface py-3 text-center text-xs font-extrabold uppercase text-black transition-colors hover:bg-gray-200"
           >
-            Lihat detail layanan &rarr;
+            See service details &rarr;
           </a>
         </div>
       </div>

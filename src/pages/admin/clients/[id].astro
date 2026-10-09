@@ -1,0 +1,35 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import ClientForm from '../../../components/admin/ClientForm.astro';
+import { getClient } from '../../../lib/clients';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const id = Number.parseInt(Astro.params.id ?? '', 10);
+if (!Number.isInteger(id) || id <= 0) return Astro.redirect('/admin/clients');
+
+const result = Astro.getActionResult(actions.saveClient);
+if (result?.data) return Astro.redirect('/admin/clients');
+
+const client = await getClient(id);
+if (!client) return Astro.redirect('/admin/clients');
+
+const error = result?.error
+  ? isInputError(result.error)
+    ? 'Mohon periksa kembali isian formulir.'
+    : result.error.message
+  : null;
+
+const unread = await unreadCount();
+---
+
+<AdminLayout title="Ubah klien" adminName={admin.name} unread={unread}>
+  <div class="mx-auto max-w-3xl">
+    <ClientForm client={client} error={error} />
+  </div>
+</AdminLayout>

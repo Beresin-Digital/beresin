@@ -10,14 +10,14 @@ import { faqItems } from '../data/faq';
 import { site } from '../data/site';
 import { faqPage, serviceCatalog } from '../lib/seo';
 
-const title = 'Layanan — Website, Aplikasi, SIAKAD, IoT & Desain | Beresin Digital';
+const title = 'Services — Websites, Mobile Apps, IoT & Design | Beresin Digital';
 const description =
-  'Layanan Beresin Digital: website dan aplikasi custom, sistem akademik SIAKAD sekolah, portal e-government, sistem IoT & smart home, serta desain grafis dan branding — lengkap dengan alur kerja dan jawaban pertanyaan pengadaan.';
+  'Beresin Digital services: website and mobile app development, IoT solutions, system integration, and graphic design (UI/UX and branding) — with our process and answers to common questions.';
 
-const pageUrl = `${site.url}/layanan`;
+const pageUrl = `${site.url}/services`;
 
 /**
- * Structured data for this page: the three pillars as `Service` nodes behind an
+ * Structured data for this page: the four services as `Service` nodes behind an
  * `ItemList`, plus a `FAQPage` mirroring the visible accordion below.
  */
 const jsonLd = [
@@ -31,13 +31,13 @@ const jsonLd = [
 
 <BaseLayout title={title} description={description} jsonLd={jsonLd}>
   <PageHeader
-    eyebrow="Layanan"
-    title="Yang kami kerjakan"
-    lead="Tiga pilar layanan kami, dijabarkan sampai ke detailnya — apa saja yang Anda terima, siapa yang paling cocok, dan bagaimana prosesnya dari diskusi pertama sampai sistem live."
+    eyebrow="Services"
+    title="What we do"
+    lead="Our four services, spelled out to the detail — what you receive, who each one fits, and how the process runs from the first conversation to a live system."
   >
-    <!-- Jump nav. Plain anchors, no JavaScript — the pillar sections carry the
+    <!-- Jump nav. Plain anchors, no JavaScript — the service sections carry the
          matching ids and inherit `scroll-margin-top` from global.css. -->
-    <nav aria-label="Lompat ke pilar layanan" class="mt-8 flex flex-wrap gap-2">
+    <nav aria-label="Jump to a service" class="mt-8 flex flex-wrap gap-2">
       {
         services.map((service, i) => (
           <a
@@ -67,26 +67,26 @@ const jsonLd = [
       <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
         <div class="lg:col-span-8">
           <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
-            Langkah berikutnya
+            Next step
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
           >
-            Belum yakin mulai dari mana?
+            Not sure where to start?
           </h2>
           <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-            Ceritakan kondisi Anda sekarang. Kami bantu tentukan pilar yang paling relevan, ruang
-            lingkupnya, dan langkah pertamanya — tanpa biaya dan tanpa komitmen.
+            Tell us where you are today. We will help you work out the most relevant service, the
+            scope, and the first step — at no cost and with no commitment.
           </p>
         </div>
 
         <div class="flex flex-col gap-3 lg:col-span-4">
           <button
             type="button"
-            data-open-modal="Konsultasi Layanan"
+            data-open-modal="Service consultation"
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
           >
-            Konsultasi gratis
+            Free consultation
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </button>
 
@@ -95,7 +95,7 @@ const jsonLd = [
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
           >
             <Mail class="h-4 w-4" stroke-width={2.25} />
-            Email tim pengadaan
+            Email us
           </a>
         </div>
       </div>

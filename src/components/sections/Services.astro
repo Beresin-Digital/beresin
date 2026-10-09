@@ -19,13 +19,13 @@ import { services } from '../../data/services';
         <h2
           class="font-display max-w-2xl text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
         >
-          Designing for seamless and enjoyable interactions.
+          Websites, apps, integrations, and design built around your business.
         </h2>
       </div>
 
       <div>
         <a
-          href="/layanan"
+          href="/services"
           class="font-mono inline-block rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
         >
           All services &rarr;
@@ -33,61 +33,30 @@ import { services } from '../../data/services';
       </div>
     </div>
 
-    <!-- Four pillars: two-up from sm, four-up only at xl. At lg (1024) a
+    <!-- Four equal services in a four-up grid (two-up from sm). At lg (1024) a
          four-column grid squeezes the cards to ~222px, which forces 3-line
-         titles and 5-line descriptions; two-up there reads far better and the
-         four-across layout lands once there is room for it. -->
+         titles and 5-line descriptions; two-up there reads far better, so the
+         four-up layout only kicks in at xl. -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {
         services.map((service) => (
-          <article
-            class:list={[
-              'group flex flex-col justify-between space-y-6 rounded-3xl p-6',
-              service.featured
-                ? 'relative overflow-hidden border-2 border-black bg-brand-lime text-black shadow-[6px_6px_0px_#FFFFFF]'
-                : 'border border-white/10 bg-white/5 transition-all hover:border-brand-lime',
-            ]}
-          >
+          <article class="group flex flex-col justify-between space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-brand-lime">
             <div>
               <div class="mb-4 flex items-center justify-between">
-                <h3
-                  class:list={[
-                    'font-display text-xl font-black uppercase',
-                    service.featured
-                      ? 'text-black'
-                      : 'text-white transition-colors group-hover:text-brand-lime',
-                  ]}
-                >
+                <h3 class="font-display text-xl font-black uppercase text-white transition-colors group-hover:text-brand-lime">
                   {service.title}
                 </h3>
                 <span
-                  class:list={[
-                    'flex h-10 w-10 items-center justify-center rounded-full font-bold',
-                    service.featured ? 'bg-black text-brand-lime' : 'bg-brand-lime text-black',
-                  ]}
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-lime font-bold text-black"
                   aria-hidden="true"
                 >
                   <ArrowUpRight class="h-5 w-5" stroke-width={2.5} />
                 </span>
               </div>
-              <p
-                class:list={[
-                  'text-xs leading-relaxed',
-                  service.featured ? 'font-semibold text-black/80' : 'font-medium text-gray-400',
-                ]}
-              >
-                {service.description}
-              </p>
+              <p class="text-xs font-medium leading-relaxed text-gray-400">{service.description}</p>
             </div>
 
-            <div
-              class:list={[
-                // 3:2 matches the source photos, so nothing is cropped and the
-                // height stays right at every column count.
-                'aspect-[3/2] overflow-hidden rounded-2xl',
-                service.featured ? 'border border-black/20' : 'border border-white/10',
-              ]}
-            >
+            <div class="aspect-[3/2] overflow-hidden rounded-2xl border border-white/10">
               <Picture
                 src={service.image.src}
                 formats={['avif', 'webp']}

@@ -1,5 +1,5 @@
 /**
- * Procurement FAQ for /layanan.
+ * FAQ for /services.
  *
  * Two kinds of answer live in this file, and they are not equal:
  *
@@ -22,51 +22,52 @@ export interface FaqItem {
 
 export const faqItems: FaqItem[] = [
   {
-    question: 'Apakah source code dan aset desain menjadi milik kami?',
+    question: 'Do we own the source code and design assets?',
     answer:
-      'Ya. Setelah pelunasan, seluruh source code aplikasi, aset desain, dan dokumen teknis menjadi milik Anda sepenuhnya. Kami tidak menahan sistem Anda sebagai sandera dan tidak memasang kunci lisensi tersembunyi.',
+      'Yes. After final payment, all application source code, design assets, and technical documentation belong to you outright. We do not hold your system hostage and do not install hidden license locks.',
   },
   {
-    question: 'Di mana data dan sistem kami disimpan?',
+    question: 'Where are our data and systems stored?',
     answer:
-      'Di server yang kami sewa di Indonesia, sehingga data Anda tidak keluar dari yurisdiksi Indonesia. Kami tidak menyimpan alamat IP mentah pengunjung — hanya bentuk terenkripsi (HMAC) untuk keperluan keamanan, sesuai prinsip minimalisasi data pada UU PDP.',
+      'On servers we lease in Indonesia, so your data does not leave Indonesian jurisdiction. We do not store visitors’ raw IP addresses — only an encrypted form (HMAC) for security purposes, in line with the data-minimisation principle of the PDP Law.',
   },
   {
-    question: 'Apakah tim kami dilatih untuk mengelola sistemnya sendiri?',
+    question: 'Will our team be trained to manage the system?',
     answer:
-      'Ya. Setiap proyek ditutup dengan pelatihan penggunaan dan dokumentasi tertulis. Panel admin dirancang untuk staf non-teknis, sehingga tim Anda bisa memperbarui konten dan data sehari-hari tanpa perlu menghubungi kami.',
+      'Yes. Every project closes with usage training and written documentation. Admin panels are designed for non-technical staff, so your team can update content and day-to-day data without needing to contact us.',
   },
   {
-    question: 'Apakah Anda bisa mengikuti proses pengadaan atau tender?',
+    question: 'Can you work with the systems and tools we already use?',
     answer:
-      'Bisa. PT Beresin Urusan DIgital adalah badan hukum resmi dengan NPWP dan rekening perusahaan, sehingga dapat mengikuti pengadaan langsung maupun tender, melengkapi dokumen administrasi, dan menerbitkan invoice resmi sesuai ketentuan instansi Anda.',
+      'Usually, yes. We regularly integrate with existing tools — payment gateways, messaging, CRM, accounting, and internal systems — through APIs and documented integrations. If something cannot be connected cleanly, we will tell you before the project starts, not after.',
   },
   {
-    question: 'Bersediakah menandatangani NDA sebelum diskusi teknis?',
+    question: 'Are you willing to sign an NDA before technical discussions?',
     answer:
-      'Bersedia. Kami memahami bahwa sebagian lembaga perlu menandatangani perjanjian kerahasiaan lebih dulu sebelum membuka data atau prosedur internal. Silakan kirimkan draf NDA Anda, atau kami sediakan draf standar untuk ditinjau.',
+      'Yes. We understand that some teams need a confidentiality agreement signed before opening up data or internal procedures. Send us your draft, or we can provide a standard draft for you to review.',
   },
   {
-    question: 'Bagaimana skema pembayaran yang Anda terapkan?',
+    question: 'What payment structure do you use?',
     // TODO(user): confirm the actual milestone split (e.g. 30/40/30) and whether
-    // a DP is required before kickoff, then state it here. Until then the answer
-    // deliberately points at the proposal rather than inventing percentages —
-    // this string is rendered on the page AND published in FAQPage JSON-LD.
+    // a deposit is required before kickoff, then state it here. Until then the
+    // answer deliberately points at the proposal rather than inventing
+    // percentages — this string is rendered on the page AND published in
+    // FAQPage JSON-LD.
     answer:
-      'Pembayaran dilakukan bertahap mengikuti progres pekerjaan, bukan sekaligus di muka. Rincian termin dan persentasenya kami tuangkan tertulis di proposal agar dapat Anda verifikasi sebelum proyek dimulai.',
+      'Payment is made in stages following the progress of the work, not all up front. The terms and percentages are put in writing in the proposal so you can verify them before the project begins.',
   },
   {
-    question: 'Berapa lama estimasi pengerjaan sebuah proyek?',
+    question: 'How long does a project take?',
     // TODO(user): replace the hedge with real duration ranges per project type
     // once the owner confirms them.
     answer:
-      'Durasi bergantung pada lingkup: website company profile jauh lebih cepat daripada sistem akademik terpadu. Estimasi waktu yang mengikat kami cantumkan di proposal setelah sesi pemetaan, bukan angka umum yang tidak bisa kami pertanggungjawabkan.',
+      'It depends on the scope: a company profile website is far quicker than a full custom web application. A binding timeline is stated in the proposal after the mapping session, not a generic figure we cannot stand behind.',
   },
   {
-    question: 'Apakah ada garansi setelah sistem diluncurkan?',
+    question: 'Is there a warranty after the system launches?',
     // TODO(user): confirm the warranty window (e.g. 30/60/90 days) and what it
     // covers (bug fixes only, or also small content changes).
     answer:
-      'Ada. Kami memberikan masa garansi perbaikan untuk bug atau kesalahan yang berasal dari pekerjaan kami, di luar perubahan kebutuhan baru. Durasi dan cakupannya kami sebutkan jelas di proposal.',
+      'Yes. We provide a warranty period for fixing bugs or defects that come from our work, excluding new scope changes. The duration and coverage are stated clearly in the proposal.',
   },
 ];

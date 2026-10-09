@@ -1,20 +1,23 @@
 /**
- * Sitemap, generated at build time.
+ * Sitemap.
  *
  * Why a route instead of `@astrojs/sitemap`: that integration writes its files
  * from the `astro:build:done` hook, which runs *after* `@astrojs/node` snapshots
  * the static asset manifest. The Node server only serves paths in that manifest,
  * so the generated `sitemap-*.xml` files 404 on the origin (`astro preview` and
- * `node ./dist/server/entry.mjs` alike). A prerendered route is part of the
- * manifest, so it is served identically by the Node origin and by Caddy.
+ * `node ./dist/server/entry.mjs` alike). A route is part of the manifest, so it
+ * is served identically by the Node origin and by Caddy.
  *
- * Routes are discovered from the file tree rather than listed by hand, so adding
- * a page cannot silently leave it out of the sitemap.
+ * Server-rendered because the article URLs come from the database. The static
+ * page list is still discovered from the file tree rather than listed by hand,
+ * so adding a page cannot silently leave it out.
  */
 import type { APIRoute } from 'astro';
+import { listPublishedArticles } from '../lib/articles';
+import { isoDate } from '../lib/format';
 import { site } from '../data/site';
 
-export const prerender = true;
+export const prerender = false;
 
 /** Raw source of every page, keyed by path relative to `src/pages`. */
 const pageSources = import.meta.glob('./**/*.astro', {
@@ -27,10 +30,10 @@ const pageSources = import.meta.glob('./**/*.astro', {
 const EXCLUDED_SEGMENTS = new Set(['admin', 'api']);
 
 /** Pages whose content changes rarely; ranked below the marketing pages. */
-const LOW_PRIORITY = new Set(['/kebijakan-privasi', '/syarat-ketentuan']);
+const LOW_PRIORITY = new Set(['/privacy-policy', '/terms-and-conditions']);
 
 function toUrl(relPath: string): string | null {
-  // './index.astro' -> '/', './artikel/index.astro' -> '/artikel'
+  // './index.astro' -> '/', './articles/index.astro' -> '/articles'
   const segments = relPath.replace(/^\.\//, '').replace(/\.astro$/, '').split('/');
 
   if (
@@ -63,45 +66,66 @@ function rank(path: string): { priority: string; changefreq: string } {
 const escapeXml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Build date — the sitemap is regenerated on every deploy, so this is honest. */
-const lastmod = new Date().toISOString().slice(0, 10);
-
-const paths = Object.entries(pageSources)
-  // Pages that opt out of prerendering are server-only and must not be listed.
-  .filter(([, source]) => !/export\s+const\s+prerender\s*=\s*false/.test(source))
+/**
+ * Every route discovered from the file tree, including the ones that render
+ * server-side. Unlike the earlier build-time version, this no longer drops pages
+ * that carry `export const prerender = false` — `/`, `/articles` and `/portfolio`
+ * are exactly those pages now, and they are the ones that matter most.
+ */
+const staticPaths = Object.entries(pageSources)
   .map(([relPath]) => toUrl(relPath))
   .filter((path): path is string => path !== null)
   // '/' first, then alphabetical — stable, diff-friendly output.
   .sort((a, b) => (a === '/' ? '' : a).localeCompare(b === '/' ? '' : b));
 
-// TODO(phase-4): append published article URLs from the `articles` table here.
-const entries = paths.map((path) => {
-  const { priority, changefreq } = rank(path);
-  const loc = `${site.url}${path === '/' ? '/' : path}`;
-  return [
-    '  <url>',
-    `    <loc>${escapeXml(loc)}</loc>`,
-    `    <lastmod>${lastmod}</lastmod>`,
-    `    <changefreq>${changefreq}</changefreq>`,
-    `    <priority>${priority}</priority>`,
-    '  </url>',
+/**
+ * The static pages only change on deploy, so a per-process date is honest for
+ * them. Article entries carry their real `updatedAt` instead.
+ */
+const generatedOn = new Date().toISOString().slice(0, 10);
+
+export const GET: APIRoute = async () => {
+  const articles = await listPublishedArticles();
+
+  const entries = [
+    ...staticPaths.map((path) => {
+      const { priority, changefreq } = rank(path);
+      return {
+        loc: `${site.url}${path === '/' ? '/' : path}`,
+        lastmod: generatedOn,
+        changefreq,
+        priority,
+      };
+    }),
+    ...articles.map((article) => ({
+      loc: `${site.url}/articles/${article.slug}`,
+      lastmod: isoDate(article.updatedAt),
+      changefreq: 'monthly',
+      priority: '0.6',
+    })),
+  ];
+
+  const body = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...entries.map((entry) =>
+      [
+        '  <url>',
+        `    <loc>${escapeXml(entry.loc)}</loc>`,
+        `    <lastmod>${entry.lastmod}</lastmod>`,
+        `    <changefreq>${entry.changefreq}</changefreq>`,
+        `    <priority>${entry.priority}</priority>`,
+        '  </url>',
+      ].join('\n')
+    ),
+    '</urlset>',
+    '',
   ].join('\n');
-});
 
-const body = [
-  '<?xml version="1.0" encoding="UTF-8"?>',
-  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...entries,
-  '</urlset>',
-  '',
-].join('\n');
-
-export const GET: APIRoute = () =>
-  new Response(body, {
+  return new Response(body, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      // Prerendered output is written to disk, so in production Caddy owns the
-      // caching headers. This applies to `astro dev` only.
       'Cache-Control': 'public, max-age=0, must-revalidate',
     },
   });
+};

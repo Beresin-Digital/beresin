@@ -1,0 +1,143 @@
+---
+export const prerender = false;
+
+import { actions, isInputError } from 'astro:actions';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { listClients } from '../../../lib/clients';
+import { unreadCount } from '../../../lib/leads';
+
+const admin = Astro.locals.admin;
+if (!admin) return Astro.redirect('/admin/login');
+
+const deleted = Astro.getActionResult(actions.deleteClient);
+if (deleted?.data) return Astro.redirect('/admin/clients');
+
+const deleteError = deleted?.error
+  ? isInputError(deleted.error)
+    ? 'Permintaan tidak valid.'
+    : deleted.error.message
+  : null;
+
+const [clients, unread] = await Promise.all([listClients(), unreadCount()]);
+
+const activeCount = clients.filter((client) => client.isActive).length;
+---
+
+<AdminLayout title="Klien" adminName={admin.name} unread={unread}>
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+      {clients.length} klien · {activeCount} tampil
+    </p>
+    <a
+      href="/admin/clients/new"
+      class="font-mono rounded-lg border-2 border-black bg-brand-lime px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[3px_3px_0px_#0D0F12] transition-transform hover:-translate-y-0.5"
+    >
+      + Tambah klien
+    </a>
+  </div>
+
+  {
+    deleteError && (
+      <p role="alert" class="mb-4 rounded-lg border-2 border-black bg-brand-lime px-3 py-2 text-xs font-extrabold text-black">
+        {deleteError}
+      </p>
+    )
+  }
+
+  <p class="mb-4 rounded-xl border-2 border-dashed border-gray-300 bg-brand-surface px-4 py-3 text-[11px] font-medium leading-relaxed text-gray-600">
+    <strong class="font-extrabold text-brand-dark">Catatan kejujuran.</strong> Kolom “Nyata” bersifat
+    internal: ia menandai keterlibatan yang terverifikasi, dan tidak mengubah tampilan. Menampilkan
+    baris generik aman; menyebut nama klien nyata hanya boleh dengan izin tertulis.
+  </p>
+
+  {
+    clients.length === 0 ? (
+      <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white px-6 py-16 text-center">
+        <p class="font-display text-sm font-black uppercase tracking-tight text-brand-dark">
+          Belum ada klien
+        </p>
+        <p class="mt-1 text-xs font-medium text-gray-500">
+          Baris yang Anda tambahkan akan muncul di marquee beranda bila status tampilnya aktif.
+        </p>
+      </div>
+    ) : (
+      <div class="overflow-x-auto rounded-2xl border-2 border-black bg-white shadow-[4px_4px_0px_#0D0F12]">
+        <table class="w-full min-w-[44rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-black bg-brand-surface">
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Nama</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Kategori</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Tampil</th>
+              <th scope="col" class="font-mono px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Nyata</th>
+              <th scope="col" class="font-mono px-3 py-2 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Urutan</th>
+              <th scope="col" class="font-mono px-3 py-2 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-500">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {clients.map((client) => (
+              <tr class="border-b border-gray-200 last:border-b-0 hover:bg-brand-surface">
+                <td class="px-3 py-2.5">
+                  <a href={`/admin/clients/${client.id}`} class="font-medium text-brand-dark hover:underline">
+                    {client.name}
+                  </a>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs text-gray-500">{client.category || '—'}</td>
+                <td class="whitespace-nowrap px-3 py-2.5">
+                  <span
+                    class:list={[
+                      'font-mono inline-block rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest',
+                      client.isActive ? 'bg-brand-lime text-black' : 'bg-gray-200 text-gray-600',
+                    ]}
+                  >
+                    {client.isActive ? 'Aktif' : 'Nonaktif'}
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-xs">
+                  {client.isRealEngagement ? (
+                    <span class="font-bold text-brand-dark">Ya</span>
+                  ) : (
+                    <span class="text-gray-400">—</span>
+                  )}
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-right text-xs tabular-nums text-gray-500">
+                  {client.sortOrder}
+                </td>
+                <td class="px-3 py-2.5">
+                  <div class="flex items-center justify-end gap-3">
+                    <a
+                      href={`/admin/clients/${client.id}`}
+                      class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-brand-dark hover:underline"
+                    >
+                      Ubah
+                    </a>
+                    <details class="relative">
+                      <summary class="font-mono cursor-pointer list-none text-[10px] font-extrabold uppercase tracking-widest text-gray-500 hover:text-brand-dark">
+                        Hapus
+                      </summary>
+                      <form
+                        method="post"
+                        action="?_action=deleteClient"
+                        class="absolute right-0 z-10 mt-2 w-56 rounded-xl border-2 border-black bg-white p-3 shadow-[4px_4px_0px_#0D0F12]"
+                      >
+                        <input type="hidden" name="id" value={client.id} />
+                        <p class="text-[11px] font-semibold text-brand-dark">
+                          Hapus “{client.name}” secara permanen?
+                        </p>
+                        <button
+                          type="submit"
+                          class="font-mono mt-3 w-full rounded-lg border-2 border-black bg-brand-dark px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-brand-lime transition-colors hover:bg-black"
+                        >
+                          Ya, hapus
+                        </button>
+                      </form>
+                    </details>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</AdminLayout>

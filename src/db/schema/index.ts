@@ -5,7 +5,10 @@
  * Adding a content resource later (articles, clients, media) means adding one
  * file next to these and one line here.
  */
+export * from './articles';
 export * from './auth';
+export * from './clients';
 export * from './leads';
+export * from './projects';
 export * from './rate-limits';
 export * from './sessions';

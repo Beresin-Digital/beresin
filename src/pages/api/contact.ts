@@ -95,7 +95,7 @@ function returnPath(form: FormData): string {
 }
 
 function withStatus(path: string, params: string): string {
-  return `${path}?${params}${path === '/' ? '#kontak' : ''}`;
+  return `${path}?${params}${path === '/' ? '#contact' : ''}`;
 }
 
 /**

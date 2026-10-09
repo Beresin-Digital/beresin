@@ -8,6 +8,20 @@
       "when": 1791390831275,
       "tag": "0000_clean_gauntlet",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791556803302,
+      "tag": "0001_nappy_legion",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791557239736,
+      "tag": "0002_polite_thena",
+      "breakpoints": true
     }
   ]
 }
