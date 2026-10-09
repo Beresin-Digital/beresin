@@ -1,0 +1,63 @@
+name: CI / Deploy klomang
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: beresin-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and verify HTML
+        env:
+          PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
+        run: docker build --build-arg PUBLIC_GA4_ID="$PUBLIC_GA4_ID" -t "beresin:$GITHUB_SHA" .
+      - name: Check server behind HTTPS proxy
+        run: |
+          docker run -d --name smoke -p 4321:4321 "beresin:$GITHUB_SHA"
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:4321/admin/login >/dev/null; then break; fi
+            sleep 2
+          done
+          node scripts/verify-deploy.mjs
+      - name: Server logs
+        if: failure()
+        run: docker logs smoke || true
+      - name: Export image
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: docker save "beresin:$GITHUB_SHA" | gzip > image.tar.gz
+      - name: Deploy via SSH
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        env:
+          SSH_KEY: ${{ secrets.KLOMANG_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KLOMANG_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.KLOMANG_HOST }}
+          SSH_USER: ${{ vars.KLOMANG_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          target="$SSH_USER@$SSH_HOST"
+          release="/home/moon/apps/beresin/releases/$GITHUB_SHA"
+          ssh "$target" "mkdir -p '$release'"
+          scp image.tar.gz deploy/compose.yml deploy/init-db.sh deploy/deploy.sh "$target:$release/"
+          ssh "$target" "set -e; docker load -i '$release/image.tar.gz'; bash '$release/deploy.sh' 'beresin:$GITHUB_SHA'; rm '$release/image.tar.gz'"
+      - name: Check public site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: BASE_URL=https://beresindigital.id node scripts/verify-deploy.mjs

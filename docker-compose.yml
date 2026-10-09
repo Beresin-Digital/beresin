@@ -1,8 +1,7 @@
 # ---------------------------------------------------------------------------
 # Postgres for LOCAL DEVELOPMENT only.
 #
-# This file is never used in production — there the app runs next to a managed
-# Postgres instance.
+# Production uses deploy/compose.yml with a private Postgres container.
 #
 #   pnpm db:up            # start (waits until healthy)
 #   pnpm db:down          # stop, keep data

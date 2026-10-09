@@ -63,16 +63,12 @@ export default defineConfig({
     // framing around an 8 MB file.
     actionBodySizeLimit: 12 * 1024 * 1024,
 
-    // PRODUCTION ONLY — leave unset in dev.
-    //
-    // Once the site sits behind Caddy, `X-Forwarded-For` is only honoured when
-    // the host has been validated against `allowedDomains`. With it unset, every
-    // request appears to come from 127.0.0.1: the IP rate limiter would treat
-    // the entire internet as one client and block it, and ip_hash would be
-    // useless. Set it to the real host before the first production deploy, e.g.
-    //   allowedDomains: [{ protocol: 'https', hostname: 'beresindigital.id' }],
-    // Setting it here now would break localhost during development.
-    allowedDomains: [{ protocol: 'https', hostname: 'blanch-estival-donny.ngrok-free.dev' }]
+    allowedDomains: process.env.NODE_ENV === 'production'
+      ? [
+          { protocol: 'https', hostname: 'beresindigital.id' },
+          { protocol: 'https', hostname: 'www.beresindigital.id' },
+        ]
+      : [],
   },
 
   // Server-side sessions for the admin area, stored in Postgres.
