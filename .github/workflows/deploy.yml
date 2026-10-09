@@ -21,17 +21,65 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    # The smoke test runs the built image, and the public pages (`/`, `/articles`,
+    # `/portfolio`, `/sitemap.xml`) are server-rendered from Postgres — with no
+    # database they answer 500 and the test proves nothing. This service gives CI
+    # the same shape as production, where the app talks to a real Postgres.
+    services:
+      postgres:
+        image: postgres:17.6-bookworm
+        env:
+          POSTGRES_DB: beresin
+          POSTGRES_USER: beresin
+          POSTGRES_PASSWORD: beresin
+          POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -q -U beresin -d beresin"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
     steps:
       - uses: actions/checkout@v4
       - name: Build and verify HTML
         env:
           PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
         run: docker build --build-arg PUBLIC_GA4_ID="$PUBLIC_GA4_ID" -t "beresin:$GITHUB_SHA" .
-      - name: Check server behind HTTPS proxy
+
+      # Migrations run through the image itself, exactly as deploy.sh does in
+      # production — so the schema the smoke test exercises is the one the image
+      # ships, not whatever the runner's checkout happens to contain.
+      #
+      # The service publishes 5432 on the runner, and `host-gateway` is how the
+      # nested container reaches it (the runner's own `localhost` is not visible
+      # from inside a sibling container).
+      - name: Apply migrations
         run: |
-          docker run -d --name smoke -p 4321:4321 "beresin:$GITHUB_SHA"
+          docker run --rm \
+            --add-host=host.docker.internal:host-gateway \
+            -e DB_HOST=host.docker.internal -e DB_PORT=5432 \
+            -e DB_NAME=beresin -e DB_USER=beresin -e DB_PASSWORD=beresin \
+            "beresin:$GITHUB_SHA" \
+            node node_modules/drizzle-kit/bin.cjs migrate
+
+      - name: Smoke test
+        run: |
+          docker run -d --name smoke -p 4321:4321 \
+            --add-host=host.docker.internal:host-gateway \
+            -e DB_HOST=host.docker.internal -e DB_PORT=5432 \
+            -e DB_NAME=beresin -e DB_USER=beresin -e DB_PASSWORD=beresin \
+            -e SESSION_SECRET="$(openssl rand -hex 32)" \
+            -e LEAD_IP_HMAC_SECRET="$(openssl rand -hex 32)" \
+            "beresin:$GITHUB_SHA"
+          # Wait on `/`, not `/admin/login`: the login form renders without the
+          # database, so it would report "ready" while every content page was
+          # still failing. `/` only answers 200 once the DB is reachable and
+          # migrated, which is the readiness that actually matters here.
           for attempt in $(seq 1 30); do
-            if curl -fsS http://localhost:4321/admin/login >/dev/null; then break; fi
+            if curl -fsS http://localhost:4321/ >/dev/null; then break; fi
             sleep 2
           done
           node scripts/verify-deploy.mjs

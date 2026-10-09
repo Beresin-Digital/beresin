@@ -7,7 +7,7 @@ const headers = {
   'X-Forwarded-Proto': 'https',
   'X-Forwarded-For': '203.0.113.20',
 };
-for (const path of ['/', '/kontak', '/admin/login', '/sitemap.xml']) {
+for (const path of ['/', '/contact', '/admin/login', '/sitemap.xml']) {
   const response = await fetch(base + path, { headers, redirect: 'manual' });
   assert.equal(response.status, 200, path);
 }
@@ -16,10 +16,12 @@ assert.equal(response.status, 302);
 assert.equal(response.headers.get('location'), '/admin/login?next=%2Fadmin');
 
 for (const [origin, fields, status, location] of [
-  ['https://beresindigital.id', { company_website: 'bot', page_url: '/kontak' }, 303, '/kontak?terkirim=1'],
-  ['https://beresindigital.id', { page_url: '/kontak' }, 303, '/kontak?gagal=nama'],
-  ['https://beresindigital.id', { company_website: 'bot', page_url: '//evil.example' }, 303, '/?terkirim=1#kontak'],
-  ['https://www.beresindigital.id', { company_website: 'bot', page_url: '/kontak' }, 303, '/kontak?terkirim=1'],
+  ['https://beresindigital.id', { company_website: 'bot', page_url: '/contact' }, 303, '/contact?terkirim=1'],
+  ['https://beresindigital.id', { page_url: '/contact' }, 303, '/contact?gagal=nama'],
+  // A non-local `page_url` is refused and the visitor is sent to the homepage
+  // instead; the homepage form lives under the `#contact` anchor.
+  ['https://beresindigital.id', { company_website: 'bot', page_url: '//evil.example' }, 303, '/?terkirim=1#contact'],
+  ['https://www.beresindigital.id', { company_website: 'bot', page_url: '/contact' }, 303, '/contact?terkirim=1'],
   ['https://evil.example', { company_website: 'bot' }, 403, null],
 ]) {
   const www = origin === 'https://www.beresindigital.id';
