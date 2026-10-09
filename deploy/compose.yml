@@ -1,0 +1,55 @@
+services:
+  app:
+    image: ${BERESIN_IMAGE:?BERESIN_IMAGE is required}
+    restart: unless-stopped
+    init: true
+    mem_limit: 256m
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
+      DB_USER: ${DB_USER:?DB_USER is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET is required}
+      LEAD_IP_HMAC_SECRET: ${LEAD_IP_HMAC_SECRET:?LEAD_IP_HMAC_SECRET is required}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      private:
+      proxy:
+        aliases:
+          - beresin-app
+  db:
+    image: postgres:17.6-bookworm
+    restart: unless-stopped
+    mem_limit: 256m
+    environment:
+      POSTGRES_DB: ${DB_NAME:?DB_NAME is required}
+      POSTGRES_PASSWORD: ${DB_OWNER_PASSWORD:?DB_OWNER_PASSWORD is required}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8
+      DB_USER: ${DB_USER:?DB_USER is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/10-beresin.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -q -U postgres -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - private
+
+networks:
+  private:
+    internal: true
+  proxy:
+    external: true
+    name: proxy-tier
+
+volumes:
+  pgdata:
+  uploads:
