@@ -19,8 +19,12 @@ node_modules/
 .env.*
 !.env.example
 
-# Local uploads (production lives at /srv/beresin/uploads)
-uploads/
+# Local uploads (production lives at /srv/beresin/uploads).
+# Root-anchored: a bare `uploads/` also matches `src/pages/uploads/`, the route
+# that SERVES these files. That pattern silently ignored the route, so it was
+# never committed and every deployed image 404'd its own uploads while the
+# upload itself succeeded.
+/uploads/
 
 # Local runtime data (e.g. the contact-form NDJSON fallback when the DB is down)
 .data/

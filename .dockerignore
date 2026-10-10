@@ -7,7 +7,10 @@ dist
 .env.*
 !.env.example
 .data
-uploads
+# Root-anchored: a bare `uploads` also drops `src/pages/uploads/`, the route
+# that serves uploads, from the build context — the image then 404s its own
+# images. Only the runtime upload dir belongs here.
+/uploads
 .lighthouse
 preview
 design-reference
