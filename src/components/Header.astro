@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import { ArrowUpRight, Menu, MessageCircle, X } from '@lucide/astro';
 import { whatsappLink } from '../data/site';
 
 const navItems = [
@@ -77,48 +77,94 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
       </a>
     </div>
 
-    <!-- Mobile menu: CSS-only via <details>, no JS -->
-    <details class="mobile-menu relative lg:hidden">
+    <!-- Mobile menu: CSS-only via <details>, no JS required to open/close.
+         The panel is `absolute` against the header (a positioned ancestor via
+         `sticky`), NOT against this <details> — a `relative` here would make the
+         containing block the hamburger button itself, squashing the panel to
+         ~40px wide and wrapping every label to one character per line. -->
+    <details class="group mobile-menu lg:hidden">
       <summary
-        class="cursor-pointer list-none p-2 text-brand-dark"
-        aria-label="Open navigation menu"
+        class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border-2 border-black bg-white text-brand-dark shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
+        aria-label="Navigation menu"
       >
-        <svg
-          class="h-6 w-6"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        <Menu class="h-6 w-6 group-open:hidden" stroke-width={2.5} aria-hidden="true" />
+        <X class="hidden h-6 w-6 group-open:block" stroke-width={2.5} aria-hidden="true" />
       </summary>
 
+      <!-- Panel spans the full viewport width and drops from the header's
+           bottom edge. `max-h` + scroll keeps it usable in landscape on short
+           phones; the inner `max-w-7xl` box keeps the links aligned with the
+           rest of the page instead of hugging the screen edges. -->
       <div
-        class="absolute left-0 right-0 top-full space-y-4 border-b border-gray-200 bg-white px-6 py-6 shadow-lg"
+        class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto border-t-2 border-black bg-white shadow-[0_18px_40px_rgba(13,15,18,0.14)]"
       >
-        <nav class="flex flex-col gap-4 text-xs font-extrabold uppercase" aria-label="Mobile navigation">
-          {
-            navItems.map((item) => (
-              <a href={item.href} class="text-left text-gray-600 hover:text-black">
-                {item.label}
-              </a>
-            ))
-          }
-        </nav>
-        <a
-          href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="block w-full rounded-xl border border-black bg-brand-lime py-3 text-center text-xs font-extrabold uppercase text-black"
+        <nav
+          class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8"
+          aria-label="Mobile navigation"
         >
-          Chat on WhatsApp
-        </a>
+          <ul class="divide-y divide-gray-100">
+            {
+              navItems.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="flex items-center justify-between py-4 text-sm font-extrabold uppercase tracking-wide text-gray-700 transition-colors hover:text-black"
+                    aria-current={isCurrent(item.href) ? 'page' : undefined}
+                  >
+                    {item.label}
+                    {isCurrent(item.href) && (
+                      <span class="h-2 w-2 rounded-full bg-brand-lime ring-1 ring-black" aria-hidden="true" />
+                    )}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <div class="mx-auto max-w-7xl border-t border-gray-100 px-4 py-5 sm:px-6 lg:px-8">
+          <a
+            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-black bg-brand-lime py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
+          >
+            <MessageCircle class="h-4 w-4" stroke-width={2.5} aria-hidden="true" />
+            Chat on WhatsApp
+          </a>
+        </div>
       </div>
     </details>
   </div>
 </header>
+
+<!--
+  <details> gives us open/close for free, but not the two dismissals a mobile
+  menu is expected to have: tapping the page behind it and pressing Escape. The
+  menu is still fully usable without this script — it is an enhancement, not a
+  dependency. Kept inline (like ConsultModal) so there is no bundle to fetch.
+-->
+<script is:inline>
+  (function () {
+    var menu = document.querySelector('.mobile-menu');
+    if (!menu) return;
+    var summary = menu.querySelector('summary');
+
+    // A tapped link may be a same-page anchor (e.g. `/#clients`), which does not
+    // reload — close the menu so the target is not left hidden behind it.
+    menu.addEventListener('click', function (event) {
+      if (event.target.closest('a')) menu.open = false;
+    });
+
+    document.addEventListener('click', function (event) {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        if (summary) summary.focus();
+      }
+    });
+  })();
+</script>
