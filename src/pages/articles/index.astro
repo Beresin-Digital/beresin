@@ -91,19 +91,27 @@ const hasCover = (article: (typeof articles)[number]) =>
             <!-- The page h1 already names this list; the sr-only heading keeps
                  the outline h1 → h2 → h3 (the cards are h3). -->
             <h2 class="sr-only">Article list</h2>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Masonry via CSS multi-column. A grid row is as tall as its
+                 tallest card, so the text-only articles leave a gap under them;
+                 multi-column lets each card keep its natural height and pack
+                 tightly, which is the whole point. No JS.
+                 Trade-off: multi-column fills top-to-bottom, so the newest
+                 article is at the top of column one and the order runs down it
+                 (column-major) rather than left-to-right — the normal reading
+                 order for a masonry wall. -->
+            <div class="columns-1 gap-8 sm:columns-2 lg:columns-3">
               {articles.map((article) => (
-                <article class="group flex flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1">
+                <article class="group mb-8 flex break-inside-avoid flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1">
                   <a href={`/articles/${article.slug}`} class="flex flex-1 flex-col">
                     {hasCover(article) && (
-                      <div class="relative aspect-[16/10] overflow-hidden border-b-2 border-black">
+                      <div class="relative overflow-hidden border-b-2 border-black">
                         <ContentImage
                           src={article.coverImage!}
                           alt={article.coverAlt}
                           width={article.coverWidth!}
                           height={article.coverHeight!}
                           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 90vw"
-                          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          class="h-auto max-h-[26rem] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <span class="font-mono absolute left-4 top-4 rounded border border-black bg-brand-lime px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black shadow-[2px_2px_0px_#0D0F12]">
                           {article.category}

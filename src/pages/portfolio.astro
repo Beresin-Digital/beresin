@@ -41,14 +41,18 @@ const jsonLd = [
            heading is visually hidden — it exists only to keep the outline
            h1 → h2 → h3 (the cards are h3) instead of jumping straight to h3. -->
       <h2 class="sr-only">Project list</h2>
+      <!-- Masonry via CSS multi-column — the same technique (and the same
+           column-major reading order) as /articles. ProjectCard's `masonry`
+           variant drops the fixed 16:10 cover box so the cards keep their natural
+           heights and pack without the gaps a grid row would leave. -->
       {
         projects.length === 0 ? (
           <p class="rounded-2xl border-2 border-dashed border-gray-300 bg-brand-surface px-6 py-16 text-center text-sm font-medium text-gray-500">
             No projects are published yet. Check back soon.
           </p>
         ) : (
-          <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => <ProjectCard project={project} />)}
+          <div class="columns-1 gap-8 sm:columns-2 lg:columns-3">
+            {projects.map((project) => <ProjectCard project={project} variant="masonry" />)}
           </div>
         )
       }

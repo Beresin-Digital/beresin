@@ -19,9 +19,18 @@ import type { Project } from '../db/schema';
  */
 interface Props {
   project: Project;
+  /**
+   * `grid` (default) pins the cover to a 16:10 box so every card in a CSS grid
+   * row lines up. `masonry` lets the cover keep its natural aspect ratio — so
+   * the cards have genuinely different heights, which is the point of a masonry
+   * wall — and adds the `break-inside-avoid` and bottom margin the multi-column
+   * container needs. The homepage teaser stays on `grid`; /portfolio is masonry.
+   */
+  variant?: 'grid' | 'masonry';
 }
 
-const { project } = Astro.props;
+const { project, variant = 'grid' } = Astro.props;
+const isMasonry = variant === 'masonry';
 
 // Both halves of the pair are written together on upload; require both so the
 // srcset ladder is never built from a missing width.
@@ -29,7 +38,10 @@ const hasImage = Boolean(project.image && project.imageWidth && project.imageHei
 ---
 
 <article
-  class="group relative flex flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1 focus-within:-translate-y-1"
+  class:list={[
+    'group relative flex flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1 focus-within:-translate-y-1',
+    isMasonry && 'mb-8 break-inside-avoid',
+  ]}
 >
   <!-- Full-card click target. Transparent; the visible content sits beneath it. -->
   <button
@@ -38,7 +50,12 @@ const hasImage = Boolean(project.image && project.imageWidth && project.imageHei
     class="absolute inset-0 z-10 cursor-pointer rounded-3xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-lime"
     aria-label={`View details: ${project.title}`}></button>
 
-  <div class="relative aspect-[16/10] overflow-hidden border-b-2 border-black">
+  <div
+    class:list={[
+      'relative overflow-hidden border-b-2 border-black',
+      !isMasonry && 'aspect-[16/10]',
+    ]}
+  >
     {
       hasImage ? (
         <ContentImage
@@ -47,7 +64,11 @@ const hasImage = Boolean(project.image && project.imageWidth && project.imageHei
           width={project.imageWidth!}
           height={project.imageHeight!}
           sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 90vw"
-          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          class={
+            isMasonry
+              ? 'h-auto max-h-[26rem] w-full object-cover transition-transform duration-500 group-hover:scale-105'
+              : 'h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
+          }
         />
       ) : (
         <div class="flex h-full w-full items-center justify-center bg-brand-surface text-gray-400">
