@@ -4,6 +4,7 @@ import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ConsultModal from '../components/ConsultModal.astro';
+import Analytics from '../components/Analytics.astro';
 
 interface Props {
   title: string;
@@ -14,13 +15,15 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: object[];
+  lang?: 'en' | 'id';
+  directory?: boolean;
 }
 
 const props = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={props.lang ?? 'en'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,7 +49,7 @@ const props = Astro.props;
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:border focus:border-black focus:bg-brand-lime focus:px-4 focus:py-2 focus:text-xs focus:font-black focus:uppercase focus:tracking-wider"
     >
-      Skip to main content
+      {props.lang === 'id' ? 'Lewati ke konten utama' : 'Skip to main content'}
     </a>
 
     <Header />
@@ -56,6 +59,7 @@ const props = Astro.props;
     </main>
 
     <Footer />
-    <ConsultModal />
+    {!props.directory && <ConsultModal />}
+    <Analytics lang={props.lang} />
   </body>
 </html>

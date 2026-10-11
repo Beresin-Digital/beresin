@@ -1,0 +1,18 @@
+---
+import DirectoryLayout from '../../../../layouts/DirectoryLayout.astro';
+import SchoolListing from '../../../../components/directory/SchoolListing.astro';
+import { schools, regencies, regionPath, DIRECTORY_PAGE_SIZE } from '../../../../lib/directory/data';
+import { itemList } from '../../../../lib/seo';
+import { site } from '../../../../data/site';
+export function getStaticPaths() { return regencies.map(regency => ({ params: { provinsi: regency.provinceSlug, kabupaten: regency.slug }, props: { regency } })); }
+const { regency } = Astro.props;
+const records = schools.filter(school => school.provinceSlug === regency.provinceSlug && school.regencySlug === regency.slug);
+const path = regionPath(regency.provinceSlug, regency.slug);
+const description = `${records.length} sekolah dan lembaga pendidikan di ${regency.name}, ${regency.province}. Cari nama, filter bentuk pendidikan dan kecamatan, lalu buka profil sekolah.`;
+const jsonLd = [itemList({ url: site.url + path, name: `Sekolah di ${regency.name}`, items: records.slice(0, DIRECTORY_PAGE_SIZE).map(school => ({ name: school.name, url: site.url + school.path })) })];
+---
+<DirectoryLayout title={`Sekolah di ${regency.name}`} description={description} crumbs={[{ name: regency.province, path: regionPath(regency.provinceSlug) }, { name: regency.name, path }]} jsonLd={jsonLd} event="region_view" province={regency.province} regency={regency.name}>
+  <h1 class="directory-heading">Sekolah di {regency.name}</h1>
+  <p class="directory-copy mt-3">{records.length} sekolah dan lembaga · {new Set(records.map(school => school.educationLevel)).size} bentuk pendidikan · {regency.province}. Pencarian mencakup seluruh data wilayah ini.</p>
+  <SchoolListing schools={records} page={1} provinceSlug={regency.provinceSlug} regencySlug={regency.slug} />
+</DirectoryLayout>

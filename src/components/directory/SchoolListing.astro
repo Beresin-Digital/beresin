@@ -1,0 +1,17 @@
+---
+import SchoolCard from './SchoolCard.astro';
+import SchoolSearch from './SchoolSearch.astro';
+import { DIRECTORY_PAGE_SIZE, listingPath, type School } from '../../lib/directory/data';
+interface Props { schools: School[]; page: number; provinceSlug: string; regencySlug: string; }
+const { schools, page, provinceSlug, regencySlug } = Astro.props;
+const pages = Math.ceil(schools.length / DIRECTORY_PAGE_SIZE);
+const start = (page - 1) * DIRECTORY_PAGE_SIZE;
+---
+<SchoolSearch indexUrl={`${listingPath(provinceSlug, regencySlug)}/index-pencarian.json`} total={schools.length} levels={[...new Set(schools.map(school => school.educationLevel))].sort()} districts={[...new Set(schools.flatMap(school => school.district ? [school.district] : []))].sort()} />
+<ul data-static-list class="school-list mt-6">{schools.slice(start, start + DIRECTORY_PAGE_SIZE).map(school => <SchoolCard school={school} />)}</ul>
+{pages > 1 && <nav data-static-pagination aria-label="Halaman daftar sekolah" class="mt-8">
+  <p class="mb-3 text-sm text-gray-600">Halaman {page} dari {pages} · Sekolah {start + 1}–{Math.min(start + DIRECTORY_PAGE_SIZE, schools.length)} dari {schools.length}</p>
+  <ol class="flex flex-wrap gap-2">
+    {Array.from({ length: pages }, (_, i) => <li><a href={listingPath(provinceSlug, regencySlug, i + 1)} aria-label={`Halaman ${i + 1}`} aria-current={page === i + 1 ? 'page' : undefined} class:list={['inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black px-3 text-sm font-bold', page === i + 1 ? 'bg-brand-dark text-white' : 'bg-white']}>{i + 1}</a></li>)}
+  </ol>
+</nav>}

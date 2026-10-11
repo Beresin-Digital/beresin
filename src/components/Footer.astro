@@ -9,6 +9,7 @@ const menuLinks = [
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'Clients', href: '/#clients' },
   { label: 'Articles', href: '/articles' },
+  { label: 'Direktori Sekolah', href: '/sekolah' },
   { label: 'About', href: '/about' },
 ];
 
@@ -82,6 +83,7 @@ const legalLinks = [
     >
       <p>© {year} {site.legalName}. All rights reserved.</p>
       <ul class="flex items-center gap-4">
+        <li><button type="button" data-cookie-preferences hidden class="min-h-11 underline hover:text-gray-300">Cookie Preferences</button></li>
         {
           legalLinks.map((link) => (
             <li>

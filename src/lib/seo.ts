@@ -54,18 +54,18 @@ export function organization(): Json {
   });
 }
 
-export function website(): Json {
+export function website(lang: 'en' | 'id' = 'en'): Json {
   return {
     '@type': 'WebSite',
     '@id': SITE_ID,
     url: site.url,
     name: site.displayName,
-    inLanguage: 'en',
+    inLanguage: lang,
     publisher: { '@id': ORG_ID },
   };
 }
 
-export function webPage(opts: { url: string; name: string; description: string }): Json {
+export function webPage(opts: { url: string; name: string; description: string; lang?: 'en' | 'id' }): Json {
   return {
     '@type': 'WebPage',
     '@id': `${opts.url}#webpage`,
@@ -73,7 +73,7 @@ export function webPage(opts: { url: string; name: string; description: string }
     name: opts.name,
     description: opts.description,
     isPartOf: { '@id': SITE_ID },
-    inLanguage: 'en',
+    inLanguage: opts.lang ?? 'en',
   };
 }
 
@@ -213,5 +213,5 @@ export function graph(...nodes: (Json | undefined)[]): string {
     { '@context': 'https://schema.org', '@graph': nodes.filter(Boolean) },
     null,
     0
-  );
+  ).replace(/</g, '\\u003c');
 }

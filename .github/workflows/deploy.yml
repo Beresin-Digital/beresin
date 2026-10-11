@@ -47,7 +47,8 @@ jobs:
       - name: Build and verify HTML
         env:
           PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
-        run: docker build --build-arg PUBLIC_GA4_ID="$PUBLIC_GA4_ID" -t "beresin:$GITHUB_SHA" .
+          PUBLIC_GA4_MANUAL_EVENTS: ${{ vars.PUBLIC_GA4_MANUAL_EVENTS }}
+        run: docker build --build-arg PUBLIC_GA4_ID="$PUBLIC_GA4_ID" --build-arg PUBLIC_GA4_MANUAL_EVENTS="$PUBLIC_GA4_MANUAL_EVENTS" -t "beresin:$GITHUB_SHA" .
 
       # Migrations run through the image itself, exactly as deploy.sh does in
       # production — so the schema the smoke test exercises is the one the image

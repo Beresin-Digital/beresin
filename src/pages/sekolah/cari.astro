@@ -1,0 +1,11 @@
+---
+import DirectoryLayout from '../../layouts/DirectoryLayout.astro';
+import SchoolSearch from '../../components/directory/SchoolSearch.astro';
+import { schools, provinces, regionPath } from '../../lib/directory/data';
+---
+<DirectoryLayout title="Cari sekolah" description="Cari nama sekolah atau NPSN dari wilayah yang tersedia dalam Direktori Sekolah Beresin Digital." noindex crumbs={[{ name: 'Cari sekolah', path: '/sekolah/cari' }]}>
+  <h1 class="directory-heading">Cari sekolah</h1>
+  <p class="directory-copy mt-3">Cari dari {schools.length} sekolah dan lembaga pendidikan di wilayah yang tersedia. Gunakan nama, NPSN, atau bentuk pendidikan.</p>
+  <SchoolSearch indexUrl="/sekolah/index-pencarian.json" total={schools.length} levels={[...new Set(schools.map(school => school.educationLevel))].sort()} global />
+  <section class="mt-12"><h2 class="directory-section-heading">Telusuri wilayah</h2><ul class="space-y-3">{provinces.map(province => <li><a href={regionPath(province.slug)} class="directory-button bg-white">{province.name}</a></li>)}</ul></section>
+</DirectoryLayout>

@@ -1,0 +1,23 @@
+---
+import DirectoryLayout from '../../../layouts/DirectoryLayout.astro';
+import DirectorySearch from '../../../components/directory/DirectorySearch.astro';
+import { provinces, regencies, schools, regionPath } from '../../../lib/directory/data';
+import { itemList } from '../../../lib/seo';
+import { site } from '../../../data/site';
+export function getStaticPaths() { return provinces.map(province => ({ params: { provinsi: province.slug }, props: { province } })); }
+const { province } = Astro.props;
+const regions = regencies.filter(regency => regency.provinceSlug === province.slug);
+const count = schools.filter(school => school.provinceSlug === province.slug).length;
+const path = regionPath(province.slug);
+const description = `${count} sekolah dan lembaga pendidikan dalam data ${province.name}. Telusuri ${regions.length} kabupaten/kota yang tersedia di Direktori Sekolah Beresin Digital.`;
+const jsonLd = [itemList({ url: site.url + path, name: `Wilayah sekolah ${province.name}`, items: regions.map(region => ({ name: region.name, url: site.url + regionPath(province.slug, region.slug) })) })];
+---
+<DirectoryLayout title={`Sekolah di ${province.name}`} description={description} crumbs={[{ name: province.name, path }]} jsonLd={jsonLd} event="region_view" province={province.name}>
+  <h1 class="directory-heading">Sekolah di {province.name}</h1>
+  <p class="directory-copy mt-6">Data yang tersedia mencakup {count} sekolah dan lembaga pendidikan di {regions.length} kabupaten/kota. Daftar ini menggambarkan cakupan dataset, bukan seluruh sekolah di provinsi.</p>
+  <DirectorySearch />
+  <section class="mt-12">
+    <h2 class="directory-section-heading">Pilih kabupaten atau kota</h2>
+    <ul class="divide-y divide-gray-200 border-y border-gray-200">{regions.map(region => <li><a href={regionPath(province.slug, region.slug)} class="flex min-h-20 flex-wrap items-center justify-between gap-3 py-6 text-xl font-bold underline"><span>{region.name}</span><span class="text-sm font-medium text-gray-600">{schools.filter(school => school.provinceSlug === province.slug && school.regencySlug === region.slug).length} sekolah dan lembaga</span></a></li>)}</ul>
+  </section>
+</DirectoryLayout>

@@ -1,0 +1,22 @@
+.directory a, .directory button, .directory input, .directory select { outline-offset: 4px; }
+.directory :focus-visible { outline: 3px solid var(--color-brand-dark); }
+.directory input, .directory select { width: 100%; min-height: 48px; border: 1px solid #0d0f12; border-radius: 12px; background: white; padding: 12px 14px; font-size: 16px; }
+.directory label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; }
+.directory .directory-button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; border: 1px solid #0d0f12; border-radius: 12px; padding: 12px 20px; font-size: 14px; font-weight: 800; }
+.directory .directory-primary { background: var(--color-brand-lime); color: black; box-shadow: 3px 3px 0 #0d0f12; }
+.directory .directory-primary:hover { background: var(--color-brand-lime-hover); }
+.directory .directory-search-panel { border: 1px solid var(--color-brand-dark); border-radius: 16px; background: var(--color-brand-surface); padding: 20px; }
+.directory .school-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 16px; }
+.directory .school-card { height: 100%; border: 1px solid var(--color-brand-border); border-radius: 16px; padding: 20px; background: white; overflow-wrap: anywhere; }
+.directory .school-card:focus-within { border-color: var(--color-brand-dark); }
+.directory .school-card a { display: inline-flex; min-height: 44px; align-items: center; padding-block: 6px; font-size: 18px; line-height: 1.4; font-weight: 800; text-underline-offset: 4px; }
+.directory .school-card a:hover { text-decoration: underline; }
+.directory .school-card p { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--color-brand-muted); }
+.directory .school-card .school-level { margin-top: 0; font-size: 13px; font-weight: 700; color: var(--color-brand-dark); }
+.directory .school-card .school-npsn { margin-top: 12px; font-size: 13px; }
+.directory .directory-copy { max-width: 72ch; font-size: 16px; line-height: 1.8; color: #52525b; }
+.directory .directory-heading { font-size: clamp(32px, 4vw, 52px); line-height: 1.15; font-weight: 800; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+.directory .directory-landing-heading { font-size: clamp(36px, 5vw, 64px); line-height: 1.08; }
+.directory .directory-section-heading { margin-bottom: 16px; font-size: 24px; line-height: 1.3; font-weight: 800; }
+@media (min-width: 640px) { .directory .directory-search-panel { padding: 24px; } }
+.directory [hidden] { display: none !important; }

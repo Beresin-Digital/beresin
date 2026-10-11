@@ -1,0 +1,65 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site } from '../data/site';
+import { breadcrumbs } from '../lib/seo';
+import '../styles/directory.css';
+
+interface Props {
+  title: string;
+  description: string;
+  crumbs?: { name: string; path: string }[];
+  jsonLd?: object[];
+  noindex?: boolean;
+  event?: string;
+  npsn?: string;
+  province?: string;
+  regency?: string;
+  educationLevel?: string;
+}
+const { title, description, crumbs = [], jsonLd = [], noindex = false, event = 'directory_view', npsn, province, regency, educationLevel } = Astro.props;
+const trail = [{ name: 'Direktori Sekolah', path: '/sekolah' }, ...crumbs];
+const nodes = [...jsonLd, ...(crumbs.length ? [breadcrumbs(trail.map(crumb => ({ name: crumb.name, url: site.url + crumb.path })))] : [])];
+---
+<BaseLayout title={`${title} | Beresin Digital`} description={description} lang="id" directory noindex={noindex} jsonLd={nodes}>
+  <div class="directory" data-directory-event={event} data-npsn={npsn} data-province={province} data-regency={regency} data-education-level={educationLevel}>
+    <div class="border-b border-black bg-brand-surface">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 px-4 py-2 sm:px-6 lg:px-8">
+        <a href="/sekolah" class="inline-flex min-h-11 items-center text-sm font-extrabold">Direktori Sekolah</a>
+        <nav aria-label="Navigasi direktori" class="flex flex-wrap gap-3 text-sm font-semibold sm:gap-5">
+          <a href="/sekolah/cari" class="inline-flex min-h-11 items-center underline">Cari sekolah</a>
+          <a href="/sekolah/tentang-data" class="inline-flex min-h-11 items-center underline">Tentang data</a>
+        </nav>
+      </div>
+    </div>
+    <div class="mx-auto max-w-7xl px-4 pt-7 pb-16 sm:px-6 sm:pb-20 lg:px-8">
+      {crumbs.length > 0 && <nav aria-label="Breadcrumb" class="mb-5 text-sm text-gray-600">
+        <ol class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {trail.map((crumb, i) => <li class="flex items-center gap-3">{i > 0 && <span aria-hidden="true">/</span>}{i === trail.length - 1 ? <span aria-current="page">{crumb.name}</span> : <a href={crumb.path} class="inline-flex min-h-11 items-center underline">{crumb.name}</a>}</li>)}
+        </ol>
+      </nav>}
+      <slot />
+      <p class="mt-12 border-t border-gray-200 pt-6 text-sm leading-relaxed text-gray-600">Direktori independen yang dikelola Beresin Digital. Kami tidak mewakili pemerintah atau sekolah yang tercantum. Data dapat berubah; konfirmasikan informasi kepada sekolah. <a class="underline" href="/sekolah/tentang-data">Sumber dan cara koreksi data</a>.</p>
+    </div>
+  </div>
+</BaseLayout>
+<script>
+  import { track } from '../lib/analytics';
+  const directory = document.querySelector<HTMLElement>('[data-directory-event]');
+  if (directory) {
+    const properties: Record<string, string> = {};
+    for (const key of ['npsn', 'province', 'regency', 'educationLevel']) {
+      const value = directory.dataset[key];
+      if (value) properties[key] = value;
+    }
+    let recorded = false;
+    const view = () => {
+      if (!recorded && window.beresinAnalyticsAllowed) { track(directory.dataset.directoryEvent!, properties); recorded = true; }
+    };
+    view();
+    window.addEventListener('beresin:analytics-ready', view);
+    directory.addEventListener('click', event => {
+      const link = (event.target as Element).closest<HTMLElement>('[data-directory-click]');
+      if (link) track(link.dataset.directoryClick!, { ...properties, cta_type: link.dataset.ctaType ?? link.dataset.directoryClick! });
+    });
+  }
+</script>

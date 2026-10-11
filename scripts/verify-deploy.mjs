@@ -7,10 +7,49 @@ const headers = {
   'X-Forwarded-Proto': 'https',
   'X-Forwarded-For': '203.0.113.20',
 };
-for (const path of ['/', '/contact', '/admin/login', '/sitemap.xml']) {
+for (const path of ['/', '/portfolio', '/articles', '/contact', '/admin/login', '/sitemap.xml', '/sitemap-site.xml', '/sekolah', '/sekolah/cari', '/sekolah/tentang-data', '/sekolah/sitemap.xml']) {
   const response = await fetch(base + path, { headers, redirect: 'manual' });
   assert.equal(response.status, 200, path);
 }
+const siteSitemapResponse = await fetch(base + '/sitemap-site.xml', { headers });
+const siteSitemap = await siteSitemapResponse.text();
+const sitemapEntries = [...siteSitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)];
+assert.ok(sitemapEntries.length > 0, 'Nonempty site sitemap');
+for (const [, entry] of sitemapEntries) {
+  const loc = entry.match(/<loc>(.*?)<\/loc>/)?.[1];
+  assert.ok(loc, 'Sitemap URL');
+  const path = new URL(loc).pathname;
+  if (!path.startsWith('/articles/')) {
+    assert.ok(!entry.includes('<lastmod>'), `Unknown content update date must be omitted: ${path}`);
+    continue;
+  }
+  const articleResponse = await fetch(base + path, { headers });
+  assert.equal(articleResponse.status, 200, path);
+  const html = await articleResponse.text();
+  const nodes = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs)].flatMap(match => JSON.parse(match[1])['@graph']);
+  const article = nodes.find(node => node['@type'] === 'BlogPosting');
+  assert.ok(article?.dateModified, `Article update timestamp: ${path}`);
+  const updatedOn = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Jakarta',
+  }).format(new Date(article.dateModified));
+  assert.equal(entry.match(/<lastmod>(.*?)<\/lastmod>/)?.[1], updatedOn, `Article sitemap date matches content: ${path}`);
+}
+const llmsResponse = await fetch(base + '/llms.txt', { headers });
+assert.equal(llmsResponse.status, 200, '/llms.txt');
+assert.match(llmsResponse.headers.get('content-type'), /^text\/plain\b/);
+const llms = await llmsResponse.text();
+assert.match(llms, /^# Beresin Digital\n/);
+for (const [, url] of llms.matchAll(/\]\((https:\/\/beresindigital\.id[^)]+)\)/g)) {
+  const response = await fetch(base + new URL(url).pathname, { headers, redirect: 'manual' });
+  assert.equal(response.status, 200, `llms.txt link: ${url}`);
+}
+const directoryResponse = await fetch(base + '/sekolah/index-pencarian.json', { headers });
+assert.equal(directoryResponse.status, 200);
+const directoryIndex = await directoryResponse.json();
+assert.ok(directoryIndex.length > 0);
+const profileResponse = await fetch(base + directoryIndex[0].path, { headers });
+assert.equal(profileResponse.status, 200);
+assert.ok((await profileResponse.text()).includes(directoryIndex[0].npsn));
 let response = await fetch(base + '/admin', { headers, redirect: 'manual' });
 assert.equal(response.status, 302);
 assert.equal(response.headers.get('location'), '/admin/login?next=%2Fadmin');
@@ -35,4 +74,4 @@ for (const [origin, fields, status, location] of [
   assert.equal(response.status, status, origin);
   assert.equal(response.headers.get('location'), location, origin);
 }
-console.log('Deploy smoke checks passed: pages, admin guard, proxy HTTPS, contact redirects, CSRF.');
+console.log('Deploy smoke checks passed: pages, accurate sitemap dates, llms.txt and public links, admin guard, proxy HTTPS, contact redirects, CSRF.');

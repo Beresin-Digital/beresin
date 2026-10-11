@@ -29,6 +29,10 @@ node_modules/
 # Local runtime data (e.g. the contact-form NDJSON fallback when the DB is down)
 .data/
 
+# Local agent settings and source archives
+/.codex/
+/*.zip
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json

@@ -19,7 +19,10 @@ password `.env` setelah database dibuat tanpa mengganti role Postgres juga.
 
 GitHub repository memakai secrets `KLOMANG_SSH_KEY`, `KLOMANG_KNOWN_HOSTS`
 dan variables `KLOMANG_HOST`, `KLOMANG_USER`. `PUBLIC_GA4_ID` opsional dan
-dibaca saat build. Key CI memakai user `moon`, yang memiliki akses Docker;
+dibaca saat build. Analytics baru aktif bila `PUBLIC_GA4_MANUAL_EVENTS=true`
+setelah Enhanced Measurement dinonaktifkan pada data stream GA4, lalu pengunjung
+memberi consent. Lihat `docs/directory.md` untuk event dan pengaturan privasinya.
+Key CI memakai user `moon`, yang memiliki akses Docker;
 batasi siapa yang boleh mengubah workflow dan push ke `master`.
 
 ## Nginx Proxy Manager

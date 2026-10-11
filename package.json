@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/verify-directory-data.mjs && node scripts/prepare-directory.mjs && astro build && node scripts/verify-directory.mjs",
     "start": "node --env-file=.env dist/server/entry.mjs",
     "preview": "astro preview",
     "astro": "astro",
@@ -15,7 +15,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node scripts/seed-admin.mjs",
     "db:seed-content": "node scripts/seed-content.mjs",
-    "verify:admin": "node scripts/verify-admin.mjs"
+    "verify:admin": "node scripts/verify-admin.mjs",
+    "verify:directory": "node scripts/verify-directory-data.mjs && node scripts/verify-directory.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

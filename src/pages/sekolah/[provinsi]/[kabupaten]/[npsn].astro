@@ -1,0 +1,124 @@
+---
+import DirectoryLayout from '../../../../layouts/DirectoryLayout.astro';
+import SchoolCard from '../../../../components/directory/SchoolCard.astro';
+import { schools, regionPath, relatedSchools, sourceLabel } from '../../../../lib/directory/data';
+import { site, whatsappLink } from '../../../../data/site';
+export function getStaticPaths() { return schools.map(school => ({ params: { provinsi: school.provinceSlug, kabupaten: school.regencySlug, npsn: school.npsn.toLowerCase() }, props: { school } })); }
+const { school } = Astro.props;
+const url = site.url + school.path;
+const description = `${school.name}, ${school.educationLevel} di ${school.district ? `${school.district}, ` : ''}${school.regency}, ${school.province}. NPSN ${school.npsn}. Lihat identitas, alamat, dan kontak yang tersedia.`;
+const related = relatedSchools(school);
+const facts = [
+  ['NPSN', school.npsn], ['Bentuk pendidikan', school.educationLevel], ['Status', school.schoolStatus], ['Akreditasi', school.accreditation], ['Alamat', school.address], ['Dusun / kampung', school.village], ['Kecamatan', school.district], ['Kabupaten / kota', school.regency], ['Provinsi', school.province], ['Kode pos', school.postalCode], ['Yayasan', school.foundationName],
+].filter(([, value]) => value);
+const jsonLd = [{
+  '@type': 'School', '@id': `${url}#school`, name: school.name, url,
+  identifier: { '@type': 'PropertyValue', propertyID: 'NPSN', value: school.npsn },
+  address: { '@type': 'PostalAddress', ...(school.address ? { streetAddress: school.address } : {}), addressLocality: school.regency, addressRegion: school.province, addressCountry: 'ID', ...(school.postalCode ? { postalCode: school.postalCode } : {}) },
+  ...(school.phone ? { telephone: school.phone } : {}), ...(school.email ? { email: school.email } : {}),
+  ...(school.website ? { sameAs: [school.website] } : {}),
+}];
+const consult = whatsappLink(`Halo Beresin Digital, saya ingin konsultasi website untuk ${school.name} (NPSN ${school.npsn}). Profil: ${url}`);
+const correction = whatsappLink(`Halo Beresin Digital, saya pengelola ${school.name} (NPSN ${school.npsn}) dan ingin mengajukan koreksi data profil. Profil: ${url}`);
+---
+<DirectoryLayout title={`${school.name} (NPSN ${school.npsn}) - ${school.regency}`} description={description} crumbs={[{ name: school.province, path: regionPath(school.provinceSlug) }, { name: school.regency, path: regionPath(school.provinceSlug, school.regencySlug) }, { name: school.name, path: school.path }]} jsonLd={jsonLd} event="school_profile_view" npsn={school.npsn} province={school.province} regency={school.regency} educationLevel={school.educationLevel}>
+  <h1 class="directory-heading max-w-5xl">{school.name}</h1>
+  <p class="directory-copy mt-3">{school.educationLevel} di {school.district && `${school.district}, `}{school.regency}, {school.province}.</p>
+  <p data-profile-source class="mt-3 text-sm leading-relaxed text-brand-muted">{sourceLabel(school)}</p>
+  <div data-profile-actions data-share-title={school.name} class="mt-5">
+    <div class="flex flex-wrap gap-3">
+      {(school.phone || school.email || school.website) && <a href="#school-contact" class="directory-button directory-primary">Hubungi sekolah</a>}
+      <button type="button" data-share-profile hidden class="directory-button bg-white hover:bg-brand-surface disabled:opacity-60">Bagikan profil</button>
+      <button type="button" data-copy-profile hidden class="directory-button bg-white hover:bg-brand-surface disabled:opacity-60">Salin tautan</button>
+    </div>
+    <details data-profile-link class="mt-3 max-w-2xl">
+      <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-bold underline">Tautan profil</summary>
+      <label for="school-profile-url">Tautan yang bisa disalin dan dibagikan</label>
+      <input id="school-profile-url" type="text" value={url} readonly />
+    </details>
+    <p data-share-status role="status" aria-live="polite" aria-atomic="true" class="mt-2 text-sm leading-relaxed text-gray-600"></p>
+  </div>
+  <div class="mt-6 grid gap-8 lg:grid-cols-[2fr_1fr] lg:gap-12">
+    <div>
+      <section class="rounded-2xl bg-brand-surface p-5 sm:p-6" aria-labelledby="school-contact">
+        <h2 id="school-contact" tabindex="-1" class="directory-section-heading scroll-mt-24">Hubungi sekolah</h2>
+        {school.phone || school.email || school.website ? <div class="flex flex-wrap gap-3">
+          {school.phone && <a class="directory-button bg-white" href={`tel:${school.phone}`} data-directory-click="contact_school_click" data-cta-type="phone">Telepon {school.phone}</a>}
+          {school.email && <a class="directory-button max-w-full break-all bg-white" href={`mailto:${school.email}`} data-directory-click="contact_school_click" data-cta-type="email">Email {school.email}</a>}
+          {school.website && <a class="directory-button bg-white" href={school.website} target="_blank" rel="noopener noreferrer" data-directory-click="school_website_click">Buka website sekolah</a>}
+        </div> : <p class="directory-copy">Informasi kontak belum tersedia pada dataset.</p>}
+        {(school.phone || school.email || school.website) && <p class="mt-4 text-sm leading-relaxed text-gray-600">Kontak di atas berasal dari dataset. Kami belum memverifikasi keaktifan setiap kontak; nomor telepon tidak otomatis merupakan nomor WhatsApp.</p>}
+      </section>
+      <section class="mt-8" aria-labelledby="school-facts">
+        <h2 id="school-facts" class="directory-section-heading">Identitas dan lokasi</h2>
+        <dl class="divide-y divide-gray-200 border-y border-gray-200">{facts.map(([label, value]) => <div class="grid gap-1 py-3 sm:grid-cols-[180px_1fr] sm:gap-4"><dt class="text-sm font-bold">{label}</dt><dd class="text-base leading-relaxed break-words">{value}</dd></div>)}</dl>
+      </section>
+      <section class="mt-8 border-t border-brand-border pt-5" aria-labelledby="school-source">
+        <h2 id="school-source" class="mb-3 text-lg font-bold">Sumber informasi</h2>
+        {school.sourceProfileUrl && <a href={school.sourceProfileUrl} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-11 items-center text-sm font-bold underline">Lihat rujukan profil pada sumber</a>}
+        <a href="/sekolah/tentang-data" class="mt-2 block py-3 text-sm underline">Cara data diproses dan keterbatasannya</a>
+      </section>
+    </div>
+    <aside class="space-y-6">
+      <section class="border-t border-brand-border pt-5">
+        <h2 class="mb-3 text-lg font-bold">Pengelola sekolah ini?</h2>
+        <p class="text-sm leading-relaxed text-gray-600">Bicarakan kebutuhan website sekolah bersama Beresin Digital. Pesan sudah menyertakan nama sekolah dan profil ini.</p>
+        <a href={consult} target="_blank" rel="noopener noreferrer" data-directory-click="whatsapp_consult_click" class="directory-button mt-5 w-full bg-white">Konsultasi website sekolah</a>
+        <a href="/services" data-directory-click="directory_service_click" class="mt-4 inline-flex min-h-11 items-center text-sm font-bold underline">Kenali layanan Beresin Digital</a>
+      </section>
+      <section class="border-t border-brand-border pt-5">
+        <h2 class="mb-3 text-lg font-bold">Ada informasi yang perlu diperbaiki?</h2>
+        <p class="text-sm leading-relaxed text-gray-600">Ajukan koreksi melalui WhatsApp Beresin Digital. Tim akan memeriksa bukti dari pengelola sebelum menerbitkan perubahan; tidak ada klaim kepemilikan otomatis.</p>
+        <a href={correction} target="_blank" rel="noopener noreferrer" data-directory-click="profile_claim_click" class="directory-button mt-5 w-full bg-white">Ajukan koreksi data profil</a>
+      </section>
+    </aside>
+  </div>
+  {related.length > 0 && <section class="mt-12"><h2 class="directory-section-heading">Sekolah lain di {school.regency}</h2><ul class="school-list">{related.map(value => <SchoolCard school={value} related />)}</ul></section>}
+</DirectoryLayout>
+<script>
+  const actions = document.querySelector<HTMLElement>('[data-profile-actions]');
+  if (actions) {
+    const share = actions.querySelector<HTMLButtonElement>('[data-share-profile]')!;
+    const copy = actions.querySelector<HTMLButtonElement>('[data-copy-profile]')!;
+    const details = actions.querySelector<HTMLDetailsElement>('[data-profile-link]')!;
+    const link = actions.querySelector<HTMLInputElement>('#school-profile-url')!;
+    const status = actions.querySelector<HTMLElement>('[data-share-status]')!;
+    const manualCopy = (message: string) => {
+      status.textContent = message;
+      details.open = true;
+      link.focus();
+      link.select();
+    };
+
+    copy.hidden = false;
+    copy.addEventListener('click', async () => {
+      copy.disabled = true;
+      status.textContent = 'Menyalin tautan…';
+      try {
+        await navigator.clipboard.writeText(link.value);
+        status.textContent = 'Tautan profil berhasil disalin.';
+      } catch {
+        manualCopy('Tautan belum dapat disalin otomatis. Salin tautan profil yang sudah dipilih.');
+      } finally {
+        copy.disabled = false;
+      }
+    });
+
+    if (typeof navigator.share === 'function') {
+      share.hidden = false;
+      share.addEventListener('click', async () => {
+        share.disabled = true;
+        status.textContent = 'Membuka menu berbagi…';
+        try {
+          await navigator.share({ title: actions.dataset.shareTitle, url: link.value });
+          status.textContent = 'Tautan diteruskan ke menu berbagi.';
+        } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') status.textContent = '';
+          else manualCopy('Menu berbagi tidak dapat dibuka. Salin tautan profil yang sudah dipilih.');
+        } finally {
+          share.disabled = false;
+        }
+      });
+    }
+  }
+</script>

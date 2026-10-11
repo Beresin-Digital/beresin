@@ -1,0 +1,14 @@
+---
+import type { School } from '../../lib/directory/data';
+interface Props { school: School; related?: boolean; }
+const { school, related = false } = Astro.props;
+const Heading = related ? 'h3' : 'h2';
+---
+<li>
+  <article class="school-card">
+    <p class="school-level">{school.educationLevel}</p>
+    <Heading><a href={school.path}>{school.name}</a></Heading>
+    <p>{school.district && `${school.district}, `}{school.regency}</p>
+    <p class="school-npsn">NPSN {school.npsn}</p>
+  </article>
+</li>

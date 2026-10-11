@@ -15,6 +15,7 @@ interface Props {
   noindex?: boolean;
   /** Extra JSON-LD nodes appended to the page graph. */
   jsonLd?: object[];
+  lang?: 'en' | 'id';
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   type = 'website',
   noindex = false,
   jsonLd = [],
+  lang = 'en',
 } = Astro.props;
 
 // Astro.url is absolute here because `site` is configured in astro.config.mjs.
@@ -34,8 +36,8 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site.
 
 const graphJson = ld.graph(
   ld.organization(),
-  ld.website(),
-  ld.webPage({ url: canonical, name: title, description }),
+  ld.website(lang),
+  ld.webPage({ url: canonical, name: title, description, lang }),
   ...jsonLd
 );
 ---
@@ -43,12 +45,13 @@ const graphJson = ld.graph(
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{!noindex && <link rel="describedby" href="/llms.txt" type="text/plain" />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
 <!-- Open Graph -->
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={site.displayName} />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={lang === 'id' ? 'id_ID' : 'en_US'} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />

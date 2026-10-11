@@ -1,0 +1,136 @@
+---
+interface Props {
+  indexUrl: string;
+  total: number;
+  levels?: string[];
+  districts?: string[];
+  global?: boolean;
+}
+const { indexUrl, total, levels = [], districts = [], global = false } = Astro.props;
+---
+<section data-school-search data-index-url={indexUrl} data-total={total} data-global={global ? 'true' : undefined} class="mt-8">
+  <form data-filter-form hidden method="get" role="search" aria-label="Cari dan filter sekolah" class="directory-search-panel">
+    <div class:list={['grid grid-cols-2 items-end gap-x-3 gap-y-4 sm:gap-x-4', global ? 'lg:grid-cols-[2fr_1fr_auto]' : 'lg:grid-cols-[2fr_1fr_1fr_auto]']}>
+      <div class="col-span-2 min-w-0 lg:col-span-1"><label for="school-query">Nama sekolah atau NPSN</label><input id="school-query" name="q" type="search" placeholder="Misalnya: SMK PGRI" maxlength="120" autocomplete="off" /></div>
+      <div><label for="school-level">Bentuk pendidikan</label><select id="school-level" name="level"><option value="">Semua</option>{levels.map(level => <option value={level}>{level}</option>)}</select></div>
+      {!global &&
+        <div><label for="school-district">Kecamatan</label><select id="school-district" name="district"><option value="">Semua</option>{districts.map(district => <option value={district}>{district}</option>)}</select></div>
+      }
+      <button type="submit" class:list={['directory-button directory-primary', !global && 'col-span-2 lg:col-span-1']}>{global ? 'Cari sekolah' : 'Tampilkan hasil'}</button>
+    </div>
+    <button type="reset" class="mt-3 inline-flex min-h-11 items-center text-sm font-bold underline">Reset pencarian dan filter</button>
+  </form>
+  <noscript><p class="directory-copy">Pencarian dan filter membutuhkan JavaScript. Kamu tetap bisa menelusuri <a href="/sekolah" class="underline">daftar wilayah</a> dan membuka profil sekolah melalui tautan biasa.</p></noscript>
+  <p data-search-status role="status" aria-live="polite" aria-atomic="true" class="my-6 text-sm leading-relaxed text-gray-600">{global ? 'Cari sekolah dari wilayah yang tersedia dalam direktori.' : `${total} sekolah tersedia di wilayah ini.`}</p>
+  <ul data-filter-results hidden class="school-list"></ul>
+  <button type="button" data-more-results hidden class="directory-button mt-6 border-black">Tampilkan hasil berikutnya</button>
+</section>
+<script>
+  import { filterSchools, type SearchRecord } from '../../lib/directory/search';
+  import { track } from '../../lib/analytics';
+  const root = document.querySelector<HTMLElement>('[data-school-search]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('[data-filter-form]')!;
+    const query = form.querySelector<HTMLInputElement>('[name="q"]')!;
+    const level = form.querySelector<HTMLSelectElement>('[name="level"]');
+    const district = form.querySelector<HTMLSelectElement>('[name="district"]');
+    const list = root.querySelector<HTMLUListElement>('[data-filter-results]')!;
+    const more = root.querySelector<HTMLButtonElement>('[data-more-results]')!;
+    const status = root.querySelector<HTMLElement>('[data-search-status]')!;
+    const staticList = document.querySelector<HTMLElement>('[data-static-list]');
+    const pagination = document.querySelector<HTMLElement>('[data-static-pagination]');
+    let index: Promise<SearchRecord[]> | undefined;
+    let matches: SearchRecord[] = [];
+    let shown = 0, request = 0;
+    const global = root.dataset.global === 'true';
+    form.hidden = false;
+
+    function restoreFilters() {
+      const params = new URLSearchParams(location.search);
+      query.value = params.get('q')?.slice(0, 120) ?? '';
+      for (const select of [level, district]) {
+        if (!select) continue;
+        const value = params.get(select.name) ?? '';
+        select.value = [...select.options].some(option => option.value === value) ? value : '';
+      }
+    }
+
+    function append(focusNew = false) {
+      const chunk = matches.slice(shown, shown + 40);
+      for (const school of chunk) {
+        const item = document.createElement('li');
+        const card = document.createElement('article'); card.className = 'school-card';
+        const heading = document.createElement('h2');
+        const link = document.createElement('a'); link.href = school.path; link.textContent = school.name;
+        const education = document.createElement('p'); education.className = 'school-level'; education.textContent = school.educationLevel;
+        heading.append(link); card.append(education, heading);
+        const location = document.createElement('p'); location.textContent = [school.district, school.regency, ...(global ? [school.province] : [])].filter(Boolean).join(', ');
+        const identifier = document.createElement('p'); identifier.className = 'school-npsn'; identifier.textContent = `NPSN ${school.npsn}`;
+        card.append(location, identifier);
+        item.append(card); list.append(item);
+      }
+      if (focusNew) list.querySelectorAll<HTMLAnchorElement>('a')[shown]?.focus();
+      shown += chunk.length;
+      more.hidden = shown >= matches.length;
+      status.textContent = matches.length ? `${matches.length} sekolah ditemukan. Menampilkan ${shown} hasil.` : 'Tidak ada sekolah yang cocok. Ubah kata kunci atau reset filter.';
+    }
+
+    async function search(updateUrl = true) {
+      const current = ++request;
+      const text = query.value.trim();
+      if (updateUrl) {
+        const url = new URL(location.href);
+        for (const [name, value] of [['q', text], ['level', level?.value ?? ''], ['district', district?.value ?? '']]) {
+          if (value) url.searchParams.set(name, value);
+          else url.searchParams.delete(name);
+        }
+        if (url.href !== location.href) history.pushState(null, '', url);
+      }
+      if (!text && !level?.value && !district?.value) {
+        list.hidden = true; more.hidden = true;
+        if (staticList) staticList.hidden = false;
+        if (pagination) pagination.hidden = false;
+        status.textContent = global ? 'Ketik minimal 2 karakter nama sekolah atau NPSN.' : `${root.dataset.total} sekolah tersedia di wilayah ini.`;
+        return;
+      }
+      if (text && text.length < 2) {
+        list.hidden = true; more.hidden = true;
+        if (staticList) staticList.hidden = false;
+        if (pagination) pagination.hidden = false;
+        status.textContent = 'Ketik minimal 2 karakter untuk mencari nama sekolah.';
+        return;
+      }
+      status.textContent = 'Memuat hasil pencarian…';
+      try {
+        index ??= fetch(root!.dataset.indexUrl!).then(async response => {
+          if (!response.ok) throw new Error('Indeks tidak dapat dimuat');
+          return response.json() as Promise<SearchRecord[]>;
+        });
+        const records = await index;
+        if (current !== request) return;
+        matches = filterSchools(records, text, level?.value, district?.value);
+        shown = 0; list.replaceChildren(); list.hidden = false;
+        if (staticList) staticList.hidden = true;
+        if (pagination) pagination.hidden = true;
+        append();
+        if (text) track('directory_search', { query_length: text.length, result_count: matches.length });
+        if (level?.value || district?.value) track('filter_apply', { education_level: level?.value ?? '', district: district?.value ?? '', result_count: matches.length });
+      } catch {
+        if (current !== request) return;
+        index = undefined;
+        list.hidden = true; more.hidden = true;
+        if (staticList) staticList.hidden = false;
+        if (pagination) pagination.hidden = false;
+        status.textContent = 'Pencarian belum dapat dimuat. Coba lagi atau gunakan daftar wilayah.';
+      }
+    }
+    form.addEventListener('submit', event => { event.preventDefault(); void search(); });
+    level?.addEventListener('change', () => void search());
+    district?.addEventListener('change', () => void search());
+    form.addEventListener('reset', () => setTimeout(() => void search(), 0));
+    more.addEventListener('click', () => append(true));
+    window.addEventListener('popstate', () => { restoreFilters(); void search(false); });
+    restoreFilters();
+    if (query.value || level?.value || district?.value) void search(false);
+  }
+</script>

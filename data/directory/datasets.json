@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sulsel-2026-10-06",
+    "file": "sekolah-swasta-sulsel.csv",
+    "format": "csv",
+    "province": "Sulawesi Selatan",
+    "provinceSlug": "sulawesi-selatan",
+    "sourceName": "Dapodik Kemendikdasmen",
+    "sourceUrl": "https://sekolah.data.kemendikdasmen.go.id/",
+    "sourceUpdatedAt": "2026-10-06",
+    "publicationApproved": true,
+    "contactsApproved": true
+  },
+  {
+    "id": "diy-2026-10-08",
+    "file": "sekolah-swasta-diy.csv",
+    "format": "csv",
+    "province": "DI Yogyakarta",
+    "provinceSlug": "di-yogyakarta",
+    "sourceName": "Dapodik Kemendikdasmen",
+    "sourceUrl": "https://sekolah.data.kemendikdasmen.go.id/",
+    "sourceUpdatedAt": "2026-10-08",
+    "publicationApproved": true,
+    "contactsApproved": true
+  }
+]

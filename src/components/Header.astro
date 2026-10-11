@@ -8,6 +8,7 @@ const navItems = [
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'About', href: '/about' },
   { label: 'Articles', href: '/articles' },
+  { label: 'Sekolah', href: '/sekolah' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -46,7 +47,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
          whole page scroll sideways on a tablet. Below `lg` the hamburger menu
          carries the same links. -->
     <nav
-      class="hidden items-center gap-6 text-xs font-black uppercase tracking-wider text-gray-700 lg:flex lg:gap-8"
+      class="hidden items-center gap-4 text-xs font-black uppercase tracking-wider text-gray-700 lg:flex"
       aria-label="Main navigation"
     >
       {
@@ -139,8 +140,8 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 </header>
 
 <!--
-  <details> gives us open/close for free, but not the two dismissals a mobile
-  menu is expected to have: tapping the page behind it and pressing Escape. The
+  <details> gives us open/close for free. Close it when focus leaves the menu,
+  when the page behind it is tapped, and when Escape is pressed. The
   menu is still fully usable without this script — it is an enhancement, not a
   dependency. Kept inline (like ConsultModal) so there is no bundle to fetch.
 -->
@@ -157,6 +158,10 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     });
 
     document.addEventListener('click', function (event) {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+
+    document.addEventListener('focusin', function (event) {
       if (menu.open && !menu.contains(event.target)) menu.open = false;
     });
 

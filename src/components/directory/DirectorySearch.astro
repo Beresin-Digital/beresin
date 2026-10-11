@@ -1,0 +1,11 @@
+---
+interface Props { label?: string; }
+const { label = 'Nama sekolah atau NPSN' } = Astro.props;
+---
+<form action="/sekolah/cari" method="get" role="search" class="directory-search-panel mt-6 sm:mt-8">
+  <label for="directory-search">{label}</label>
+  <div class="flex flex-col gap-3 sm:flex-row">
+    <input id="directory-search" name="q" type="search" placeholder="Misalnya: SMK PGRI Bantaeng" maxlength="120" autocomplete="off" />
+    <button type="submit" class="directory-button directory-primary shrink-0">Cari sekolah</button>
+  </div>
+</form>

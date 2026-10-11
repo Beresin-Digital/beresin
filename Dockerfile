@@ -5,7 +5,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG PUBLIC_GA4_ID=""
-ENV NODE_ENV=production PUBLIC_GA4_ID=${PUBLIC_GA4_ID}
+ARG PUBLIC_GA4_MANUAL_EVENTS="false"
+ENV NODE_ENV=production PUBLIC_GA4_ID=${PUBLIC_GA4_ID} PUBLIC_GA4_MANUAL_EVENTS=${PUBLIC_GA4_MANUAL_EVENTS}
 RUN pnpm build && node scripts/verify-structure.mjs
 
 FROM node:24-bookworm-slim

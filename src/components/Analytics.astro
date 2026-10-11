@@ -1,0 +1,76 @@
+---
+const id = import.meta.env.PUBLIC_GA4_ID ?? '';
+// Enhanced Measurement must be disabled before tags can collect uncontrolled URL/form data.
+const enabled = /^G-[A-Z\d]+$/.test(id) && import.meta.env.PUBLIC_GA4_MANUAL_EVENTS === 'true';
+const { lang = 'en' } = Astro.props;
+const indonesian = lang === 'id';
+---
+
+{enabled && <section id="analytics-consent" data-ga-id={id} hidden aria-labelledby="analytics-heading" class="border-t-2 border-black bg-brand-surface px-4 py-6">
+  <div class="mx-auto max-w-7xl space-y-3">
+    <h2 id="analytics-heading" class="text-lg font-bold">{indonesian ? 'Izinkan statistik kunjungan?' : 'Allow visit analytics?'}</h2>
+    <p class="max-w-3xl text-sm leading-relaxed text-gray-600">{indonesian ? 'Kami memakai Google Analytics untuk memahami penggunaan situs. Analytics hanya aktif jika kamu mengizinkan. Pilihan dapat diubah lewat preferensi cookie di footer.' : 'We use Google Analytics to understand how the site is used. Analytics only runs with your permission. Change your choice through Cookie Preferences in the footer.'} <a href="/privacy-policy" class="underline">{indonesian ? 'Kebijakan privasi' : 'Privacy Policy'}</a></p>
+    <div class="flex flex-wrap gap-3">
+      <button type="button" data-consent="granted" class="min-h-11 rounded-xl border border-black bg-brand-lime px-5 py-3 text-sm font-bold text-black">{indonesian ? 'Izinkan analytics' : 'Allow analytics'}</button>
+      <button type="button" data-consent="denied" class="min-h-11 rounded-xl border border-black bg-white px-5 py-3 text-sm font-bold">{indonesian ? 'Tolak analytics' : 'Decline analytics'}</button>
+    </div>
+  </div>
+</section>}
+
+<script>
+  const banner = document.querySelector<HTMLElement>('#analytics-consent');
+  const id = banner?.dataset.gaId;
+  if (banner && id) {
+    const key = 'beresin-analytics-consent';
+    let loaded = false;
+    let saved: string | null = null;
+    try { saved = localStorage.getItem(key); } catch { /* Consent still works without storage. */ }
+
+    function enable() {
+      window.beresinAnalyticsAllowed = true;
+      if (loaded) return;
+      loaded = true;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer!.push(arguments); };
+      window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      window.gtag('consent', 'update', { analytics_storage: 'granted' });
+      window.gtag('js', new Date());
+      let referrer = '';
+      try { const url = new URL(document.referrer); referrer = url.origin + url.pathname; } catch { /* No valid referrer. */ }
+      window.gtag('config', id, { page_location: location.origin + location.pathname, page_referrer: referrer, allow_google_signals: false, allow_ad_personalization_signals: false });
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+      document.head.append(script);
+      window.dispatchEvent(new Event('beresin:analytics-ready'));
+    }
+
+    if (saved === 'granted') enable();
+    else if (saved !== 'denied') banner.hidden = false;
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach(button => button.addEventListener('click', () => {
+      const choice = button.dataset.consent!;
+      try { localStorage.setItem(key, choice); } catch { /* Use the choice for this page only. */ }
+      banner.hidden = true;
+      if (choice === 'granted') enable();
+      else {
+        window.beresinAnalyticsAllowed = false;
+        if (loaded) {
+          // Reload unloads the tag, so withdrawing consent also stops automatic events.
+          window.gtag?.('consent', 'update', { analytics_storage: 'denied' });
+          for (const cookie of document.cookie.split(';')) {
+            const name = cookie.split('=')[0].trim();
+            if (!/^_ga(?:_|$)/.test(name)) continue;
+            for (const domain of ['', location.hostname, `.${location.hostname}`, '.beresindigital.id']) document.cookie = `${name}=; Max-Age=0; Path=/;${domain ? ` Domain=${domain};` : ''}`;
+          }
+          location.reload();
+        }
+      }
+    }));
+
+    document.querySelectorAll<HTMLButtonElement>('[data-cookie-preferences]').forEach(button => {
+      button.hidden = false;
+      button.addEventListener('click', () => { banner.hidden = false; banner.querySelector<HTMLButtonElement>('button')?.focus(); });
+    });
+  }
+</script>
