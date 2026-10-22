@@ -5,13 +5,11 @@ import { formatDate, isoDate, readingMinutes } from '../../lib/format';
 import type { Article } from '../../db/schema';
 
 /**
- * Homepage "Insight" section — the last block before the footer.
+ * Homepage "Insight" section: the last block before the footer.
  *
- * Layout is deliberately not a grid of equal cards. It is an editorial
- * featured-plus-index split, which echoes the asymmetry the other sections
- * already use (Hero's 3/9 sidebar, About's 4/4/4): one large cover story on the
- * left, and a typographic numbered index on the right. The index rows carry no
- * card chrome at all — just hairline rules and display numerals — so the
+ * Editorial featured-plus-index split (not a grid of equal cards): one large
+ * cover story on the left, a typographic numbered index on the right. The index
+ * rows carry no card chrome, just hairline rules and display numerals, so the
  * section reads as a publication rather than a card dump.
  *
  * `articles` is passed in by the page (published rows from the DB, newest
@@ -39,26 +37,26 @@ const hasCover = (article: Article) =>
 
 {
   featured && (
-    <section id="articles" class="border-b border-gray-200 bg-white py-20 text-brand-dark">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <!-- Header: same eyebrow + title + trailing pill rhythm as Services/Clients -->
+    <section id="articles" class="bg-white py-24 text-brand-dark">
+      <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
         <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
-              <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+            <p class="mb-4">
+              <span class="font-display rounded-full border-2 border-black bg-brand-dark px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-lime">
                 Insight
               </span>
             </p>
-            <h2 class="font-display max-w-2xl text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl">
+            <h2 class="font-display max-w-2xl text-3xl font-bold uppercase leading-none tracking-tight text-brand-dark sm:text-5xl">
               {heading}
             </h2>
           </div>
 
           <a
             href="/articles"
-            class="font-mono shrink-0 rounded-full border border-black bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-surface"
+            class="font-display inline-flex shrink-0 items-center gap-2 rounded-2xl border-2 border-black bg-white px-6 py-3 text-xs font-bold uppercase tracking-wider text-black shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand-smoke hover:shadow-none"
           >
-            All articles &rarr;
+            All articles
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </a>
         </div>
 
@@ -67,7 +65,7 @@ const hasCover = (article: Article) =>
           <article class="lg:col-span-7">
             <a
               href={`/articles/${featured.slug}`}
-              class="group block overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[8px_8px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1"
+              class="group block overflow-hidden rounded-3xl border-2 border-black bg-white shadow-hard-lg transition-all duration-300 hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
             >
               {hasCover(featured) && (
                 <div class="relative aspect-[16/10] overflow-hidden border-b-2 border-black">
@@ -79,14 +77,14 @@ const hasCover = (article: Article) =>
                     sizes="(min-width: 1024px) 58vw, 100vw"
                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <span class="font-mono absolute left-4 top-4 rounded border border-black bg-brand-lime px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black shadow-[2px_2px_0px_#0D0F12]">
+                  <span class="font-display absolute left-4 top-4 rounded-full border-2 border-black bg-brand-lime px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black shadow-hard-sm">
                     {featured.category}
                   </span>
                 </div>
               )}
 
               <div class="p-6 sm:p-8">
-                <p class="font-mono flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+                <p class="font-display flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                   <time datetime={isoDate(publishedOn(featured))}>
                     {formatDate(publishedOn(featured))}
                   </time>
@@ -94,15 +92,15 @@ const hasCover = (article: Article) =>
                   <span>{readingMinutes(featured.body)} min read</span>
                 </p>
 
-                <h3 class="font-display mt-3 text-2xl font-black uppercase leading-tight tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline sm:text-3xl">
+                <h3 class="font-display mt-3 text-2xl font-bold uppercase leading-tight tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline sm:text-3xl">
                   {featured.title}
                 </h3>
 
-                <p class="mt-3 text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
+                <p class="mt-3 text-xs font-medium leading-relaxed text-brand-muted sm:text-sm">
                   {featured.excerpt}
                 </p>
 
-                <span class="font-mono mt-6 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-dark">
+                <span class="font-display mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-dark">
                   Read more
                   <ArrowUpRight
                     class="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -115,29 +113,29 @@ const hasCover = (article: Article) =>
 
           <!-- Typographic index: no card chrome, just rules and numerals -->
           <div class="lg:col-span-5">
-            <h3 class="font-mono border-b-2 border-black pb-3 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+            <h3 class="font-display border-b-2 border-black pb-3 text-[10px] font-bold uppercase tracking-widest text-brand-muted">
               More articles
             </h3>
 
             <ul>
               {rest.map((article, i) => (
-                <li class="border-b border-gray-200">
+                <li class="border-b border-brand-border">
                   <a href={`/articles/${article.slug}`} class="group flex items-start gap-4 py-5 sm:gap-5">
                     <span
-                      class="font-display shrink-0 text-2xl font-black tabular-nums leading-none text-gray-500 transition-colors group-hover:text-brand-dark"
+                      class="font-display shrink-0 text-2xl font-bold tabular-nums leading-none text-brand-muted transition-colors group-hover:text-brand-dark"
                       aria-hidden="true"
                     >
                       {indexLabel(i)}
                     </span>
 
                     <span class="min-w-0 flex-1">
-                      <span class="font-mono block text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+                      <span class="font-display block text-[10px] font-bold uppercase tracking-widest text-brand-muted">
                         {article.category}
                       </span>
-                      <span class="font-display mt-1 block text-base font-black uppercase leading-snug tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline">
+                      <span class="font-display mt-1 block text-base font-bold uppercase leading-snug tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline">
                         {article.title}
                       </span>
-                      <span class="font-mono mt-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                      <span class="font-display mt-2 block text-[10px] font-bold uppercase tracking-wider text-brand-muted">
                         <time datetime={isoDate(publishedOn(article))}>
                           {formatDate(publishedOn(article))}
                         </time>
@@ -147,7 +145,7 @@ const hasCover = (article: Article) =>
                     </span>
 
                     <ArrowUpRight
-                      class="mt-1 h-4 w-4 shrink-0 text-gray-500 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-dark"
+                      class="mt-1 h-4 w-4 shrink-0 text-brand-muted transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-dark"
                       stroke-width={2.5}
                     />
                   </a>
