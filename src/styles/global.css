@@ -34,8 +34,8 @@
     On light surfaces, secondary text uses `brand-muted` (#6E6E6A, ~4.8:1 on
     white); `text-gray-400` stays reserved for dark surfaces only.
   */
-  --color-brand-lime: #C8FF3D;
-  --color-brand-lime-hover: #B5E62E;
+  --color-brand-lime: #D6E81A;
+  --color-brand-lime-hover: #C3D517;
   --color-brand-dark: #141414;
   --color-brand-surface: #FAFAF6;
   --color-brand-smoke: #F0EFE9;
