@@ -25,6 +25,11 @@ const CSS_URL =
   // 100..800 axis costs ~40 KB; 400..800 is ~31 KB and covers every weight the
   // design actually uses (JetBrains Mono tops out at 800, so font-black clamps).
   'family=JetBrains+Mono:wght@400..800&' +
+  // Brand type since the DESIGN.md revamp: Space Grotesk (display) + Inter
+  // (body). Currently served via a Google Fonts <link> in BaseLayout; run this
+  // script and drop the <link> to self-host them instead.
+  'family=Space+Grotesk:wght@500..700&' +
+  'family=Inter:wght@400..700&' +
   'display=swap';
 
 // A Chrome UA is required — Google serves woff2 only to modern browsers,
