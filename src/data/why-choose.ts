@@ -3,7 +3,7 @@
  *
  * Four statements, each of which is backed by something the site already
  * commits to elsewhere (`process.ts`, `principles.ts`, `services.ts`). No
- * metrics, no guarantees — the brief rules out quantitative claims that cannot
+ * metrics, no guarantees: the brief rules out quantitative claims that cannot
  * be substantiated.
  */
 export interface Reason {
@@ -15,7 +15,7 @@ export const reasons: Reason[] = [
   {
     title: 'Business-Oriented Solutions',
     description:
-      'We start from what the business needs the system to achieve, then choose the technology — not the other way around. Every decision is tied to a goal you can name.',
+      'We start from what the business needs the system to achieve, then choose the technology, not the other way around. Every decision is tied to a goal you can name.',
   },
   {
     title: 'Flexible Development Capabilities',

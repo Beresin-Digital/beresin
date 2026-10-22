@@ -15,12 +15,12 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 ---
 
-<header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
-  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+<header class="sticky top-0 z-50 border-b-2 border-black bg-white">
+  <div class="mx-auto flex h-20 max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
     <!-- Brand. No aria-label: WCAG 2.5.3 requires the accessible name to contain
-         the visible text, so the "— home" hint is a real (screen-reader-only)
+         the visible text, so the "- home" hint is a real (screen-reader-only)
          text node rather than an overriding label. The mark is the real logo PNG
-         (generated from the source file by scripts/make-icons.mjs) — a hand-drawn
+         (generated from the source file by scripts/make-icons.mjs), a hand-drawn
          SVG drifted from the actual mark, so we ship the bitmap instead. -->
     <a href="/" class="group flex items-center gap-3">
       <span class="relative h-9 w-9 shrink-0 sm:h-10 sm:w-10">
@@ -34,11 +34,11 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
           class="h-full w-full object-contain"
         />
       </span>
-      <span class="font-display text-2xl font-black tracking-tighter text-brand-dark">
+      <span class="font-display text-2xl font-bold tracking-tight text-brand-dark">
         beresin<span>digital</span><span
           class="ml-0.5 inline-block h-2.5 w-2.5 rounded-full bg-brand-lime"></span>
       </span>
-      <span class="sr-only">— home</span>
+      <span class="sr-only">- home</span>
     </a>
 
     <!-- Desktop nav. Shown from `lg`, not `md`: six items plus the wordmark and
@@ -46,7 +46,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
          whole page scroll sideways on a tablet. Below `lg` the hamburger menu
          carries the same links. -->
     <nav
-      class="hidden items-center gap-4 text-xs font-black uppercase tracking-wider text-gray-700 lg:flex"
+      class="font-display hidden items-center gap-4 text-xs font-bold uppercase tracking-wider text-brand-muted lg:flex"
       aria-label="Main navigation"
     >
       {
@@ -65,12 +65,12 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     <!-- Desktop CTA. Points at /contact rather than straight into WhatsApp: the
          contact page is where the form, the email, and the WhatsApp link all
          live, so a visitor who is not ready to chat in an app still has a path.
-         The mobile menu below keeps its direct WhatsApp button — on a phone
+         The mobile menu below keeps its direct WhatsApp button: on a phone
          that one tap is the fastest route, and the menu already lists Contact. -->
     <div class="hidden items-center gap-3 sm:flex">
       <a
         href="/contact"
-        class="flex items-center gap-2 rounded-full border border-black bg-brand-lime px-5 py-2.5 text-xs font-extrabold text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
+        class="font-display flex items-center gap-2 rounded-2xl border-2 border-black bg-brand-lime px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-black shadow-hard-sm transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-brand-dark hover:text-brand-lime hover:shadow-none"
       >
         Get in Touch
         <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
@@ -79,12 +79,12 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 
     <!-- Mobile menu: CSS-only via <details>, no JS required to open/close.
          The panel is `absolute` against the header (a positioned ancestor via
-         `sticky`), NOT against this <details> — a `relative` here would make the
+         `sticky`), NOT against this <details>; a `relative` here would make the
          containing block the hamburger button itself, squashing the panel to
          ~40px wide and wrapping every label to one character per line. -->
     <details class="group mobile-menu lg:hidden">
       <summary
-        class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border-2 border-black bg-white text-brand-dark shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
+        class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-2xl border-2 border-black bg-white text-brand-dark shadow-hard-sm transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-brand-smoke hover:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
         aria-label="Navigation menu"
       >
         <Menu class="h-6 w-6 group-open:hidden" stroke-width={2.5} aria-hidden="true" />
@@ -93,22 +93,22 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 
       <!-- Panel spans the full viewport width and drops from the header's
            bottom edge. `max-h` + scroll keeps it usable in landscape on short
-           phones; the inner `max-w-7xl` box keeps the links aligned with the
+           phones; the inner `max-w-[1200px]` box keeps the links aligned with the
            rest of the page instead of hugging the screen edges. -->
       <div
-        class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto border-t-2 border-black bg-white shadow-[0_18px_40px_rgba(13,15,18,0.14)]"
+        class="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] overflow-y-auto border-b-2 border-black bg-white shadow-hard"
       >
         <nav
-          class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8"
+          class="mx-auto max-w-[1200px] px-4 py-2 sm:px-6 lg:px-8"
           aria-label="Mobile navigation"
         >
-          <ul class="divide-y divide-gray-100">
+          <ul class="divide-y divide-brand-border">
             {
               navItems.map((item) => (
                 <li>
                   <a
                     href={item.href}
-                    class="flex items-center justify-between py-4 text-sm font-extrabold uppercase tracking-wide text-gray-700 transition-colors hover:text-black"
+                    class="font-display flex items-center justify-between py-4 text-sm font-bold uppercase tracking-wide text-brand-muted transition-colors hover:text-black"
                     aria-current={isCurrent(item.href) ? 'page' : undefined}
                   >
                     {item.label}
@@ -122,12 +122,12 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
           </ul>
         </nav>
 
-        <div class="mx-auto max-w-7xl border-t border-gray-100 px-4 py-5 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-[1200px] border-t border-brand-border px-4 py-5 sm:px-6 lg:px-8">
           <a
             href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
             target="_blank"
             rel="noopener noreferrer"
-            class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-black bg-brand-lime py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
+            class="font-display flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-black bg-brand-lime py-3.5 text-xs font-bold uppercase tracking-wider text-black shadow-hard-sm transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-brand-dark hover:text-brand-lime hover:shadow-none"
           >
             <MessageCircle class="h-4 w-4" stroke-width={2.5} aria-hidden="true" />
             Chat on WhatsApp
@@ -141,7 +141,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 <!--
   <details> gives us open/close for free. Close it when focus leaves the menu,
   when the page behind it is tapped, and when Escape is pressed. The
-  menu is still fully usable without this script — it is an enhancement, not a
+  menu is still fully usable without this script: it is an enhancement, not a
   dependency. Kept inline (like ConsultModal) so there is no bundle to fetch.
 -->
 <script is:inline>
@@ -151,7 +151,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     var summary = menu.querySelector('summary');
 
     // A tapped link may be a same-page anchor (e.g. `/#clients`), which does not
-    // reload — close the menu so the target is not left hidden behind it.
+    // reload, then close the menu so the target is not left hidden behind it.
     menu.addEventListener('click', function (event) {
       if (event.target.closest('a')) menu.open = false;
     });
@@ -172,4 +172,3 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     });
   })();
 </script>
-

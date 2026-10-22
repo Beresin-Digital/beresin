@@ -1,6 +1,6 @@
 /**
  * Static marketing copy for the service catalogue.
- * This is editorial content, not CMS content — edit here and redeploy.
+ * This is editorial content, not CMS content: edit here and redeploy.
  *
  * Four services, presented at the same level. `services` is the single display
  * order used by the homepage card grid and by /services.
@@ -15,9 +15,9 @@ export interface Service {
   /** Stable id, also used as the anchor for deep links. */
   id: string;
   title: string;
-  /** One-line summary — used by the compact homepage section. */
+  /** One-line summary (used by the compact homepage section). */
   description: string;
-  /** 2–3 sentence expansion — used by the detailed /services sections. */
+  /** 2-3 sentence expansion, used by the detailed /services sections. */
   longDescription: string;
   /** Concrete things the client receives. */
   deliverables: string[];
@@ -33,7 +33,7 @@ export const services: Service[] = [
     description:
       'Company websites, landing pages, custom web applications, and Android & iOS apps built around how your business works.',
     longDescription:
-      'We design and build the digital products your business runs on and sells with — from a fast corporate website or landing page to a custom web application and a mobile app that share one backend. Every build starts from the goal rather than a template, so the result follows your process instead of forcing your process to fit the software.',
+      'We design and build the digital products your business runs on and sells with, from a fast corporate website or landing page to a custom web application and a mobile app that share one backend. Every build starts from the goal rather than a template, so the result follows your process instead of forcing your process to fit the software.',
     deliverables: [
       'Corporate websites & company profiles',
       'Campaign & product landing pages',
@@ -71,7 +71,7 @@ export const services: Service[] = [
     description:
       'Connect the tools you already use so data stops being re-typed between systems.',
     longDescription:
-      'Most businesses run on several tools that do not talk to each other. We connect them — payments, messaging, CRM, accounting, and internal systems — through well-documented APIs and integrations, so information moves automatically and reliably.',
+      'Most businesses run on several tools that do not talk to each other. We connect them (payments, messaging, CRM, accounting, and internal systems) through well-documented APIs and integrations, so information moves automatically and reliably.',
     deliverables: [
       'REST & webhook integrations',
       'Payment, messaging & CRM connections',
@@ -88,7 +88,7 @@ export const services: Service[] = [
     description:
       'UI/UX design, branding, and the visual assets that keep your product and your brand consistent.',
     longDescription:
-      'Good design is what makes a system usable and a brand recognisable. We cover UI/UX for websites and applications, brand identity, and the day-to-day visual assets — logos, guidelines, and collateral — so everything you put out looks like it came from the same place.',
+      'Good design is what makes a system usable and a brand recognisable. We cover UI/UX for websites and applications, brand identity, and the day-to-day visual assets (logos, guidelines, and collateral) so everything you put out looks like it came from the same place.',
     deliverables: [
       'UI/UX design for websites & apps',
       'Brand identity & logo design',

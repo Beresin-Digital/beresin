@@ -6,8 +6,8 @@ import { coverage } from '../../data/services';
 
 /**
  * Two short credibility badges. Both are factual statements, not metrics: how
- * we run a project, and the kind of client base we work with — not "global
- * brands" and not an unverifiable number.
+ * we run a project, and the kind of client base we work with (not "global
+ * brands", not an unverifiable number).
  */
 const badges = [
   { icon: Check, label: 'Structured delivery & clear scope', tone: 'lime' },
@@ -15,23 +15,23 @@ const badges = [
 ] as const;
 ---
 
-<section id="about" class="border-b border-gray-200 bg-brand-surface py-20 text-brand-dark">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section id="about" class="bg-white py-24 text-brand-dark">
+  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
       <!-- Left: intro + badges -->
       <div class="space-y-6 lg:col-span-8">
-        <p class="inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
-          <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+        <p>
+          <span class="font-display rounded-full border-2 border-black bg-brand-dark px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-lime">
             Who we are
           </span>
         </p>
         <h2
-          class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+          class="font-display text-3xl font-bold uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
-          Digital solutions, built around your business.
+          Design and engineering, under one roof.
         </h2>
-        <p class="text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-          Beresin Digital helps businesses build and grow their digital solutions — from professional
+        <p class="max-w-xl text-sm font-medium leading-relaxed text-brand-muted sm:text-base">
+          Beresin Digital helps businesses build and grow their digital products, from professional
           websites to applications and custom systems. We pair clear design with dependable
           engineering, and deliver on a structured timeline.
         </p>
@@ -42,14 +42,14 @@ const badges = [
               <li class="flex items-center gap-3">
                 <span
                   class:list={[
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black font-bold',
-                    badge.tone === 'lime' ? 'bg-brand-lime text-black' : 'bg-black text-brand-lime',
+                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-black font-bold',
+                    badge.tone === 'lime' ? 'bg-brand-lime text-black' : 'bg-brand-dark text-brand-lime',
                   ]}
                   aria-hidden="true"
                 >
                   <badge.icon class="h-4 w-4" stroke-width={2.25} />
                 </span>
-                <span class="text-xs font-extrabold uppercase text-brand-dark">{badge.label}</span>
+                <span class="font-display text-xs font-bold uppercase tracking-wide text-brand-dark">{badge.label}</span>
               </li>
             ))
           }
@@ -57,8 +57,8 @@ const badges = [
       </div>
 
       <!-- Right: what the studio covers -->
-      <div class="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-4">
-        <h3 class="font-display border-b border-gray-100 pb-3 text-sm font-black uppercase text-brand-dark">
+      <div class="space-y-6 rounded-3xl border-2 border-black bg-brand-surface p-6 shadow-hard sm:p-8 lg:col-span-4">
+        <h3 class="font-display border-b-2 border-black pb-3 text-sm font-bold uppercase tracking-wide text-brand-dark">
           What we cover
         </h3>
 
@@ -67,14 +67,14 @@ const badges = [
             coverage.map((item) => (
               <li class="flex items-start gap-3">
                 <span
-                  class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-black bg-brand-lime text-black"
+                  class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black bg-brand-lime text-black"
                   aria-hidden="true"
                 >
                   <Check class="h-3.5 w-3.5" stroke-width={3} />
                 </span>
                 <span>
-                  <span class="block text-xs font-extrabold text-brand-dark">{item.label}</span>
-                  <span class="mt-0.5 block text-[11px] leading-relaxed text-gray-600">
+                  <span class="block text-xs font-bold text-brand-dark">{item.label}</span>
+                  <span class="mt-0.5 block text-[11px] leading-relaxed text-brand-muted">
                     {item.note}
                   </span>
                 </span>
@@ -86,9 +86,9 @@ const badges = [
         <div class="pt-2">
           <a
             href="/services"
-            class="font-mono block w-full rounded-xl border border-gray-300 bg-brand-surface py-3 text-center text-xs font-extrabold uppercase text-black transition-colors hover:bg-gray-200"
+            class="font-display block w-full rounded-2xl border-2 border-black bg-white py-3 text-center text-xs font-bold uppercase tracking-wider text-black shadow-hard-sm transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:bg-brand-smoke hover:shadow-none"
           >
-            See service details &rarr;
+            See service details
           </a>
         </div>
       </div>
