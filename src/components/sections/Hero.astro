@@ -4,8 +4,8 @@ import { ArrowRight, ArrowUpRight } from '@lucide/astro';
 import { images } from '../../assets/images/manifest';
 ---
 
-<section id="hero" class="bg-grid-light relative overflow-hidden border-b border-gray-200 bg-white py-12 lg:py-16">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section id="hero" class="relative overflow-hidden bg-brand-surface py-16 lg:py-24">
+  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 items-center gap-8">
       <!-- Headline, subtext, featured photo -->
       <div class="space-y-6">
@@ -23,22 +23,22 @@ import { images } from '../../assets/images/manifest';
           </div>
 
           <h1
-            class="font-display text-4xl font-black uppercase leading-none tracking-tighter text-brand-dark sm:text-6xl lg:text-7xl"
+            class="font-display text-4xl font-bold uppercase leading-none tracking-tight text-brand-dark sm:text-6xl lg:text-7xl"
           >
             <span
-              class="mb-1 inline-block border-2 border-black bg-brand-lime px-2 py-0.5 text-black shadow-[4px_4px_0px_#0D0F12]"
+              class="mb-1 inline-block rounded-lg border-2 border-black bg-brand-lime px-2 py-0.5 text-black shadow-hard-sm"
             >
               DIGITAL SOLUTIONS
             </span><br />
-            BUILT FOR YOUR BUSINESS<span class="text-brand-lime">.</span>
+            BUILT FOR YOUR BUSINESS<span class="text-brand-lime" aria-hidden="true">.</span>
           </h1>
         </div>
 
         <div class="grid grid-cols-1 items-center gap-6 pt-2 md:grid-cols-12">
           <div class="space-y-4 md:col-span-6">
-            <p class="text-sm font-semibold leading-relaxed text-gray-700">
+            <p class="text-sm font-medium leading-relaxed text-brand-muted sm:text-base">
               We design and develop <span
-                class="font-black text-black underline decoration-brand-lime decoration-4"
+                class="font-bold text-brand-dark underline decoration-brand-lime decoration-4"
                 >websites, applications, and custom digital solutions</span
               > that help businesses work smarter and grow.
             </p>
@@ -47,13 +47,13 @@ import { images } from '../../assets/images/manifest';
               <button
                 type="button"
                 data-open-modal="Discuss Your Project"
-                class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-dark px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-[3px_3px_0px_#D2EB1E] transition-all hover:bg-black"
+                class="font-display inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-brand-lime px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-black shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand-dark hover:text-brand-lime hover:shadow-none"
               >
-                Discuss Your Project <ArrowRight class="h-4 w-4 text-brand-lime" stroke-width={2.5} />
+                Discuss Your Project <ArrowRight class="h-4 w-4" stroke-width={2.5} />
               </button>
               <a
                 href="#portfolio"
-                class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:bg-brand-lime-hover"
+                class="font-display inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-white px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-black shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand-smoke hover:shadow-none"
               >
                 Explore Our Work <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
               </a>
@@ -62,7 +62,7 @@ import { images } from '../../assets/images/manifest';
 
           <div class="relative md:col-span-6">
             <div
-              class="relative h-64 overflow-hidden rounded-3xl border-2 border-black bg-brand-dark shadow-[8px_8px_0px_#0D0F12] sm:h-72"
+              class="relative h-64 overflow-hidden rounded-3xl border-2 border-black bg-brand-dark shadow-hard-lg sm:h-72"
             >
               <Picture
                 src={images.heroTeam.src}
@@ -78,7 +78,7 @@ import { images } from '../../assets/images/manifest';
               />
 
               <div
-                class="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl border border-black bg-white/90 px-4 py-2 text-xs font-black shadow-md backdrop-blur-md"
+                class="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl border-2 border-black bg-white px-4 py-2 font-display text-xs font-bold uppercase tracking-wide shadow-hard-sm"
               >
                 <span class="h-2.5 w-2.5 animate-pulse rounded-full bg-green-500"></span>
                 <span>WEBSITES · APPS · CUSTOM SYSTEMS</span>
