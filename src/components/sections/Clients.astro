@@ -6,8 +6,8 @@ import type { Client } from '../../db/schema';
  * Trusted-partners section.
  *
  * `clients` is passed in by the page (active rows from the DB, in the owner's
- * order). The display gate is `isActive` alone — `isRealEngagement` is advisory
- * and deliberately not consulted here (see the clients schema for why). The
+ * order). The display gate is `isActive` alone (`isRealEngagement` is advisory
+ * and deliberately not consulted here; see the clients schema for why). The
  * section renders nothing when the list is empty.
  *
  * Two layouts, chosen by list length. A marquee only reads as intentional when
@@ -31,18 +31,18 @@ const useMarquee = clients.length >= MARQUEE_MIN;
   clients.length > 0 && (
     <section
       id="clients"
-      class="overflow-hidden border-b border-gray-200 bg-white py-16 text-brand-dark"
+      class="overflow-hidden bg-brand-surface py-24 text-brand-dark"
     >
-      <div class="mx-auto mb-10 max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-        <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
-          <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+      <div class="mx-auto mb-10 max-w-[1200px] px-4 text-center sm:px-6 lg:px-8">
+        <p class="mb-4">
+          <span class="font-display rounded-full border-2 border-black bg-brand-dark px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-lime">
             Trusted Partners
           </span>
         </p>
-        <h2 class="font-display text-3xl font-black uppercase tracking-tight text-brand-dark sm:text-4xl">
+        <h2 class="font-display text-3xl font-bold uppercase tracking-tight text-brand-dark sm:text-4xl">
           Trusted by businesses &amp; teams
         </h2>
-        <p class="mx-auto mt-2 max-w-2xl text-xs font-medium text-gray-600 sm:text-sm">
+        <p class="mx-auto mt-3 max-w-2xl text-xs font-medium text-brand-muted sm:text-sm">
           A development and design partner for companies, education foundations, and agencies.
         </p>
       </div>
@@ -51,7 +51,7 @@ const useMarquee = clients.length >= MARQUEE_MIN;
         <div class="relative w-full overflow-hidden py-3">
           <div class="animate-marquee will-change-transform flex w-max">
             {[0, 1].map(() => (
-              <div class="flex shrink-0 items-center gap-7 pr-7">
+              <div class="flex shrink-0 items-center gap-4 pr-4">
                 {clients.map((client, i) => (
                   <ClientChip client={client} index={i} />
                 ))}
@@ -60,8 +60,8 @@ const useMarquee = clients.length >= MARQUEE_MIN;
           </div>
         </div>
       ) : (
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <ul class="flex flex-wrap items-center justify-center gap-1 sm:gap-5">
+        <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+          <ul class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             {clients.map((client, i) => (
               <li>
                 <ClientChip client={client} index={i} />
