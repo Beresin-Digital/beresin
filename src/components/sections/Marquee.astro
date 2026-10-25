@@ -1,5 +1,12 @@
 ---
 import { marqueeItems } from '../../data/services';
+import type { Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
 
 /**
  * The track holds two identical halves and animates to translateX(-50%), so one
@@ -13,7 +20,7 @@ import { marqueeItems } from '../../data/services';
  * wrapper clips that without touching vertical overflow, so the skewed edges
  * still bleed off the top and bottom exactly as designed.
  */
-const half = [...marqueeItems];
+const half = [...marqueeItems[locale]];
 ---
 
 <div class="overflow-x-clip">

@@ -1,6 +1,7 @@
 ---
 import ClientChip from '../ClientChip.astro';
 import type { Client } from '../../db/schema';
+import { dicts, type Locale } from '../../i18n';
 
 /**
  * Trusted-partners section.
@@ -15,12 +16,17 @@ import type { Client } from '../../db/schema';
  * is narrower than the screen, so the -50% loop reveals empty space and the same
  * two or three chips slide past on repeat. With a short list the chips are
  * simply centred instead, which stays clean at any count.
+ *
+ * Client names, categories, and logos come from the DB as entered by the
+ * admin and are shown unfiltered on both locales.
  */
 interface Props {
   clients: Client[];
+  locale?: Locale;
 }
 
-const { clients } = Astro.props;
+const { clients, locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /** Below this, one pass of the row does not fill a desktop viewport. */
 const MARQUEE_MIN = 8;
@@ -36,14 +42,14 @@ const useMarquee = clients.length >= MARQUEE_MIN;
       <div class="mx-auto mb-10 max-w-7xl px-4 text-center sm:px-6 lg:px-8">
         <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
           <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-            Trusted Partners
+            {d.clientsSection.eyebrow}
           </span>
         </p>
         <h2 class="font-display text-3xl font-black uppercase tracking-tight text-brand-dark sm:text-4xl">
-          Trusted by businesses &amp; teams
+          {d.clientsSection.heading}
         </h2>
         <p class="mx-auto mt-2 max-w-2xl text-xs font-medium text-gray-600 sm:text-sm">
-          A development and design partner for companies, education foundations, and agencies.
+          {d.clientsSection.lead}
         </p>
       </div>
 
