@@ -165,6 +165,9 @@ export const id: Dict = {
   },
   portfolioModal: {
     closeLabel: "Tutup detail proyek",
+    detailsLabel: "Detail proyek",
+    whatWeDid: "Yang kami kerjakan",
+    startProject: "Mulai proyek seperti ini",
   },
   notFound: {
     badge: "Error 404",

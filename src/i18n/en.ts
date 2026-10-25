@@ -165,6 +165,9 @@ export const en: Dict = {
   },
   portfolioModal: {
     closeLabel: "Close project details",
+    detailsLabel: "Project details",
+    whatWeDid: "What we did",
+    startProject: "Start a project like this",
   },
   notFound: {
     badge: "Error 404",
