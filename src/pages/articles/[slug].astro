@@ -4,10 +4,14 @@ export const prerender = false;
 /**
  * Article detail page — /articles/[slug].
  *
- * Reads one published row per request and 404s on anything else (unknown slug,
- * or a row still in draft), so a draft can never be reached by guessing its URL.
- * The Markdown body is rendered by `lib/markdown.ts`, which neutralises raw HTML
- * and strips dangerous link schemes before the output reaches the page.
+ * Reads one published Indonesian row per request and 404s on anything else
+ * (unknown slug, an English row, or a row still in draft), so a draft can never
+ * be reached by guessing its URL. The Markdown body is rendered by
+ * `lib/markdown.ts`, which neutralises raw HTML and strips dangerous link
+ * schemes before the output reaches the page.
+ *
+ * No hreflang links: slugs are per-locale with no translation-pair data, so a
+ * cross-link would be a guess, not a pair.
  */
 import { ArrowLeft, ArrowUpRight, Phone } from '@lucide/astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -18,10 +22,13 @@ import { formatDate, isoDate, isoDateTime, readingMinutes } from '../../lib/form
 import { renderMarkdown } from '../../lib/markdown';
 import { article as articleLd, breadcrumbs } from '../../lib/seo';
 import { site, whatsappLink } from '../../data/site';
+import { dicts, localizePath } from '../../i18n';
+
+const d = dicts.id;
 
 const { slug } = Astro.params;
 
-const post = slug ? await getPublishedArticleBySlug(slug) : null;
+const post = slug ? await getPublishedArticleBySlug(slug, 'id') : null;
 
 if (!post) {
   // Render the site 404 page, but with a real 404 status so the route is not
@@ -36,8 +43,8 @@ const hasCover = Boolean(post.coverImage && post.coverWidth && post.coverHeight)
 
 const jsonLd = [
   breadcrumbs([
-    { name: 'Home', url: `${site.url}/` },
-    { name: 'Articles', url: `${site.url}/articles` },
+    { name: 'Beranda', url: `${site.url}/` },
+    { name: 'Artikel', url: `${site.url}/articles` },
     { name: post.title, url: pageUrl },
   ]),
   articleLd({
@@ -49,6 +56,7 @@ const jsonLd = [
     dateModified: isoDateTime(post.updatedAt),
     authorName: site.displayName,
     category: post.category,
+    lang: 'id',
   }),
 ];
 
@@ -63,15 +71,17 @@ const bodyHtml = renderMarkdown(post.body);
   ogImageWidth={hasCover ? post.coverWidth! : undefined}
   ogImageHeight={hasCover ? post.coverHeight! : undefined}
   jsonLd={jsonLd}
+  locale="id"
+  hreflang={false}
 >
   <article class="border-b border-gray-200 bg-white text-brand-dark">
     <header class="mx-auto max-w-3xl px-4 pt-12 sm:px-6 lg:px-8">
       <a
-        href="/articles"
+        href={localizePath('/articles', 'id')}
         class="font-mono inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-500 transition-colors hover:text-brand-dark"
       >
         <ArrowLeft class="h-3.5 w-3.5" stroke-width={2.5} />
-        All articles
+        Semua artikel
       </a>
 
       <p class="font-mono mt-6 inline-block rounded border border-black bg-brand-lime px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-black shadow-[2px_2px_0px_#0D0F12]">
@@ -85,9 +95,9 @@ const bodyHtml = renderMarkdown(post.body);
       </h1>
 
       <p class="font-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
-        <time datetime={isoDate(published)}>{formatDate(published)}</time>
+        <time datetime={isoDate(published)}>{formatDate(published, 'id')}</time>
         <span aria-hidden="true">&middot;</span>
-        <span>{readingMinutes(post.body)} min read</span>
+        <span>{readingMinutes(post.body)} {d.articlesSection.minRead}</span>
       </p>
 
       <p class="mt-6 text-sm font-semibold leading-relaxed text-gray-700 sm:text-base">
@@ -123,31 +133,30 @@ const bodyHtml = renderMarkdown(post.body);
       <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
         <div class="lg:col-span-8">
           <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
-            Next step
+            Langkah berikutnya
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
           >
-            Have a project in mind?
+            Punya proyek dalam pikiran?
           </h2>
           <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-            Tell us what you need to build. We will tell you plainly whether we are the right fit, and
-            what the first step would look like.
+            Ceritakan apa yang perlu Anda bangun. Kami akan sampaikan dengan jelas apakah kami pilihan yang tepat, dan seperti apa langkah pertamanya.
           </p>
         </div>
 
         <div class="flex flex-col gap-3 lg:col-span-4">
           <button
             type="button"
-            data-open-modal="Discuss Your Project"
+            data-open-modal={d.modalSubjects.discussProject}
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
           >
-            Discuss Your Project
+            {d.modalSubjects.discussProject}
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </button>
 
           <a
-            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            href={whatsappLink(d.waMessages.discussProject)}
             target="_blank"
             rel="noopener noreferrer"
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
