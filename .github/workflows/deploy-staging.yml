@@ -1,0 +1,135 @@
+name: CI / Deploy staging
+
+# Mirrors .github/workflows/deploy.yml (prod) for the staging branch, except:
+# - no GA4 build args: staging must not send analytics
+# - image ships to GHCR (public repo, anonymous pull) instead of scp over SSH
+# - deploy triggers on the box via SSM (no inbound port 22 on the staging box)
+# - final check hits https://staging.beresindigital.id
+#
+# Required repo settings (add before first staging deploy):
+# - vars STAGING_AWS_ROLE_ARN: IAM role assumed via GitHub OIDC (no stored
+#   keys). Trust: repo Beresin-Digital/beresin, ref refs/heads/staging only.
+#   Permissions: ssm:SendCommand + ssm:GetCommandInvocation on the staging
+#   instance only.
+# - vars STAGING_INSTANCE_ID: the staging EC2 instance id
+
+on:
+  pull_request:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: beresin-staging
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Same shape as prod: public pages are server-rendered from Postgres, so
+    # the smoke test needs a real database or it proves nothing.
+    services:
+      postgres:
+        image: postgres:17.6-bookworm
+        env:
+          POSTGRES_DB: beresin
+          POSTGRES_USER: beresin
+          POSTGRES_PASSWORD: beresin
+          POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -q -U beresin -d beresin"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and verify HTML
+        run: docker build -t "beresin:$GITHUB_SHA" .
+
+      - name: Apply migrations
+        run: |
+          docker run --rm \
+            --add-host=host.docker.internal:host-gateway \
+            -e DB_HOST=host.docker.internal -e DB_PORT=5432 \
+            -e DB_NAME=beresin -e DB_USER=beresin -e DB_PASSWORD=beresin \
+            "beresin:$GITHUB_SHA" \
+            node node_modules/drizzle-kit/bin.cjs migrate
+
+      - name: Smoke test
+        run: |
+          docker run -d --name smoke -p 4321:4321 \
+            --add-host=host.docker.internal:host-gateway \
+            -e DB_HOST=host.docker.internal -e DB_PORT=5432 \
+            -e DB_NAME=beresin -e DB_USER=beresin -e DB_PASSWORD=beresin \
+            -e SESSION_SECRET="$(openssl rand -hex 32)" \
+            -e LEAD_IP_HMAC_SECRET="$(openssl rand -hex 32)" \
+            "beresin:$GITHUB_SHA"
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:4321/ >/dev/null; then break; fi
+            sleep 2
+          done
+          node scripts/verify-deploy.mjs
+      - name: Server logs
+        if: failure()
+        run: docker logs smoke || true
+
+      - name: Push image to GHCR
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker tag "beresin:$GITHUB_SHA" "ghcr.io/beresin-digital/beresin:staging-$GITHUB_SHA"
+          docker push "ghcr.io/beresin-digital/beresin:staging-$GITHUB_SHA"
+
+      - name: Configure AWS credentials (OIDC, no stored keys)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.STAGING_AWS_ROLE_ARN }}
+          aws-region: ap-southeast-1
+
+      - name: Trigger staging deploy via SSM
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+        run: |
+          image="ghcr.io/beresin-digital/beresin:staging-$GITHUB_SHA"
+          cmd=$(aws ssm send-command \
+            --instance-ids "${{ vars.STAGING_INSTANCE_ID }}" \
+            --document-name AWS-RunShellScript \
+            --parameters "commands=[\"bash /opt/staging/deploy.sh $image\"]" \
+            --query Command.CommandId --output text)
+          status=""
+          for attempt in $(seq 1 60); do
+            status=$(aws ssm get-command-invocation \
+              --command-id "$cmd" \
+              --instance-id "${{ vars.STAGING_INSTANCE_ID }}" \
+              --query Status --output text)
+            case "$status" in
+              Success) break ;;
+              Failed|Cancelled|TimedOut)
+                echo "SSM deploy failed: $status"
+                aws ssm get-command-invocation \
+                  --command-id "$cmd" \
+                  --instance-id "${{ vars.STAGING_INSTANCE_ID }}" \
+                  --query StandardErrorContent --output text
+                exit 1 ;;
+            esac
+            sleep 10
+          done
+          [ "$status" = Success ]
+
+      - name: Check staging site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+        run: BASE_URL=https://staging.beresindigital.id node scripts/verify-deploy.mjs
