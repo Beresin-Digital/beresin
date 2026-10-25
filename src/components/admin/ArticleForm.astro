@@ -1,7 +1,7 @@
 ---
 import { Image as ImageIcon } from '@lucide/astro';
 import type { Article } from '../../db/schema';
-import { ARTICLE_STATUSES } from '../../db/schema';
+import { ARTICLE_LOCALES, ARTICLE_STATUSES } from '../../db/schema';
 import { canonicalSrc } from '../../lib/image-variants';
 
 /**
@@ -15,6 +15,10 @@ import { canonicalSrc } from '../../lib/image-variants';
  * `article` is null on the "new" page. On edit, the existing stored cover path
  * is never put in a hidden field — the action keeps the row's own value unless a
  * new file is chosen — so the form cannot be used to point at another file.
+ *
+ * The admin UI itself stays Indonesian; `locale` is a data field (the public
+ * language the article is published in), not admin i18n. New rows default to
+ * Indonesian; existing rows show their stored value.
  */
 interface Props {
   article?: Article | null;
@@ -195,6 +199,23 @@ const helpClass = 'mt-1 block text-[10px] font-medium text-gray-400';
           ))
         }
       </select>
+    </label>
+
+    <label class="block">
+      <span class={labelClass}>Bahasa</span>
+      <select name="locale" class={fieldClass}>
+        {
+          ARTICLE_LOCALES.map((locale) => (
+            <option
+              value={locale}
+              selected={field('locale', article?.locale ?? 'id') === locale}
+            >
+              {locale === 'id' ? 'Indonesia' : 'English'}
+            </option>
+          ))
+        }
+      </select>
+      <span class={helpClass}>Bahasa halaman publik tempat artikel ini tampil.</span>
     </label>
   </div>
 

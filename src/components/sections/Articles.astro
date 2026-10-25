@@ -3,6 +3,7 @@ import { ArrowUpRight } from '@lucide/astro';
 import ContentImage from '../ContentImage.astro';
 import { formatDate, isoDate, readingMinutes } from '../../lib/format';
 import type { Article } from '../../db/schema';
+import { dicts, localizePath, type Locale } from '../../i18n';
 
 /**
  * Homepage "Insight" section — the last block before the footer.
@@ -15,19 +16,19 @@ import type { Article } from '../../db/schema';
  * section reads as a publication rather than a card dump.
  *
  * `articles` is passed in by the page (published rows from the DB, newest
- * first). The section renders nothing when the list is empty, so an empty table
- * degrades cleanly instead of leaving an orphaned heading.
+ * first, already filtered to the page locale). The section renders nothing when
+ * the list is empty, so an empty table degrades cleanly instead of leaving an
+ * orphaned heading.
  */
 interface Props {
   articles: Article[];
+  locale?: Locale;
 }
 
-const { articles } = Astro.props;
+const { articles, locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 const [featured, ...rest] = articles;
-
-/** h2 heading for the section, kept here so the copy sits with the markup. */
-const heading = 'Notes & guides from our team.';
 
 /** Two-digit index numeral, offset so the featured piece reads as 01. */
 const indexLabel = (i: number) => String(i + 2).padStart(2, '0');
@@ -46,19 +47,19 @@ const hasCover = (article: Article) =>
           <div>
             <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
               <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-                Insight
+                {d.articlesSection.eyebrow}
               </span>
             </p>
             <h2 class="font-display max-w-2xl text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl">
-              {heading}
+              {d.articlesSection.heading}
             </h2>
           </div>
 
           <a
-            href="/articles"
+            href={localizePath('/articles', locale)}
             class="font-mono shrink-0 rounded-full border border-black bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-surface"
           >
-            All articles &rarr;
+            {d.articlesSection.allArticles}
           </a>
         </div>
 
@@ -66,7 +67,7 @@ const hasCover = (article: Article) =>
           <!-- Featured cover story -->
           <article class="lg:col-span-7">
             <a
-              href={`/articles/${featured.slug}`}
+              href={localizePath(`/articles/${featured.slug}`, locale)}
               class="group block overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[8px_8px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1"
             >
               {hasCover(featured) && (
@@ -88,10 +89,10 @@ const hasCover = (article: Article) =>
               <div class="p-6 sm:p-8">
                 <p class="font-mono flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
                   <time datetime={isoDate(publishedOn(featured))}>
-                    {formatDate(publishedOn(featured))}
+                    {formatDate(publishedOn(featured), locale)}
                   </time>
                   <span aria-hidden="true">&middot;</span>
-                  <span>{readingMinutes(featured.body)} min read</span>
+                  <span>{readingMinutes(featured.body)} {d.articlesSection.minRead}</span>
                 </p>
 
                 <h3 class="font-display mt-3 text-2xl font-black uppercase leading-tight tracking-tight text-brand-dark decoration-brand-lime decoration-4 underline-offset-4 group-hover:underline sm:text-3xl">
@@ -103,7 +104,7 @@ const hasCover = (article: Article) =>
                 </p>
 
                 <span class="font-mono mt-6 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-dark">
-                  Read more
+                  {d.articlesSection.readMore}
                   <ArrowUpRight
                     class="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                     stroke-width={2.5}
@@ -116,13 +117,13 @@ const hasCover = (article: Article) =>
           <!-- Typographic index: no card chrome, just rules and numerals -->
           <div class="lg:col-span-5">
             <h3 class="font-mono border-b-2 border-black pb-3 text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
-              More articles
+              {d.articlesSection.moreArticles}
             </h3>
 
             <ul>
               {rest.map((article, i) => (
                 <li class="border-b border-gray-200">
-                  <a href={`/articles/${article.slug}`} class="group flex items-start gap-4 py-5 sm:gap-5">
+                  <a href={localizePath(`/articles/${article.slug}`, locale)} class="group flex items-start gap-4 py-5 sm:gap-5">
                     <span
                       class="font-display shrink-0 text-2xl font-black tabular-nums leading-none text-gray-500 transition-colors group-hover:text-brand-dark"
                       aria-hidden="true"
@@ -139,10 +140,10 @@ const hasCover = (article: Article) =>
                       </span>
                       <span class="font-mono mt-2 block text-[10px] font-bold uppercase tracking-wider text-gray-500">
                         <time datetime={isoDate(publishedOn(article))}>
-                          {formatDate(publishedOn(article))}
+                          {formatDate(publishedOn(article), locale)}
                         </time>
                         <span aria-hidden="true"> &middot; </span>
-                        {readingMinutes(article.body)} min
+                        {readingMinutes(article.body)} {d.articlesSection.minRead}
                       </span>
                     </span>
 

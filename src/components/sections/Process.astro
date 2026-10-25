@@ -1,5 +1,13 @@
 ---
 import { processSteps } from '../../data/process';
+import { dicts, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /**
  * Five-step engagement flow.
@@ -16,17 +24,16 @@ import { processSteps } from '../../data/process';
     <div class="mb-12 max-w-2xl">
       <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
         <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-          Our Process
+          {d.processSection.eyebrow}
         </span>
       </p>
       <h2
         class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
       >
-        Five steps, no surprises.
+        {d.processSection.heading}
       </h2>
       <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
-        The same process runs a single-page site or a full custom system. You always know what is
-        being worked on and what you will receive at each stage.
+        {d.processSection.lead}
       </p>
     </div>
 
@@ -40,7 +47,7 @@ import { processSteps } from '../../data/process';
 
       <ol class="relative grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-6">
         {
-          processSteps.map((step, i) => (
+          processSteps[locale].map((step, i) => (
             <li
               class="relative flex gap-5 after:absolute after:left-[27px] after:top-14 after:h-[calc(100%-1rem)] after:w-0.5 after:bg-gray-300 after:content-[''] last:after:hidden lg:flex-col lg:items-center lg:gap-5 lg:text-center lg:after:hidden"
             >

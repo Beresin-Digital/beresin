@@ -7,7 +7,7 @@ const headers = {
   'X-Forwarded-Proto': 'https',
   'X-Forwarded-For': '203.0.113.20',
 };
-for (const path of ['/', '/portfolio', '/articles', '/contact', '/admin/login', '/sitemap.xml', '/sitemap-site.xml', '/sekolah', '/sekolah/cari', '/sekolah/tentang-data', '/sekolah/sitemap.xml']) {
+for (const path of ['/', '/portfolio', '/articles', '/contact', '/en/', '/en/about', '/en/services', '/en/portfolio', '/en/contact', '/en/articles', '/en/privacy-policy', '/en/terms-and-conditions', '/admin/login', '/sitemap.xml', '/sitemap-site.xml', '/sekolah', '/sekolah/cari', '/sekolah/tentang-data', '/sekolah/sitemap.xml']) {
   const response = await fetch(base + path, { headers, redirect: 'manual' });
   assert.equal(response.status, 200, path);
 }
@@ -19,7 +19,7 @@ for (const [, entry] of sitemapEntries) {
   const loc = entry.match(/<loc>(.*?)<\/loc>/)?.[1];
   assert.ok(loc, 'Sitemap URL');
   const path = new URL(loc).pathname;
-  if (!path.startsWith('/articles/')) {
+  if (!path.startsWith('/articles/') && !path.startsWith('/en/articles/')) {
     assert.ok(!entry.includes('<lastmod>'), `Unknown content update date must be omitted: ${path}`);
     continue;
   }
@@ -33,6 +33,17 @@ for (const [, entry] of sitemapEntries) {
     year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Jakarta',
   }).format(new Date(article.dateModified));
   assert.equal(entry.match(/<lastmod>(.*?)<\/lastmod>/)?.[1], updatedOn, `Article sitemap date matches content: ${path}`);
+}
+// Hreflang: one ID page and one EN page must each expose id, en, and
+// x-default alternates, with x-default pointing at the Indonesian URL.
+for (const path of ['/about', '/en/about']) {
+  const pageResponse = await fetch(base + path, { headers });
+  assert.equal(pageResponse.status, 200, path);
+  const pageHtml = await pageResponse.text();
+  for (const lang of ['id', 'en', 'x-default']) {
+    assert.ok(pageHtml.includes(`hreflang="${lang}"`), `hreflang ${lang}: ${path}`);
+  }
+  assert.ok(pageHtml.includes('hreflang="x-default" href="https://beresindigital.id/about"'), `x-default points at ID URL: ${path}`);
 }
 const llmsResponse = await fetch(base + '/llms.txt', { headers });
 assert.equal(llmsResponse.status, 200, '/llms.txt');
@@ -81,4 +92,4 @@ for (const [origin, fields, status, location] of [
   assert.equal(response.status, status, origin);
   assert.equal(response.headers.get('location'), location, origin);
 }
-console.log('Deploy smoke checks passed: pages, accurate sitemap dates, llms.txt and public links, admin guard, proxy HTTPS, contact redirects, CSRF.');
+console.log('Deploy smoke checks passed: pages, accurate sitemap dates, hreflang, llms.txt and public links, admin guard, proxy HTTPS, contact redirects, CSRF.');

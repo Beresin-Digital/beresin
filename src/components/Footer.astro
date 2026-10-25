@@ -1,21 +1,31 @@
 ---
 import { site, whatsappLink } from '../data/site';
+import { dicts, localizePath, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 const year = new Date().getFullYear();
 
 const menuLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Clients', href: '/#clients' },
-  { label: 'Articles', href: '/articles' },
-  { label: 'Direktori Sekolah', href: '/sekolah' },
-  { label: 'About', href: '/about' },
+  { label: d.footer.menu.home, href: localizePath('/', locale) },
+  { label: d.footer.menu.services, href: localizePath('/services', locale) },
+  { label: d.footer.menu.portfolio, href: localizePath('/portfolio', locale) },
+  { label: d.footer.menu.clients, href: localizePath('/#clients', locale) },
+  { label: d.footer.menu.articles, href: localizePath('/articles', locale) },
+  // The school directory has no English version, so this link never takes a
+  // locale prefix. It always points at the Indonesian directory.
+  { label: d.footer.menu.schoolDirectory, href: '/sekolah' },
+  { label: d.footer.menu.about, href: localizePath('/about', locale) },
 ];
 
 const legalLinks = [
-  { label: 'Privacy Policy', href: '/privacy-policy' },
-  { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+  { label: d.footer.privacy, href: localizePath('/privacy-policy', locale) },
+  { label: d.footer.terms, href: localizePath('/terms-and-conditions', locale) },
 ];
 ---
 
@@ -28,8 +38,7 @@ const legalLinks = [
           class="ml-0.5 inline-block h-2.5 w-2.5 rounded-full bg-white"></span>
         </span>
         <p class="max-w-sm text-xs font-medium leading-relaxed text-gray-400">
-          Digital solutions &amp; development partner for websites, mobile apps, custom web
-          applications, IoT solutions, system integration, and graphic design.
+          {d.footer.description}
         </p>
       </div>
 
@@ -38,7 +47,7 @@ const legalLinks = [
           id="footer-menu-heading"
           class="font-mono text-xs font-extrabold uppercase tracking-wider text-brand-lime"
         >
-          Navigation
+          {d.footer.navigation}
         </h2>
         <ul class="space-y-2 text-xs font-medium text-gray-400">
           {
@@ -57,11 +66,11 @@ const legalLinks = [
         <h2
           class="font-mono text-xs font-extrabold uppercase tracking-wider text-brand-lime"
         >
-          Contact
+          {d.footer.contact}
         </h2>
         <address class="space-y-1 font-mono text-xs not-italic text-gray-400 [overflow-wrap:anywhere]">
           <p>{site.legalName}</p>
-          <p>{site.address.city}, {site.address.countryName}</p>
+          <p>{site.address.city}, {d.site.country}</p>
           <p class="pt-2">
             Email: <a href={`mailto:${site.emailProcurement}`} class="hover:text-white">
               {site.emailProcurement}
@@ -81,9 +90,9 @@ const legalLinks = [
     <div
       class="flex flex-col items-center justify-between gap-4 pt-8 font-mono text-[11px] text-gray-400 sm:flex-row"
     >
-      <p>© {year} {site.legalName}. All rights reserved.</p>
+      <p>© {year} {site.legalName}. {d.footer.rights}</p>
       <ul class="flex items-center gap-4">
-        <li><button type="button" data-cookie-preferences hidden class="min-h-11 underline hover:text-gray-300">Cookie Preferences</button></li>
+        <li><button type="button" data-cookie-preferences hidden class="min-h-11 underline hover:text-gray-300">{d.footer.cookiePreferences}</button></li>
         {
           legalLinks.map((link) => (
             <li>

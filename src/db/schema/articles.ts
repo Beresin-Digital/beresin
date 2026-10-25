@@ -14,6 +14,14 @@ export const ARTICLE_STATUSES = ['draft', 'published'] as const;
 export type ArticleStatus = (typeof ARTICLE_STATUSES)[number];
 
 /**
+ * Public languages an article can be published in. Slugs stay globally unique
+ * across locales (see `slugTaken` in lib/articles.ts), so each locale's rows
+ * simply carry their own slugs. There is no translation-pair linking.
+ */
+export const ARTICLE_LOCALES = ['id', 'en'] as const;
+export type ArticleLocale = (typeof ARTICLE_LOCALES)[number];
+
+/**
  * Articles for the public /articles section and the homepage "Insight" block.
  *
  * `body` is Markdown, rendered to HTML at request time. It is stored as the
@@ -50,6 +58,14 @@ export const articles = pgTable(
     coverHeight: integer('cover_height'),
 
     status: varchar('status', { length: 16 }).notNull().default('draft'),
+    /**
+     * Public language of the row. Defaults to 'en' because the seeded
+     * articles are English, so a re-run of the seed keeps labelling them
+     * correctly without a data rewrite; the admin form defaults new rows to
+     * 'id' instead. Public pages filter by this column, so each locale
+     * only ever lists its own rows.
+     */
+    locale: varchar('locale', { length: 2 }).notNull().default('id'),
     /** Null while draft; set on first publish, then left alone. */
     publishedAt: timestamp('published_at', { withTimezone: true }),
 
@@ -57,8 +73,9 @@ export const articles = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    // The only public query: published rows, newest first.
+    // The public queries: published rows of one locale, newest first.
     index('articles_status_published_idx').on(t.status, t.publishedAt),
+    index('articles_locale_status_published_idx').on(t.locale, t.status, t.publishedAt),
     check('articles_status_check', sql`${t.status} IN ('draft', 'published')`),
   ]
 );

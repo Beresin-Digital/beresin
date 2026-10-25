@@ -2,6 +2,18 @@
 import { Picture } from 'astro:assets';
 import { ArrowRight, ArrowUpRight } from '@lucide/astro';
 import { images } from '../../assets/images/manifest';
+import { dicts, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
+
+// headlineRest carries its trailing period; slice it off so the period renders
+// in lime, like the original markup (BUILT FOR YOUR BUSINESS + lime dot).
+const headline = d.hero.headlineRest.slice(0, -1);
 ---
 
 <section id="hero" class="bg-grid-light relative overflow-hidden border-b border-gray-200 bg-white py-12 lg:py-16">
@@ -28,34 +40,34 @@ import { images } from '../../assets/images/manifest';
             <span
               class="mb-1 inline-block border-2 border-black bg-brand-lime px-2 py-0.5 text-black shadow-[4px_4px_0px_#0D0F12]"
             >
-              DIGITAL SOLUTIONS
+              {d.hero.badge}
             </span><br />
-            BUILT FOR YOUR BUSINESS<span class="text-brand-lime">.</span>
+            {headline}<span class="text-brand-lime">.</span>
           </h1>
         </div>
 
         <div class="grid grid-cols-1 items-center gap-6 pt-2 md:grid-cols-12">
           <div class="space-y-4 md:col-span-6">
             <p class="text-sm font-semibold leading-relaxed text-gray-700">
-              We design and develop <span
+              {d.hero.leadStart}<span
                 class="font-black text-black underline decoration-brand-lime decoration-4"
-                >websites, applications, and custom digital solutions</span
-              > that help businesses work smarter and grow.
+                >{d.hero.leadEmphasis}</span
+              >{d.hero.leadEnd}
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                data-open-modal="Discuss Your Project"
+                data-open-modal={d.modalSubjects.discussProject}
                 class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-dark px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-[3px_3px_0px_#D2EB1E] transition-all hover:bg-black"
               >
-                Discuss Your Project <ArrowRight class="h-4 w-4 text-brand-lime" stroke-width={2.5} />
+                {d.hero.ctaDiscuss} <ArrowRight class="h-4 w-4 text-brand-lime" stroke-width={2.5} />
               </button>
               <a
                 href="#portfolio"
                 class="font-mono flex items-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:bg-brand-lime-hover"
               >
-                Explore Our Work <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+                {d.hero.ctaExplore} <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
               </a>
             </div>
           </div>
@@ -70,7 +82,7 @@ import { images } from '../../assets/images/manifest';
                 fallbackFormat="webp"
                 widths={[400, 600, 800, 1200]}
                 sizes="(min-width: 768px) 45vw, 100vw"
-                alt={images.heroTeam.alt}
+                alt={d.images.heroTeam}
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"
@@ -81,7 +93,7 @@ import { images } from '../../assets/images/manifest';
                 class="absolute bottom-4 left-4 flex items-center gap-2 rounded-2xl border border-black bg-white/90 px-4 py-2 text-xs font-black shadow-md backdrop-blur-md"
               >
                 <span class="h-2.5 w-2.5 animate-pulse rounded-full bg-green-500"></span>
-                <span>WEBSITES · APPS · CUSTOM SYSTEMS</span>
+                <span>{d.hero.strip}</span>
               </div>
             </div>
           </div>

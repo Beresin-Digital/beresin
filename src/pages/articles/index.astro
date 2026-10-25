@@ -4,9 +4,9 @@ export const prerender = false;
 /**
  * Articles index.
  *
- * Server-rendered against the `articles` table: published rows, newest first.
- * An empty table falls back to the same "no articles yet" panel the page had
- * before the CMS existed, so the route is never a blank shell.
+ * Server-rendered against the `articles` table: published rows of one locale,
+ * newest first. An empty table falls back to the same "no articles yet" panel
+ * the page had before the CMS existed, so the route is never a blank shell.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
@@ -15,24 +15,27 @@ import { listPublishedArticles } from '../../lib/articles';
 import { formatDate, isoDate, readingMinutes } from '../../lib/format';
 import { breadcrumbs, itemList } from '../../lib/seo';
 import { site } from '../../data/site';
+import { dicts, localizePath } from '../../i18n';
 
-const articles = await listPublishedArticles();
+const d = dicts.id;
 
-const title = 'Articles & Digital Insight | Beresin Digital';
+const articles = await listPublishedArticles('id');
+
+const title = 'Artikel & Insight Digital | Beresin Digital';
 const description =
-  'Practical notes and guides on web development, custom applications, system integration, IoT, and building digital solutions for businesses.';
+  'Catatan dan panduan praktis soal pengembangan web, aplikasi kustom, integrasi sistem, IoT, dan membangun solusi digital untuk bisnis.';
 
 const pageUrl = `${site.url}/articles`;
 
 const jsonLd = [
   breadcrumbs([
-    { name: 'Home', url: `${site.url}/` },
-    { name: 'Articles', url: pageUrl },
+    { name: 'Beranda', url: `${site.url}/` },
+    { name: 'Artikel', url: pageUrl },
   ]),
   articles.length > 0
     ? itemList({
         url: pageUrl,
-        name: 'Articles & Digital Insight',
+        name: 'Artikel & Insight Digital',
         items: articles.map((article) => ({
           url: `${site.url}/articles/${article.slug}`,
           name: article.title,
@@ -46,11 +49,11 @@ const hasCover = (article: (typeof articles)[number]) =>
   Boolean(article.coverImage && article.coverWidth && article.coverHeight);
 ---
 
-<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+<BaseLayout title={title} description={description} jsonLd={jsonLd} locale="id">
   <PageHeader
-    eyebrow="Articles"
-    title="Practical notes & guides"
-    lead="Short pieces on building digital products, custom systems, integrations, and design — written by the Beresin Digital team."
+    eyebrow="Artikel"
+    title="Catatan & panduan praktis"
+    lead="Tulisan singkat soal membangun produk digital, sistem kustom, integrasi, dan desain, ditulis oleh tim Beresin Digital."
   />
 
   <section class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
@@ -60,28 +63,27 @@ const hasCover = (article: (typeof articles)[number]) =>
           <div class="mx-auto max-w-3xl">
             <div class="rounded-3xl border-2 border-dashed border-gray-300 bg-brand-surface px-6 py-14 text-center sm:px-10">
               <span class="font-mono inline-block rounded border border-black bg-brand-lime px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-black">
-                Coming soon
+                Segera hadir
               </span>
               <h2 class="font-display mt-5 text-2xl font-black uppercase tracking-tight text-brand-dark sm:text-3xl">
-                No articles published yet
+                Belum ada artikel yang diterbitkan
               </h2>
               <p class="mx-auto mt-3 max-w-md text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-                We are preparing the first pieces. In the meantime, if you have a specific question
-                about a digital project, the team is ready to help directly.
+                Kami sedang menyiapkan tulisan pertama. Sementara itu, jika Anda punya pertanyaan spesifik soal proyek digital, tim kami siap membantu langsung.
               </p>
               <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
-                  data-open-modal="Ask About Articles"
+                  data-open-modal={d.modalSubjects.askArticles}
                   class="font-mono rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime-hover"
                 >
-                  Ask us directly
+                  Tanya langsung kepada kami
                 </button>
                 <a
-                  href="/services"
+                  href={localizePath('/services', 'id')}
                   class="font-mono rounded-full border border-black bg-white px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-gray-50"
                 >
-                  View Services
+                  Lihat Layanan
                 </a>
               </div>
             </div>
@@ -90,7 +92,7 @@ const hasCover = (article: (typeof articles)[number]) =>
           <>
             <!-- The page h1 already names this list; the sr-only heading keeps
                  the outline h1 → h2 → h3 (the cards are h3). -->
-            <h2 class="sr-only">Article list</h2>
+            <h2 class="sr-only">Daftar artikel</h2>
             <!-- Masonry via CSS multi-column. A grid row is as tall as its
                  tallest card, so the text-only articles leave a gap under them;
                  multi-column lets each card keep its natural height and pack
@@ -102,7 +104,7 @@ const hasCover = (article: (typeof articles)[number]) =>
             <div class="columns-1 gap-8 sm:columns-2 lg:columns-3">
               {articles.map((article) => (
                 <article class="group mb-8 flex break-inside-avoid flex-col overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[6px_6px_0px_#0D0F12] transition-transform duration-300 hover:-translate-y-1">
-                  <a href={`/articles/${article.slug}`} class="flex flex-1 flex-col">
+                  <a href={localizePath(`/articles/${article.slug}`, 'id')} class="flex flex-1 flex-col">
                     {hasCover(article) && (
                       <div class="relative overflow-hidden border-b-2 border-black">
                         <ContentImage
@@ -133,10 +135,10 @@ const hasCover = (article: (typeof articles)[number]) =>
                       </p>
                       <p class="font-mono mt-auto pt-5 text-[10px] font-bold uppercase tracking-wider text-gray-500">
                         <time datetime={isoDate(publishedOn(article))}>
-                          {formatDate(publishedOn(article))}
+                          {formatDate(publishedOn(article), 'id')}
                         </time>
                         <span aria-hidden="true"> &middot; </span>
-                        {readingMinutes(article.body)} min read
+                        {readingMinutes(article.body)} {d.articlesSection.minRead}
                       </p>
                     </div>
                   </a>

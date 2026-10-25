@@ -1,15 +1,26 @@
 ---
 import { ArrowUpRight, Menu, MessageCircle, X } from '@lucide/astro';
 import { whatsappLink } from '../data/site';
+import { dicts, localizePath, switchPath, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Portfolio', href: '/portfolio' },
-  { label: 'About', href: '/about' },
-  { label: 'Articles', href: '/articles' },
-  { label: 'Contact', href: '/contact' },
+  { label: d.nav.home, href: localizePath('/', locale) },
+  { label: d.nav.services, href: localizePath('/services', locale) },
+  { label: d.nav.portfolio, href: localizePath('/portfolio', locale) },
+  { label: d.nav.about, href: localizePath('/about', locale) },
+  { label: d.nav.articles, href: localizePath('/articles', locale) },
+  { label: d.nav.contact, href: localizePath('/contact', locale) },
 ];
+
+const homeHref = locale === 'en' ? '/en' : '/';
+const otherLocalePath = switchPath(Astro.url.pathname);
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
@@ -18,11 +29,11 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
 <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
   <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
     <!-- Brand. No aria-label: WCAG 2.5.3 requires the accessible name to contain
-         the visible text, so the "— home" hint is a real (screen-reader-only)
+         the visible text, so the ", home" hint is a real (screen-reader-only)
          text node rather than an overriding label. The mark is the real logo PNG
          (generated from the source file by scripts/make-icons.mjs) — a hand-drawn
          SVG drifted from the actual mark, so we ship the bitmap instead. -->
-    <a href="/" class="group flex items-center gap-3">
+    <a href={homeHref} class="group flex items-center gap-3">
       <span class="relative h-9 w-9 shrink-0 sm:h-10 sm:w-10">
         <img
           src="/logo-mark.png"
@@ -38,7 +49,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
         beresin<span>digital</span><span
           class="ml-0.5 inline-block h-2.5 w-2.5 rounded-full bg-brand-lime"></span>
       </span>
-      <span class="sr-only">— home</span>
+      <span class="sr-only">{d.nav.homeSr}</span>
     </a>
 
     <!-- Desktop nav. Shown from `lg`, not `md`: six items plus the wordmark and
@@ -47,7 +58,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
          carries the same links. -->
     <nav
       class="hidden items-center gap-4 text-xs font-black uppercase tracking-wider text-gray-700 lg:flex"
-      aria-label="Main navigation"
+      aria-label={d.nav.menuAria}
     >
       {
         navItems.map((item) => (
@@ -62,17 +73,32 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
       }
     </nav>
 
-    <!-- Desktop CTA. Points at /contact rather than straight into WhatsApp: the
-         contact page is where the form, the email, and the WhatsApp link all
-         live, so a visitor who is not ready to chat in an app still has a path.
-         The mobile menu below keeps its direct WhatsApp button — on a phone
-         that one tap is the fastest route, and the menu already lists Contact. -->
-    <div class="hidden items-center gap-3 sm:flex">
+    <!-- Desktop CTA + language switcher. The CTA points at /contact rather
+         than straight into WhatsApp: the contact page is where the form, the
+         email, and the WhatsApp link all live, so a visitor who is not ready
+         to chat in an app still has a path. -->
+    <div class="hidden items-center gap-4 sm:flex">
+      <div
+        class="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider"
+        aria-label={d.switcher.ariaLabel}
+      >
+        {locale === 'id' ? (
+          <span aria-current="true" class="text-black">ID</span>
+        ) : (
+          <a href={otherLocalePath} class="text-gray-500 transition-colors hover:text-black">ID</a>
+        )}
+        <span aria-hidden="true" class="text-gray-300">|</span>
+        {locale === 'en' ? (
+          <span aria-current="true" class="text-black">EN</span>
+        ) : (
+          <a href={otherLocalePath} class="text-gray-500 transition-colors hover:text-black">EN</a>
+        )}
+      </div>
       <a
-        href="/contact"
+        href={localizePath('/contact', locale)}
         class="flex items-center gap-2 rounded-full border border-black bg-brand-lime px-5 py-2.5 text-xs font-extrabold text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
       >
-        Get in Touch
+        {d.nav.getInTouch}
         <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
       </a>
     </div>
@@ -85,7 +111,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     <details class="group mobile-menu lg:hidden">
       <summary
         class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border-2 border-black bg-white text-brand-dark shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark"
-        aria-label="Navigation menu"
+        aria-label={d.nav.menuAria}
       >
         <Menu class="h-6 w-6 group-open:hidden" stroke-width={2.5} aria-hidden="true" />
         <X class="hidden h-6 w-6 group-open:block" stroke-width={2.5} aria-hidden="true" />
@@ -100,7 +126,7 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
       >
         <nav
           class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8"
-          aria-label="Mobile navigation"
+          aria-label={d.nav.menuAria}
         >
           <ul class="divide-y divide-gray-100">
             {
@@ -122,15 +148,34 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
           </ul>
         </nav>
 
+        <div class="mx-auto max-w-7xl border-t border-gray-100 px-4 py-4 sm:px-6 lg:px-8">
+          <div
+            class="flex items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-wider"
+            aria-label={d.switcher.ariaLabel}
+          >
+            {locale === 'id' ? (
+              <span aria-current="true" class="text-black">ID</span>
+            ) : (
+              <a href={otherLocalePath} class="text-gray-500 transition-colors hover:text-black">ID</a>
+            )}
+            <span aria-hidden="true" class="text-gray-300">|</span>
+            {locale === 'en' ? (
+              <span aria-current="true" class="text-black">EN</span>
+            ) : (
+              <a href={otherLocalePath} class="text-gray-500 transition-colors hover:text-black">EN</a>
+            )}
+          </div>
+        </div>
+
         <div class="mx-auto max-w-7xl border-t border-gray-100 px-4 py-5 sm:px-6 lg:px-8">
           <a
-            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            href={whatsappLink(d.waMessages.discussProject)}
             target="_blank"
             rel="noopener noreferrer"
             class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-black bg-brand-lime py-3.5 text-xs font-extrabold uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-all hover:-translate-x-px hover:-translate-y-px hover:bg-brand-lime-hover"
           >
             <MessageCircle class="h-4 w-4" stroke-width={2.5} aria-hidden="true" />
-            Chat on WhatsApp
+            {d.nav.chatWhatsapp}
           </a>
         </div>
       </div>
@@ -172,4 +217,3 @@ const isCurrent = (href: string) => !href.includes('#') && href === currentPath;
     });
   })();
 </script>
-

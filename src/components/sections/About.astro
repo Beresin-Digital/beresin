@@ -3,6 +3,14 @@ import { Picture } from 'astro:assets';
 import { Check, ShieldCheck } from '@lucide/astro';
 import { images } from '../../assets/images/manifest';
 import { coverage } from '../../data/services';
+import { dicts, localizePath, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /**
  * Two short credibility badges. Both are factual statements, not metrics: how
@@ -10,8 +18,8 @@ import { coverage } from '../../data/services';
  * brands" and not an unverifiable number.
  */
 const badges = [
-  { icon: Check, label: 'Structured delivery & clear scope', tone: 'lime' },
-  { icon: ShieldCheck, label: 'Trusted by businesses, schools & agencies', tone: 'dark' },
+  { icon: Check, label: d.aboutSection.badges[0], tone: 'lime' },
+  { icon: ShieldCheck, label: d.aboutSection.badges[1], tone: 'dark' },
 ] as const;
 ---
 
@@ -22,18 +30,16 @@ const badges = [
       <div class="space-y-6 lg:col-span-8">
         <p class="inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
           <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-            Who we are
+            {d.aboutSection.eyebrow}
           </span>
         </p>
         <h2
           class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
-          Digital solutions, built around your business.
+          {d.aboutSection.heading}
         </h2>
         <p class="text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-          Beresin Digital helps businesses build and grow their digital solutions — from professional
-          websites to applications and custom systems. We pair clear design with dependable
-          engineering, and deliver on a structured timeline.
+          {d.aboutSection.lead}
         </p>
 
         <ul class="space-y-4 pt-2">
@@ -59,12 +65,12 @@ const badges = [
       <!-- Right: what the studio covers -->
       <div class="space-y-6 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-4">
         <h3 class="font-display border-b border-gray-100 pb-3 text-sm font-black uppercase text-brand-dark">
-          What we cover
+          {d.aboutSection.coverTitle}
         </h3>
 
         <ul class="space-y-4">
           {
-            coverage.map((item) => (
+            coverage[locale].map((item) => (
               <li class="flex items-start gap-3">
                 <span
                   class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-black bg-brand-lime text-black"
@@ -85,10 +91,10 @@ const badges = [
 
         <div class="pt-2">
           <a
-            href="/services"
+            href={localizePath('/services', locale)}
             class="font-mono block w-full rounded-xl border border-gray-300 bg-brand-surface py-3 text-center text-xs font-extrabold uppercase text-black transition-colors hover:bg-gray-200"
           >
-            See service details &rarr;
+            {d.aboutSection.coverLink}
           </a>
         </div>
       </div>

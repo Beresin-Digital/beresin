@@ -1,0 +1,294 @@
+---
+import { Mail, Clock, MessageCircle, ArrowUpRight, MapPin } from '@lucide/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import FormStatus from '../../components/FormStatus.astro';
+import { site, whatsappLink, addressLine } from '../../data/site';
+import { responseSteps, partnerAssurances, locationFacts } from '../../data/contact';
+import { contactPage } from '../../lib/seo';
+import { dicts, localizePath } from '../../i18n';
+
+const d = dicts.en;
+
+const title = 'Contact | Beresin Digital';
+const description =
+  'Contact Beresin Digital in Depok, West Java. Free consultation for websites, mobile apps, custom web applications, IoT solutions, system integration, and graphic design.';
+
+const pageUrl = `${site.url}/en/contact`;
+
+const channels = [
+  {
+    icon: MessageCircle,
+    label: 'WhatsApp',
+    value: site.whatsappDisplay,
+    href: whatsappLink(d.waMessages.discussProject),
+    external: true,
+    note: 'The fastest route, best for quick questions or an initial discussion.',
+  },
+  {
+    icon: Mail,
+    label: 'Email',
+    value: site.emailProcurement,
+    href: `mailto:${site.emailProcurement}`,
+    external: false,
+    note: 'For proposals, formal documents, and official correspondence.',
+  },
+  {
+    icon: Clock,
+    label: 'Opening Hours',
+    value: site.openingHoursDisplay,
+    href: null,
+    external: false,
+    note: 'Messages received outside working hours are answered on the next working day.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={[contactPage({ url: pageUrl, lang: 'en' })]} locale="en">
+  <PageHeader
+    eyebrow="Contact"
+    title="Let's talk about your project"
+    lead="Tell us what you need. We reply within 1×24 working hours with an estimate of scope, timing, and technology options."
+  />
+
+  <FormStatus locale="en" />
+
+  <!-- Channels + form. The form is the point of the page, so it takes the wider
+       column on desktop while the channels stay narrow beside it. -->
+  <section id="channels" class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark sm:py-20">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-5 lg:gap-12 lg:px-8">
+      <div class="lg:col-span-2">
+        <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark sm:text-3xl">
+          Official channels
+        </h2>
+        <p class="mt-2 text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
+          For proposals and official correspondence, use one of the channels below.
+        </p>
+
+        <ul class="mt-6 space-y-3">
+          {
+            channels.map(({ icon: Icon, label, value, href, external, note }) => (
+              <li class="flex items-start gap-3 rounded-2xl border border-gray-200 bg-white p-4">
+                <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black bg-brand-lime text-black">
+                  <Icon class="h-4 w-4" stroke-width={2.25} />
+                </span>
+                <div class="min-w-0">
+                  <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                    {label}
+                  </p>
+                  {href ? (
+                    <a
+                      href={href}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
+                      class="mt-0.5 block break-words text-sm font-extrabold text-brand-dark underline decoration-brand-lime decoration-2 underline-offset-2 hover:text-black"
+                    >
+                      {value}
+                    </a>
+                  ) : (
+                    <p class="mt-0.5 text-sm font-extrabold text-brand-dark">{value}</p>
+                  )}
+                  <p class="mt-1.5 text-[11px] font-medium leading-relaxed text-gray-600">{note}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <address class="mt-6 font-mono text-[11px] not-italic leading-relaxed text-gray-600">
+          {site.legalName}
+        </address>
+      </div>
+
+      <div class="lg:col-span-3">
+        <div class="rounded-3xl border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#0D0F12] sm:p-8">
+          <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark">
+            Send a project brief
+          </h2>
+          <p class="mt-1 text-xs font-medium text-gray-600">
+            Fields marked as required must be filled in. Your data is processed in line with our
+            Privacy Policy.
+          </p>
+          <div class="mt-6">
+            <ContactForm idPrefix="page" source="contact-page" locale="en" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sets the expectation for what happens after the form is sent. Every line
+       restates the 1×24 working-hours promise already made in the page lead. -->
+  <section id="flow" class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 max-w-2xl">
+        <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+          <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+            After you send
+          </span>
+        </p>
+        <h2
+          class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+        >
+          What happens next.
+        </h2>
+        <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+          No brief gets lost in an inbox. The flow looks like this.
+        </p>
+      </div>
+
+      <ol class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3">
+        {
+          responseSteps.en.map((step, i) => (
+            <li class="border-t-2 border-black pt-5">
+              <span
+                class="font-display text-3xl font-black tabular-nums leading-none text-gray-500"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 class="font-display mt-3 text-base font-black uppercase leading-snug tracking-tight text-brand-dark">
+                {step.title}
+              </h3>
+              <p class="mt-2 text-xs font-medium leading-relaxed text-gray-700 sm:text-sm">
+                {step.description}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Location. Address and practical facts only: no embedded third-party map,
+       so this page makes no Google request and sets no Google cookie. The street
+       address stays unpublished by the owner's decision, so there is nothing to
+       pin: the block answers "where are you, and how do we reach you" instead. -->
+  <section id="location" class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+        <!-- Heading column -->
+        <div class="lg:col-span-5">
+          <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+            <span
+              class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]"
+            >
+              Location
+            </span>
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-4xl"
+          >
+            Our office in {site.address.city}.
+          </h2>
+          <p class="mt-4 max-w-md text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+            We are a registered company based in {site.address.city}, {d.site.region}. Visits are
+            by appointment, so message us first and we will confirm the exact address and a time that
+            works.
+          </p>
+
+          <a
+            href={whatsappLink(d.waMessages.arrangeVisit)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-mono mt-6 inline-flex items-center gap-2 rounded-full border border-black bg-brand-lime px-5 py-3 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime-hover"
+          >
+            Arrange a visit
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </a>
+        </div>
+
+        <!-- Details column: the address card, then the practical facts that would
+             otherwise leave this section looking half-empty. -->
+        <div class="lg:col-span-7">
+          <address
+            class="rounded-3xl border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#0D0F12] not-italic [overflow-wrap:anywhere] sm:p-7"
+          >
+            <div class="flex items-start gap-4">
+              <span
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black bg-brand-lime text-black"
+                aria-hidden="true"
+              >
+                <MapPin class="h-5 w-5" stroke-width={2.25} />
+              </span>
+              <div class="min-w-0">
+                <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                  Registered address
+                </p>
+                <p class="mt-2 text-base font-extrabold leading-snug text-brand-dark">
+                  {site.legalName}
+                </p>
+                <p class="mt-1 text-sm font-medium leading-relaxed text-gray-700">
+                  {addressLine('en')}
+                </p>
+              </div>
+            </div>
+
+            <dl class="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 border-t border-gray-200 pt-6 sm:grid-cols-3">
+              {
+                locationFacts.en.map((fact) => (
+                  <div>
+                    <dt class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
+                      {fact.label}
+                    </dt>
+                    <dd class="mt-1.5 text-xs font-semibold leading-relaxed text-brand-dark">
+                      {fact.value}
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </address>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Partner and engagement facts. Every fact here already lives in faq.ts or
+       site.ts; this is where a prospective client or agency partner lands, so it
+       is worth surfacing before they leave for /services. -->
+  <section id="partners" class="border-b border-black bg-brand-dark py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+        <div class="lg:col-span-4">
+          <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
+            Partners
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl"
+          >
+            For partners &amp; engagements.
+          </h2>
+          <p class="mt-4 text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+            The things usually checked before working with a new partner. If you need any other
+            document, just ask.
+          </p>
+
+          <a
+            href={localizePath('/services#faq', 'en')}
+            class="font-mono mt-6 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-lime underline decoration-brand-lime decoration-2 underline-offset-4 hover:text-white"
+          >
+            See the full FAQ
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </a>
+        </div>
+
+        <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-8">
+          {
+            partnerAssurances.en.map((item) => (
+              <div class="border-t-2 border-white/20 pt-4">
+                <dt class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-brand-lime">
+                  {item.label}
+                </dt>
+                <dd class="mt-2 text-xs font-medium leading-relaxed text-gray-300 sm:text-sm">
+                  {item.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

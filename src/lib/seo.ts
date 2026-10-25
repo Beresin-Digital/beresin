@@ -3,6 +3,7 @@
  * each other by @id instead of being repeated.
  */
 import { site, socialLinks } from '../data/site';
+import { dicts, type Locale } from '../i18n';
 
 type Json = Record<string, unknown>;
 
@@ -16,13 +17,14 @@ function compact<T extends Json>(obj: T): T {
   ) as T;
 }
 
-function postalAddress(): Json {
-  const { street, city, region, postalCode, country } = site.address;
+function postalAddress(lang: Locale = 'en'): Json {
+  const { street, city, postalCode, country } = site.address;
   return compact({
     '@type': 'PostalAddress',
     streetAddress: street,
     addressLocality: city,
-    addressRegion: region,
+    // Region display name is locale-specific: Jawa Barat / West Java.
+    addressRegion: dicts[lang].site.region,
     postalCode,
     addressCountry: country,
   });
@@ -34,7 +36,7 @@ function geo(): Json | undefined {
   return { '@type': 'GeoCoordinates', latitude, longitude };
 }
 
-export function organization(): Json {
+export function organization(lang: Locale = 'en'): Json {
   return compact({
     '@type': ['Organization', 'ProfessionalService'],
     '@id': ORG_ID,
@@ -45,9 +47,9 @@ export function organization(): Json {
     image: `${site.url}${site.defaultOgImage}`,
     email: site.emailGeneral,
     telephone: site.whatsappDisplay,
-    address: postalAddress(),
+    address: postalAddress(lang),
     geo: geo(),
-    areaServed: { '@type': 'Country', name: site.address.countryName },
+    areaServed: { '@type': 'Country', name: dicts[lang].site.country },
     openingHours: site.openingHours,
     sameAs: socialLinks(),
     vatID: site.npwp || undefined,
@@ -84,14 +86,14 @@ export function webPage(opts: { url: string; name: string; description: string; 
  * The `about` reference points back at the Organization node, which already
  * carries the address, email, phone and opening hours.
  */
-export function contactPage(opts: { url: string }): Json {
+export function contactPage(opts: { url: string; lang?: Locale }): Json {
   return {
     '@type': 'ContactPage',
     '@id': `${opts.url}#contact`,
     url: opts.url,
     isPartOf: { '@id': SITE_ID },
     about: { '@id': ORG_ID },
-    inLanguage: 'en',
+    inLanguage: opts.lang ?? 'en',
   };
 }
 
@@ -116,6 +118,7 @@ export function article(opts: {
   dateModified: string;
   authorName: string;
   category?: string;
+  lang?: Locale;
 }): Json {
   return compact({
     '@type': 'BlogPosting',
@@ -127,7 +130,7 @@ export function article(opts: {
     datePublished: opts.datePublished,
     dateModified: opts.dateModified,
     articleSection: opts.category,
-    inLanguage: 'en',
+    inLanguage: opts.lang ?? 'en',
     author: { '@type': 'Person', name: opts.authorName },
     publisher: { '@id': ORG_ID },
   });

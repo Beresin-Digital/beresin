@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import * as ld from '../lib/seo';
+import { localizePath, normalizePath } from '../i18n';
 
 interface Props {
   title: string;
@@ -16,6 +17,15 @@ interface Props {
   /** Extra JSON-LD nodes appended to the page graph. */
   jsonLd?: object[];
   lang?: 'en' | 'id';
+  /**
+   * Whether to emit hreflang alternates. On by default: the ID and EN URLs
+   * map 1:1 by prefix, so both are derived from the current path and
+   * `x-default` points at the Indonesian URL (ID is the primary locale).
+   * Pass `false` where no 1:1 pair exists: article detail pages (per-locale
+   * slugs, no pair data) and the 404 page (its path is the requested URL,
+   * not a real page in either locale).
+   */
+  hreflang?: boolean;
 }
 
 const {
@@ -28,14 +38,20 @@ const {
   noindex = false,
   jsonLd = [],
   lang = 'en',
+  hreflang = true,
 } = Astro.props;
 
 // Astro.url is absolute here because `site` is configured in astro.config.mjs.
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site.url).href;
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, site.url).href;
 
+const idPath = localizePath(normalizePath(Astro.url.pathname), 'id');
+const enPath = localizePath(normalizePath(Astro.url.pathname), 'en');
+const idHref = new URL(idPath, site.url).href;
+const enHref = new URL(enPath, site.url).href;
+
 const graphJson = ld.graph(
-  ld.organization(),
+  ld.organization(lang),
   ld.website(lang),
   ld.webPage({ url: canonical, name: title, description, lang }),
   ...jsonLd
@@ -45,6 +61,13 @@ const graphJson = ld.graph(
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{hreflang && (
+  <>
+    <link rel="alternate" hreflang="id" href={idHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="x-default" href={idHref} />
+  </>
+)}
 {!noindex && <link rel="describedby" href="/llms.txt" type="text/plain" />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 

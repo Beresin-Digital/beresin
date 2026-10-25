@@ -29,6 +29,19 @@ try {
 export default defineConfig({
   site: 'https://beresindigital.id',
 
+  // Two locales, Indonesian-first. The default locale has no URL prefix, so
+  // every existing ID URL stays exactly where it is; English lives under
+  // `/en/...` (files in `src/pages/en/`). `prefixDefaultLocale: false` is the
+  // object form of that behaviour: Astro 7 rejects the `prefix-other-locales`
+  // string for `routing` (it accepts only 'manual' or an object). It makes
+  // `/en/about` resolve to the English page while `/about` keeps serving the
+  // Indonesian one, and it powers `Astro.currentLocale`.
+  i18n: {
+    defaultLocale: 'id',
+    locales: ['id', 'en'],
+    routing: { prefixDefaultLocale: false },
+  },
+
   // Static by default: every marketing page is prerendered to HTML at build.
   // Routes that need a server (admin, API) opt out individually with
   // `export const prerender = false` — the flag must live in each file.
