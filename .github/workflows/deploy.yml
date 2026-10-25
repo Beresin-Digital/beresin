@@ -107,6 +107,22 @@ jobs:
           ssh "$target" "mkdir -p '$release'"
           scp image.tar.gz deploy/compose.yml deploy/init-db.sh deploy/deploy.sh "$target:$release/"
           ssh "$target" "set -e; docker load -i '$release/image.tar.gz'; bash '$release/deploy.sh' 'beresin:$GITHUB_SHA'; rm '$release/image.tar.gz'"
-      - name: Check public site
+      # Runner GitHub diblokir Cloudflare Bot Fight Mode (Free, tidak bisa
+      # di-skip oleh WAF/Page Rule) — check publik dari runner selalu 403.
+      # Check pindah ke klomang via SSH yang sudah dipakai step deploy, dengan
+      # --resolve ke NPM lokal sehingga melewati Cloudflare sepenuhnya.
+      - name: Check prod origin via SSH
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-        run: BASE_URL=https://beresindigital.id node scripts/verify-deploy.mjs
+        env:
+          SSH_KEY: ${{ secrets.KLOMANG_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KLOMANG_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.KLOMANG_HOST }}
+          SSH_USER: ${{ vars.KLOMANG_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          target="$SSH_USER@$SSH_HOST"
+          scp scripts/check-prod-origin.sh "$target:/tmp/check-prod-origin.sh"
+          ssh "$target" "bash /tmp/check-prod-origin.sh; rc=$?; rm -f /tmp/check-prod-origin.sh; exit $rc"
