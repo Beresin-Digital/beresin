@@ -14,60 +14,119 @@
  *
  * Answers are plain text, never HTML: the same string feeds the accordion and
  * the FAQPage JSON-LD, so nothing here can smuggle markup into structured data.
+ *
+ * The Indonesian entries are faithful translations of the English ones,
+ * including the same hedges and the same TODO(user) markers on the unconfirmed
+ * commercial promises.
  */
+import type { Locale } from '../i18n';
+
 export interface FaqItem {
   question: string;
   answer: string;
 }
 
-export const faqItems: FaqItem[] = [
-  {
-    question: 'Do we own the source code and design assets?',
-    answer:
-      'Yes. After final payment, all application source code, design assets, and technical documentation belong to you outright. We do not hold your system hostage and do not install hidden license locks.',
-  },
-  {
-    question: 'Where are our data and systems stored?',
-    answer:
-      'On servers we lease in Indonesia, so your data does not leave Indonesian jurisdiction. We do not store visitors’ raw IP addresses — only an encrypted form (HMAC) for security purposes, in line with the data-minimisation principle of the PDP Law.',
-  },
-  {
-    question: 'Will our team be trained to manage the system?',
-    answer:
-      'Yes. Every project closes with usage training and written documentation. Admin panels are designed for non-technical staff, so your team can update content and day-to-day data without needing to contact us.',
-  },
-  {
-    question: 'Can you work with the systems and tools we already use?',
-    answer:
-      'Usually, yes. We regularly integrate with existing tools — payment gateways, messaging, CRM, accounting, and internal systems — through APIs and documented integrations. If something cannot be connected cleanly, we will tell you before the project starts, not after.',
-  },
-  {
-    question: 'Are you willing to sign an NDA before technical discussions?',
-    answer:
-      'Yes. We understand that some teams need a confidentiality agreement signed before opening up data or internal procedures. Send us your draft, or we can provide a standard draft for you to review.',
-  },
-  {
-    question: 'What payment structure do you use?',
-    // TODO(user): confirm the actual milestone split (e.g. 30/40/30) and whether
-    // a deposit is required before kickoff, then state it here. Until then the
-    // answer deliberately points at the proposal rather than inventing
-    // percentages — this string is rendered on the page AND published in
-    // FAQPage JSON-LD.
-    answer:
-      'Payment is made in stages following the progress of the work, not all up front. The terms and percentages are put in writing in the proposal so you can verify them before the project begins.',
-  },
-  {
-    question: 'How long does a project take?',
-    // TODO(user): replace the hedge with real duration ranges per project type
-    // once the owner confirms them.
-    answer:
-      'It depends on the scope: a company profile website is far quicker than a full custom web application. A binding timeline is stated in the proposal after the mapping session, not a generic figure we cannot stand behind.',
-  },
-  {
-    question: 'Is there a warranty after the system launches?',
-    // TODO(user): confirm the warranty window (e.g. 30/60/90 days) and what it
-    // covers (bug fixes only, or also small content changes).
-    answer:
-      'Yes. We provide a warranty period for fixing bugs or defects that come from our work, excluding new scope changes. The duration and coverage are stated clearly in the proposal.',
-  },
-];
+export const faqItems: Record<Locale, FaqItem[]> = {
+  en: [
+    {
+      question: 'Do we own the source code and design assets?',
+      answer:
+        'Yes. After final payment, all application source code, design assets, and technical documentation belong to you outright. We do not hold your system hostage and do not install hidden license locks.',
+    },
+    {
+      question: 'Where are our data and systems stored?',
+      answer:
+        'On servers we lease in Indonesia, so your data does not leave Indonesian jurisdiction. We do not store visitors’ raw IP addresses — only an encrypted form (HMAC) for security purposes, in line with the data-minimisation principle of the PDP Law.',
+    },
+    {
+      question: 'Will our team be trained to manage the system?',
+      answer:
+        'Yes. Every project closes with usage training and written documentation. Admin panels are designed for non-technical staff, so your team can update content and day-to-day data without needing to contact us.',
+    },
+    {
+      question: 'Can you work with the systems and tools we already use?',
+      answer:
+        'Usually, yes. We regularly integrate with existing tools — payment gateways, messaging, CRM, accounting, and internal systems — through APIs and documented integrations. If something cannot be connected cleanly, we will tell you before the project starts, not after.',
+    },
+    {
+      question: 'Are you willing to sign an NDA before technical discussions?',
+      answer:
+        'Yes. We understand that some teams need a confidentiality agreement signed before opening up data or internal procedures. Send us your draft, or we can provide a standard draft for you to review.',
+    },
+    {
+      question: 'What payment structure do you use?',
+      // TODO(user): confirm the actual milestone split (e.g. 30/40/30) and whether
+      // a deposit is required before kickoff, then state it here. Until then the
+      // answer deliberately points at the proposal rather than inventing
+      // percentages — this string is rendered on the page AND published in
+      // FAQPage JSON-LD.
+      answer:
+        'Payment is made in stages following the progress of the work, not all up front. The terms and percentages are put in writing in the proposal so you can verify them before the project begins.',
+    },
+    {
+      question: 'How long does a project take?',
+      // TODO(user): replace the hedge with real duration ranges per project type
+      // once the owner confirms them.
+      answer:
+        'It depends on the scope: a company profile website is far quicker than a full custom web application. A binding timeline is stated in the proposal after the mapping session, not a generic figure we cannot stand behind.',
+    },
+    {
+      question: 'Is there a warranty after the system launches?',
+      // TODO(user): confirm the warranty window (e.g. 30/60/90 days) and what it
+      // covers (bug fixes only, or also small content changes).
+      answer:
+        'Yes. We provide a warranty period for fixing bugs or defects that come from our work, excluding new scope changes. The duration and coverage are stated clearly in the proposal.',
+    },
+  ],
+  id: [
+    {
+      question: 'Apakah kami memiliki source code dan aset desain?',
+      answer:
+        'Ya. Setelah pembayaran final, seluruh source code aplikasi, aset desain, dan dokumentasi teknis menjadi milik Anda sepenuhnya. Kami tidak menyandera sistem Anda dan tidak memasang kunci lisensi tersembunyi.',
+    },
+    {
+      question: 'Di mana data dan sistem kami disimpan?',
+      answer:
+        'Di server yang kami sewa di Indonesia, sehingga data Anda tidak keluar dari yurisdiksi Indonesia. Kami tidak menyimpan alamat IP mentah pengunjung, hanya bentuk terenkripsinya (HMAC) untuk keperluan keamanan, sesuai prinsip minimisasi data dalam UU PDP.',
+    },
+    {
+      question: 'Apakah tim kami akan dilatih untuk mengelola sistem?',
+      answer:
+        'Ya. Setiap proyek ditutup dengan pelatihan penggunaan dan dokumentasi tertulis. Panel admin dirancang untuk staf non-teknis, sehingga tim Anda bisa memperbarui konten dan data sehari-hari tanpa harus menghubungi kami.',
+    },
+    {
+      question: 'Bisakah Anda bekerja dengan sistem dan tools yang sudah kami pakai?',
+      answer:
+        'Biasanya, bisa. Kami rutin mengintegrasikan tools yang sudah ada, payment gateway, messaging, CRM, akuntansi, dan sistem internal, lewat API dan integrasi yang terdokumentasi. Jika ada yang tidak bisa dihubungkan dengan rapi, kami akan memberi tahu sebelum proyek dimulai, bukan sesudahnya.',
+    },
+    {
+      question: 'Apakah Anda bersedia menandatangani NDA sebelum diskusi teknis?',
+      answer:
+        'Ya. Kami memahami bahwa sebagian tim perlu perjanjian kerahasiaan ditandatangani sebelum membuka data atau prosedur internal. Kirimkan draf Anda, atau kami bisa menyediakan draf standar untuk Anda tinjau.',
+    },
+    {
+      question: 'Struktur pembayaran seperti apa yang Anda pakai?',
+      // TODO(user): konfirmasi pembagian milestone yang sebenarnya (mis. 30/40/30)
+      // dan apakah deposit diperlukan sebelum kickoff, lalu nyatakan di sini.
+      // Sampai saat itu jawabannya sengaja mengarahkan ke proposal, bukan
+      // mengarang persentase. String ini dirender di halaman DAN diterbitkan
+      // di JSON-LD FAQPage.
+      answer:
+        'Pembayaran dilakukan bertahap mengikuti progres pekerjaan, bukan seluruhnya di muka. Syarat dan persentasenya ditulis dalam proposal sehingga Anda bisa memverifikasinya sebelum proyek dimulai.',
+    },
+    {
+      question: 'Berapa lama proyek dikerjakan?',
+      // TODO(user): ganti perkiraan ini dengan rentang durasi nyata per jenis
+      // proyek setelah pemilik mengonfirmasinya.
+      answer:
+        'Tergantung ruang lingkupnya: website company profile jauh lebih cepat daripada aplikasi web kustom sepenuhnya. Timeline yang mengikat dinyatakan dalam proposal setelah sesi pemetaan, bukan angka generik yang tidak bisa kami pertanggungjawabkan.',
+    },
+    {
+      question: 'Apakah ada garansi setelah sistem diluncurkan?',
+      // TODO(user): konfirmasi jangka garansi (mis. 30/60/90 hari) dan cakupannya
+      // (hanya perbaikan bug, atau juga perubahan konten kecil).
+      answer:
+        'Ya. Kami menyediakan masa garansi untuk memperbaiki bug atau cacat yang berasal dari pekerjaan kami, di luar perubahan ruang lingkup baru. Durasi dan cakupannya dinyatakan dengan jelas dalam proposal.',
+    },
+  ],
+};
