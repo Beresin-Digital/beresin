@@ -1,6 +1,14 @@
 ---
 import { ArrowUpRight, Building2, Code, Megaphone, Palette } from '@lucide/astro';
 import { partnerTypes } from '../../data/partners';
+import { dicts, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /**
  * "Partnership" — who we collaborate with.
@@ -30,31 +38,30 @@ function iconFor(name: string) {
           <svg class="h-4 w-4 fill-brand-lime" viewBox="0 0 24 24" aria-hidden="true">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
-          Partnership
+          {d.partnershipSection.eyebrow}
         </p>
         <h2
           class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
         >
-          Let&rsquo;s build together.
+          {d.partnershipSection.heading}
         </h2>
         <p class="mt-4 max-w-xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-          Beyond direct clients, we work as a development partner for teams and agencies who need
-          the build handled — under your brand or ours.
+          {d.partnershipSection.lead}
         </p>
 
         <button
           type="button"
-          data-open-modal="Discuss a Partnership"
+          data-open-modal={d.modalSubjects.partnership}
           class="font-mono mt-7 inline-flex items-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
         >
-          Discuss a Partnership
+          {d.partnershipSection.cta}
           <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
         </button>
       </div>
 
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:col-span-7">
         {
-          partnerTypes.map((partner) => {
+          partnerTypes[locale].map((partner) => {
             const Icon = iconFor(partner.icon);
             return (
               <article class="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:border-brand-lime">
