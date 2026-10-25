@@ -20,27 +20,26 @@ import { listPublishedProjects } from '../lib/projects';
 // Server-rendered so a publish in the admin appears immediately. The DB is only
 // touched at request time, so `pnpm build` still needs no database.
 const [articles, clients, projects] = await Promise.all([
-  listPublishedArticles(),
+  listPublishedArticles('id'),
   listActiveClients(),
   listPublishedProjects(),
 ]);
 
-const title = 'Digital Solutions & Development Partner | Beresin Digital';
+const title = 'Partner Solusi Digital & Pengembangan | Beresin Digital';
 const description =
-  'Beresin Digital is a digital solutions and development partner. We design and build websites, mobile apps, custom web applications, IoT solutions, system integrations, and graphic design for businesses.';
+  'Beresin Digital adalah partner solusi digital dan pengembangan. Kami merancang dan membangun website, aplikasi mobile, aplikasi web kustom, solusi IoT, integrasi sistem, dan desain grafis untuk bisnis.';
 ---
 
-<BaseLayout title={title} description={description}>
-  <Hero />
-  <Marquee />
-  <FormStatus />
-  <Services />
-  <Clients clients={clients} />
-  <About />
-  <Portfolio projects={projects} />
-  <WhyChooseUs />
-  <Partnership />
-  <Articles articles={articles} />
-  <PortfolioModal projects={projects} />
+<BaseLayout title={title} description={description} locale="id">
+  <Hero locale="id" />
+  <Marquee locale="id" />
+  <FormStatus locale="id" />
+  <Services locale="id" />
+  <Clients clients={clients} locale="id" />
+  <About locale="id" />
+  <Portfolio projects={projects} locale="id" />
+  <WhyChooseUs locale="id" />
+  <Partnership locale="id" />
+  <Articles articles={articles} locale="id" />
+  <PortfolioModal projects={projects} locale="id" />
 </BaseLayout>
-
