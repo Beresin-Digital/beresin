@@ -54,6 +54,12 @@ let response = await fetch(base + '/admin', { headers, redirect: 'manual' });
 assert.equal(response.status, 302);
 assert.equal(response.headers.get('location'), '/admin/login?next=%2Fadmin');
 
+// Node fetch does not send `sec-fetch-site` the way a browser does, and
+// Astro's origin check (security.checkOrigin) lets `same-origin` through
+// immediately. Without it these POSTs fall back to an Origin-vs-URL
+// comparison that fails behind the staging proxy, even though a real
+// browser submit succeeds. The evil-origin case deliberately omits the
+// header so it still exercises the 403 path.
 for (const [origin, fields, status, location] of [
   ['https://beresindigital.id', { company_website: 'bot', page_url: '/contact' }, 303, '/contact?terkirim=1'],
   ['https://beresindigital.id', { page_url: '/contact' }, 303, '/contact?gagal=nama'],
@@ -64,10 +70,11 @@ for (const [origin, fields, status, location] of [
   ['https://evil.example', { company_website: 'bot' }, 403, null],
 ]) {
   const www = origin === 'https://www.beresindigital.id';
+  const evil = origin === 'https://evil.example';
   const contactBase = www && base === 'https://beresindigital.id' ? origin : base;
   response = await fetch(contactBase + '/api/contact', {
     method: 'POST',
-    headers: { ...headers, ...(www ? { Host: 'www.beresindigital.id', 'X-Forwarded-Host': 'www.beresindigital.id' } : {}), Origin: origin },
+    headers: { ...headers, ...(www ? { Host: 'www.beresindigital.id', 'X-Forwarded-Host': 'www.beresindigital.id' } : {}), Origin: origin, ...(evil ? {} : { 'sec-fetch-site': 'same-origin' }) },
     body: new URLSearchParams(fields),
     redirect: 'manual',
   });
