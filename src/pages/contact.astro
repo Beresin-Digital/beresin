@@ -6,11 +6,14 @@ import ContactForm from '../components/ContactForm.astro';
 import FormStatus from '../components/FormStatus.astro';
 import { site, whatsappLink, addressLine } from '../data/site';
 import { responseSteps, partnerAssurances, locationFacts } from '../data/contact';
+import { dicts, localizePath } from '../i18n';
 import { contactPage } from '../lib/seo';
 
-const title = 'Contact | Beresin Digital';
+const d = dicts.id;
+
+const title = 'Kontak | Beresin Digital';
 const description =
-  'Contact Beresin Digital in Depok, West Java. Free consultation for websites, mobile apps, custom web applications, IoT solutions, system integration, and graphic design.';
+  'Hubungi Beresin Digital di Depok, Jawa Barat. Konsultasi gratis untuk website, aplikasi mobile, aplikasi web kustom, solusi IoT, integrasi sistem, dan desain grafis.';
 
 const pageUrl = `${site.url}/contact`;
 
@@ -19,9 +22,9 @@ const channels = [
     icon: MessageCircle,
     label: 'WhatsApp',
     value: site.whatsappDisplay,
-    href: whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.'),
+    href: whatsappLink(d.waMessages.discussProject),
     external: true,
-    note: 'The fastest route — best for quick questions or an initial discussion.',
+    note: 'Jalur tercepat, paling cocok untuk pertanyaan singkat atau diskusi awal.',
   },
   {
     icon: Mail,
@@ -29,27 +32,27 @@ const channels = [
     value: site.emailProcurement,
     href: `mailto:${site.emailProcurement}`,
     external: false,
-    note: 'For proposals, formal documents, and official correspondence.',
+    note: 'Untuk proposal, dokumen resmi, dan korespondensi resmi.',
   },
   {
     icon: Clock,
-    label: 'Opening Hours',
-    value: site.openingHoursDisplay,
+    label: 'Jam Buka',
+    value: 'Senin-Jumat, 09:00-18:00 WIB',
     href: null,
     external: false,
-    note: 'Messages received outside working hours are answered on the next working day.',
+    note: 'Pesan yang diterima di luar jam kerja dijawab pada hari kerja berikutnya.',
   },
 ];
 ---
 
-<BaseLayout title={title} description={description} jsonLd={[contactPage({ url: pageUrl })]}>
+<BaseLayout title={title} description={description} jsonLd={[contactPage({ url: pageUrl, lang: 'id' })]} locale="id">
   <PageHeader
-    eyebrow="Contact"
-    title="Let's talk about your project"
-    lead="Tell us what you need. We reply within 1×24 working hours with an estimate of scope, timing, and technology options."
+    eyebrow="Kontak"
+    title="Mari bicara soal proyek Anda"
+    lead="Ceritakan kebutuhan Anda. Kami membalas dalam 1×24 jam kerja dengan perkiraan ruang lingkup, waktu, dan opsi teknologi."
   />
 
-  <FormStatus />
+  <FormStatus locale="id" />
 
   <!-- Channels + form. The form is the point of the page, so it takes the wider
        column on desktop while the channels stay narrow beside it. -->
@@ -57,10 +60,10 @@ const channels = [
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-5 lg:gap-12 lg:px-8">
       <div class="lg:col-span-2">
         <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark sm:text-3xl">
-          Official channels
+          Kanal resmi
         </h2>
         <p class="mt-2 text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-          For proposals and official correspondence, use one of the channels below.
+          Untuk proposal dan korespondensi resmi, gunakan salah satu kanal di bawah ini.
         </p>
 
         <ul class="mt-6 space-y-3">
@@ -101,14 +104,13 @@ const channels = [
       <div class="lg:col-span-3">
         <div class="rounded-3xl border-2 border-black bg-white p-6 shadow-[6px_6px_0px_#0D0F12] sm:p-8">
           <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark">
-            Send a project brief
+            Kirim brief proyek
           </h2>
           <p class="mt-1 text-xs font-medium text-gray-600">
-            Fields marked as required must be filled in. Your data is processed in line with our
-            Privacy Policy.
+            Kolom yang ditandai wajib harus diisi. Data Anda diproses sesuai dengan Kebijakan Privasi kami.
           </p>
           <div class="mt-6">
-            <ContactForm idPrefix="page" source="contact-page" />
+            <ContactForm idPrefix="page" source="contact-page" locale="id" />
           </div>
         </div>
       </div>
@@ -122,22 +124,22 @@ const channels = [
       <div class="mb-10 max-w-2xl">
         <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
           <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-            After you send
+            Setelah Anda mengirim
           </span>
         </p>
         <h2
           class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
-          What happens next.
+          Apa yang terjadi selanjutnya.
         </h2>
         <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
-          No brief gets lost in an inbox. The flow looks like this.
+          Tidak ada brief yang hilang di inbox. Alurnya seperti ini.
         </p>
       </div>
 
       <ol class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-3">
         {
-          responseSteps.map((step, i) => (
+          responseSteps.id.map((step, i) => (
             <li class="border-t-2 border-black pt-5">
               <span
                 class="font-display text-3xl font-black tabular-nums leading-none text-gray-500"
@@ -171,29 +173,25 @@ const channels = [
             <span
               class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]"
             >
-              Location
+              Lokasi
             </span>
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-4xl"
           >
-            Our office in {site.address.city}.
+            Kantor kami di {site.address.city}.
           </h2>
           <p class="mt-4 max-w-md text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
-            We are a registered company based in {site.address.city}, {site.address.region}. Visits are
-            by appointment, so message us first and we will confirm the exact address and a time that
-            works.
+            Kami adalah perusahaan terdaftar yang berbasis di {site.address.city}, {d.site.region}. Kunjungan hanya dengan perjanjian, jadi kirimkan pesan dulu kepada kami dan kami akan mengonfirmasi alamat pastinya dan waktu yang cocok.
           </p>
 
           <a
-            href={whatsappLink(
-              'Hi Beresin Digital, I would like to arrange a visit to your office.'
-            )}
+            href={whatsappLink(d.waMessages.arrangeVisit)}
             target="_blank"
             rel="noopener noreferrer"
             class="font-mono mt-6 inline-flex items-center gap-2 rounded-full border border-black bg-brand-lime px-5 py-3 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime-hover"
           >
-            Arrange a visit
+            Atur kunjungan
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </a>
         </div>
@@ -213,20 +211,20 @@ const channels = [
               </span>
               <div class="min-w-0">
                 <p class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
-                  Registered address
+                  Alamat terdaftar
                 </p>
                 <p class="mt-2 text-base font-extrabold leading-snug text-brand-dark">
                   {site.legalName}
                 </p>
                 <p class="mt-1 text-sm font-medium leading-relaxed text-gray-700">
-                  {addressLine()}
+                  {addressLine('id')}
                 </p>
               </div>
             </div>
 
             <dl class="mt-6 grid grid-cols-1 gap-x-8 gap-y-5 border-t border-gray-200 pt-6 sm:grid-cols-3">
               {
-                locationFacts.map((fact) => (
+                locationFacts.id.map((fact) => (
                   <div>
                     <dt class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-500">
                       {fact.label}
@@ -252,30 +250,29 @@ const channels = [
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
         <div class="lg:col-span-4">
           <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
-            Partners
+            Partner
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-4xl"
           >
-            For partners &amp; engagements.
+            Untuk partner dan kerja sama.
           </h2>
           <p class="mt-4 text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-            The things usually checked before working with a new partner. If you need any other
-            document, just ask.
+            Hal-hal yang biasanya diperiksa sebelum bekerja dengan partner baru. Jika Anda membutuhkan dokumen lain, tanyakan saja.
           </p>
 
           <a
-            href="/services#faq"
+            href={localizePath('/services#faq', 'id')}
             class="font-mono mt-6 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-brand-lime underline decoration-brand-lime decoration-2 underline-offset-4 hover:text-white"
           >
-            See the full FAQ
+            Lihat FAQ lengkap
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </a>
         </div>
 
         <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-8">
           {
-            partnerAssurances.map((item) => (
+            partnerAssurances.id.map((item) => (
               <div class="border-t-2 border-white/20 pt-4">
                 <dt class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-brand-lime">
                   {item.label}

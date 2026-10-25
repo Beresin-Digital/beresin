@@ -1,0 +1,2 @@
+ALTER TABLE "articles" ADD COLUMN "locale" varchar(2) DEFAULT 'id' NOT NULL;--> statement-breakpoint
+CREATE INDEX "articles_locale_status_published_idx" ON "articles" USING btree ("locale","status","published_at");

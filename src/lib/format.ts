@@ -14,12 +14,12 @@ const toDate = (value: Date | string): Date | null => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-/** Human-readable date: "18 Sep 2026". */
-export function formatDate(value: Date | string): string {
+/** Human-readable date: "18 Sep 2026" (EN) or "18 Sep 2026" with Indonesian month names (ID). */
+export function formatDate(value: Date | string, locale: 'id' | 'en' = 'en'): string {
   const date = toDate(value);
   if (!date) return '';
 
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

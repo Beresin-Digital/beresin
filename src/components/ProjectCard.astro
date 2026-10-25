@@ -3,6 +3,7 @@ import { ArrowUpRight, Image as ImageIcon } from '@lucide/astro';
 import ClientBadge from './ClientBadge.astro';
 import ContentImage from './ContentImage.astro';
 import type { Project } from '../db/schema';
+import { dicts, type Locale } from '../i18n';
 
 /**
  * A single project card. Shared by the homepage "Selected Work" section and the
@@ -16,6 +17,10 @@ import type { Project } from '../db/schema';
  * A `status: 'concept'` row renders with its visible "Concept Project" label.
  * That label is enforced server-side on save (`src/lib/projects.ts`), so it
  * cannot be dropped by a crafted form post.
+ *
+ * Project content (title, summary, category, highlights, status label) comes
+ * from the DB as entered by the admin and is shown unfiltered on both locales;
+ * only the card chrome ("View details") is localised.
  */
 interface Props {
   project: Project;
@@ -27,9 +32,11 @@ interface Props {
    * container needs. The homepage teaser stays on `grid`; /portfolio is masonry.
    */
   variant?: 'grid' | 'masonry';
+  locale?: Locale;
 }
 
-const { project, variant = 'grid' } = Astro.props;
+const { project, variant = 'grid', locale = 'en' } = Astro.props;
+const d = dicts[locale];
 const isMasonry = variant === 'masonry';
 
 // Both halves of the pair are written together on upload; require both so the
@@ -48,7 +55,7 @@ const hasImage = Boolean(project.image && project.imageWidth && project.imageHei
     type="button"
     data-project-id={project.id}
     class="absolute inset-0 z-10 cursor-pointer rounded-3xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-lime"
-    aria-label={`View details: ${project.title}`}></button>
+    aria-label={`${d.projectCard.viewDetailsAria}${project.title}`}></button>
 
   <div
     class:list={[
@@ -118,7 +125,7 @@ const hasImage = Boolean(project.image && project.imageWidth && project.imageHei
       class="font-mono mt-5 inline-flex items-center gap-2 pt-1 text-[11px] font-black uppercase tracking-wider text-brand-dark group-hover:text-black"
       aria-hidden="true"
     >
-      View details
+      {d.projectCard.viewDetails}
       <ArrowUpRight
         class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
         stroke-width={2.5}

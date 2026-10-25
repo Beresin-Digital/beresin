@@ -1,5 +1,13 @@
 ---
 import { principles } from '../../data/principles';
+import { dicts, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /**
  * "Principles & how we work" for /about.
@@ -21,23 +29,22 @@ import { principles } from '../../data/principles';
       <div class="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
         <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
           <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-            Principles &amp; How We Work
+            {d.principlesSection.eyebrow}
           </span>
         </p>
         <h2
           class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
-          How we work.
+          {d.principlesSection.heading}
         </h2>
         <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
-          Six things that hold on every project, whatever its size. These are not wall-poster values
-          — you can hold us to all of them.
+          {d.principlesSection.lead}
         </p>
       </div>
 
       <ol class="lg:col-span-8">
         {
-          principles.map((principle, i) => (
+          principles[locale].map((principle, i) => (
             <li class="grid grid-cols-[auto_1fr] gap-x-5 border-t border-gray-300 py-6 first:border-t-0 first:pt-0 sm:gap-x-6">
               <span
                 class="font-display text-2xl font-black tabular-nums leading-none text-gray-500 sm:text-3xl"

@@ -7,6 +7,14 @@
  * free. The only JavaScript is the ~15 lines below that wires up open/close.
  */
 import ContactForm from './ContactForm.astro';
+import { dicts, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 ---
 
 <dialog
@@ -19,7 +27,7 @@ import ContactForm from './ContactForm.astro';
       type="button"
       data-close-modal
       class="absolute right-5 top-5 text-gray-500 transition-colors hover:text-black"
-      aria-label="Close dialog"
+      aria-label={d.consultModal.closeLabel}
     >
       <svg
         class="h-6 w-6"
@@ -39,21 +47,21 @@ import ContactForm from './ContactForm.astro';
       <span
         class="rounded border border-black bg-brand-lime px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-black"
       >
-        Propose Project
+        {d.consultModal.badge}
       </span>
       <h2
         id="consult-modal-title"
         data-modal-title
         class="font-display mt-2 text-2xl font-black uppercase tracking-tight"
       >
-        Project Consultation
+        {d.consultModal.title}
       </h2>
       <p class="mt-1 text-xs font-medium text-gray-600">
-        The Beresin Digital team will get back to you with an initial estimate.
+        {d.consultModal.lead}
       </p>
     </div>
 
-    <ContactForm idPrefix="modal" source="consult-modal" compact />
+    <ContactForm idPrefix="modal" source="consult-modal" compact locale={locale} />
   </div>
 </dialog>
 

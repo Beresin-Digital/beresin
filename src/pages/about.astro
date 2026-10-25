@@ -6,18 +6,21 @@ import { Picture } from 'astro:assets';
 import { ArrowUpRight, Phone } from '@lucide/astro';
 import { images } from '../assets/images/manifest';
 import { site, addressLine, whatsappLink } from '../data/site';
+import { dicts } from '../i18n';
 
-const title = 'About Us | Beresin Digital';
+const d = dicts.id;
+
+const title = 'Tentang Kami | Beresin Digital';
 const description =
-  'PT Beresin Urusan Digital is a digital solutions and development partner based in Depok, West Java — building websites, mobile apps, custom web applications, IoT solutions, system integrations, and graphic design for businesses and teams.';
+  'PT Beresin Urusan Digital adalah partner solusi digital dan pengembangan yang berbasis di Depok, Jawa Barat, yang membangun website, aplikasi mobile, aplikasi web kustom, solusi IoT, integrasi sistem, dan desain grafis untuk bisnis dan tim.';
 
 /**
  * The company facts a prospective client or partner actually verifies. Kept as
  * data so the strip and any future JSON-LD stay in sync with `site.ts`.
  */
 const facts = [
-  { label: 'Legal entity', value: site.legalName },
-  { label: 'Address', value: addressLine() },
+  { label: 'Badan hukum', value: site.legalName },
+  { label: 'Alamat', value: addressLine('id') },
   {
     label: 'Email',
     value: site.emailProcurement,
@@ -32,11 +35,11 @@ const facts = [
 ] as const;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} locale="id">
   <PageHeader
-    eyebrow="About Us"
-    title="Digital solutions, built around your business"
-    lead="A digital solutions and development partner — we build systems meant to be used every day, not just to look good in a presentation. Here is what we stand for and who we work with."
+    eyebrow="Tentang Kami"
+    title="Solusi digital, dibangun sesuai bisnis Anda"
+    lead="Partner solusi digital dan pengembangan. Kami membangun sistem yang memang dipakai setiap hari, dan tetap terlihat bagus saat dipakai. Berikut ini apa yang kami pegang dan siapa yang kami layani."
   />
 
   <!-- Positioning. Deliberately not the homepage About block: that section is
@@ -47,31 +50,24 @@ const facts = [
         <div class="lg:col-span-6">
           <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
             <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-              Who we are
+              Siapa kami
             </span>
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
           >
-            We build digital solutions, not just websites.
+            Kami membangun solusi digital, dari website, aplikasi, hingga sistem.
           </h2>
 
           <div class="mt-5 space-y-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
             <p>
-              PT Beresin Urusan Digital is a digital solutions and development partner based
-              in {site.address.city}, {site.address.region}. We help businesses build and grow their
-              digital presence and systems — from professional websites and applications to custom
-              systems shaped around how each business actually works.
+              PT Beresin Urusan Digital adalah partner solusi digital dan pengembangan yang berbasis di {site.address.city}, {d.site.region}. Kami membantu bisnis membangun dan mengembangkan kehadiran digital dan sistemnya, dari website dan aplikasi profesional sampai sistem kustom yang dibentuk mengikuti cara setiap bisnis benar-benar bekerja.
             </p>
             <p>
-              Our clients are companies, education foundations, and agencies — teams that need their
-              systems to be genuinely used day to day, not just to pass at handover. That is why we
-              put process mapping and documentation up front, not at the end.
+              Klien kami adalah perusahaan, yayasan pendidikan, dan agensi, tim yang membutuhkan sistemnya benar-benar dipakai sehari-hari, jauh setelah serah terima. Karena itu kami menempatkan pemetaan proses dan dokumentasi di depan, bukan di akhir.
             </p>
             <p>
-              We also work as a development partner for agencies and internal teams that need the
-              build handled, under their brand or ours. Engagements often continue past launch, as a
-              long-term partner for the roadmap rather than a one-off vendor.
+              Kami juga bekerja sebagai partner pengembangan untuk agensi dan tim internal yang membutuhkan pengerjaan build, di bawah brand mereka atau brand kami. Kerja sama sering berlanjut melewati peluncuran, sebagai partner jangka panjang untuk roadmap, bukan vendor sekali jalan.
             </p>
           </div>
 
@@ -79,7 +75,7 @@ const facts = [
             href="/services"
             class="font-mono mt-7 inline-flex items-center gap-2 rounded-full border border-black bg-white px-5 py-3 text-xs font-extrabold uppercase tracking-wider text-brand-dark shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime"
           >
-            See our services
+            Lihat layanan kami
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </a>
         </div>
@@ -92,7 +88,7 @@ const facts = [
               fallbackFormat="webp"
               widths={[480, 720, 960]}
               sizes="(min-width: 1024px) 48vw, 90vw"
-              alt={images.heroTeam.alt}
+              alt={d.images.heroTeam}
               loading="lazy"
               decoding="async"
               class="aspect-[3/2] h-full w-full object-cover"
@@ -103,7 +99,7 @@ const facts = [
     </div>
   </section>
 
-  <Principles />
+  <Principles locale="id" />
 
   <!-- Company facts. Kept compact: the four things someone actually checks
        before engaging a vendor. NPWP is intentionally absent — the owner chose
@@ -111,10 +107,10 @@ const facts = [
   <section class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark sm:text-3xl">
-        Company details
+        Detail perusahaan
       </h2>
       <p class="mt-3 max-w-2xl text-xs font-medium leading-relaxed text-gray-700 sm:text-sm">
-        The details usually requested when engaging a vendor or partner.
+        Detail yang biasanya diminta saat menggaet vendor atau partner.
       </p>
 
       <dl class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -150,31 +146,30 @@ const facts = [
       <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
         <div class="lg:col-span-8">
           <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
-            Next step
+            Langkah berikutnya
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
           >
-            Want to see whether how we work fits?
+            Ingin tahu apakah cara kami bekerja cocok?
           </h2>
           <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-            Tell us about the project or the problem you are facing. We will tell you plainly if we
-            are not the right fit for what you need.
+            Ceritakan proyek atau masalah yang Anda hadapi. Kami akan sampaikan dengan jelas jika kami bukan pilihan yang tepat untuk kebutuhan Anda.
           </p>
         </div>
 
         <div class="flex flex-col gap-3 lg:col-span-4">
           <button
             type="button"
-            data-open-modal="Discuss Your Project"
+            data-open-modal={d.modalSubjects.discussProject}
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
           >
-            Free consultation
+            Konsultasi gratis
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </button>
 
           <a
-            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            href={whatsappLink(d.waMessages.discussProject)}
             target="_blank"
             rel="noopener noreferrer"
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"

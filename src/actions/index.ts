@@ -1,6 +1,6 @@
 import { ActionError, defineAction } from 'astro:actions';
 import { z } from 'astro/zod';
-import { ARTICLE_STATUSES, LEAD_STATUSES, PROJECT_STATUSES } from '../db/schema';
+import { ARTICLE_LOCALES, ARTICLE_STATUSES, LEAD_STATUSES, PROJECT_STATUSES } from '../db/schema';
 import { hashIp, rateLimit } from '../lib/anti-abuse';
 import { createArticle, deleteArticle, getArticle, slugTaken as articleSlugTaken, updateArticle } from '../lib/articles';
 import {
@@ -213,6 +213,7 @@ export const server = {
       category: z.string().max(64).default(''),
       coverAlt: z.string().max(255).default(''),
       status: z.enum(ARTICLE_STATUSES),
+      locale: z.enum(ARTICLE_LOCALES).default('id'),
       removeCover: z.boolean().default(false),
       cover: z.instanceof(File).optional(),
     }),
@@ -260,6 +261,7 @@ export const server = {
         coverWidth,
         coverHeight,
         status: input.status,
+        locale: input.locale,
       };
 
       const id = existing

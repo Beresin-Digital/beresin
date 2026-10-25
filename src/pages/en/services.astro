@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ServiceDetail from '../../components/sections/ServiceDetail.astro';
+import Process from '../../components/sections/Process.astro';
+import Faq from '../../components/sections/Faq.astro';
+import { ArrowUpRight, Mail } from '@lucide/astro';
+import { services } from '../../data/services';
+import { faqItems } from '../../data/faq';
+import { site } from '../../data/site';
+import { dicts } from '../../i18n';
+import { faqPage, serviceCatalog } from '../../lib/seo';
+
+const d = dicts.en;
+
+const title = 'Services: Websites, Mobile Apps, IoT & Design | Beresin Digital';
+const description =
+  'Beresin Digital services: website and mobile app development, IoT solutions, system integration, and graphic design (UI/UX and branding), with our process and answers to common questions.';
+
+const pageUrl = `${site.url}/en/services`;
+
+/**
+ * Structured data for this page: the four services as `Service` nodes behind an
+ * `ItemList`, plus a `FAQPage` mirroring the visible accordion below.
+ */
+const jsonLd = [
+  ...serviceCatalog({
+    url: pageUrl,
+    services: services.en.map((s) => ({ id: s.id, title: s.title, description: s.description })),
+  }),
+  faqPage(faqItems.en),
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd} locale="en">
+  <PageHeader
+    eyebrow="Services"
+    title="What we do"
+    lead="Our four services, spelled out to the detail: what you receive, who each one fits, and how the process runs from the first conversation to a live system."
+  >
+    <!-- Jump nav. Plain anchors, no JavaScript. The service sections carry the
+         matching ids and inherit `scroll-margin-top` from global.css. -->
+    <nav aria-label="Jump to a service" class="mt-8 flex flex-wrap gap-2">
+      {
+        services.en.map((service, i) => (
+          <a
+            href={`#${service.id}`}
+            class="font-mono inline-flex items-center gap-2 rounded-full border border-black bg-white px-4 py-2 text-[11px] font-extrabold uppercase tracking-wider text-brand-dark shadow-[2px_2px_0px_#0D0F12] transition-colors hover:bg-brand-lime"
+          >
+            <span class="tabular-nums text-gray-600" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            {service.title}
+          </a>
+        ))
+      }
+    </nav>
+  </PageHeader>
+
+  {services.en.map((service, i) => <ServiceDetail service={service} index={i} locale="en" />)}
+
+  <Process locale="en" />
+  <Faq locale="en" />
+
+  <!-- Closing CTA. Dark, to echo the homepage Services band and give the page a
+       definite end. Deliberately not the old "Punya kebutuhan yang belum
+       tercantum?" copy. This is a next step, not a repeat of the pitch. -->
+  <section class="border-b border-black bg-brand-dark py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
+            Next step
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          >
+            Not sure where to start?
+          </h2>
+          <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+            Tell us where you are today. We will help you work out the most relevant service, the
+            scope, and the first step, at no cost and with no commitment.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 lg:col-span-4">
+          <button
+            type="button"
+            data-open-modal={d.modalSubjects.serviceConsultation}
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
+          >
+            Free consultation
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </button>
+
+          <a
+            href={`mailto:${site.emailProcurement}`}
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
+          >
+            <Mail class="h-4 w-4" stroke-width={2.25} />
+            Email us
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

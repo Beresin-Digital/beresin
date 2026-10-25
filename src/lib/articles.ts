@@ -1,6 +1,6 @@
 import { and, count, desc, eq, ne } from 'drizzle-orm';
 import { db } from '../db/client';
-import { articles, type Article, type ArticleStatus } from '../db/schema';
+import { articles, type Article, type ArticleLocale, type ArticleStatus } from '../db/schema';
 
 export interface ArticleInput {
   slug: string;
@@ -13,25 +13,35 @@ export interface ArticleInput {
   coverWidth: number | null;
   coverHeight: number | null;
   status: ArticleStatus;
+  locale: ArticleLocale;
 }
 
 // --- public ---------------------------------------------------------------
 
-/** Published articles, newest first. */
-export async function listPublishedArticles(): Promise<Article[]> {
+/** Published articles of one locale, newest first. */
+export async function listPublishedArticles(locale: ArticleLocale): Promise<Article[]> {
   return db
     .select()
     .from(articles)
-    .where(eq(articles.status, 'published'))
+    .where(and(eq(articles.locale, locale), eq(articles.status, 'published')))
     .orderBy(desc(articles.publishedAt));
 }
 
-/** A single published article, or null if it does not exist or is still a draft. */
-export async function getPublishedArticleBySlug(slug: string): Promise<Article | null> {
+/** A single published article of one locale, or null if it does not exist or is still a draft. */
+export async function getPublishedArticleBySlug(
+  slug: string,
+  locale: ArticleLocale
+): Promise<Article | null> {
   const [row] = await db
     .select()
     .from(articles)
-    .where(and(eq(articles.slug, slug), eq(articles.status, 'published')))
+    .where(
+      and(
+        eq(articles.slug, slug),
+        eq(articles.locale, locale),
+        eq(articles.status, 'published')
+      )
+    )
     .limit(1);
 
   return row ?? null;

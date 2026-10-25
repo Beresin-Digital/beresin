@@ -1,5 +1,13 @@
 ---
 import { reasons } from '../../data/why-choose';
+import { dicts, type Locale } from '../../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
 
 /**
  * "Why choose us" — four differentiators.
@@ -15,23 +23,22 @@ import { reasons } from '../../data/why-choose';
     <div class="mb-12 max-w-2xl">
       <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
         <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
-          Why Choose Us
+          {d.whySection.eyebrow}
         </span>
       </p>
       <h2
         class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
       >
-        Why work with us.
+        {d.whySection.heading}
       </h2>
       <p class="mt-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
-        Four things that hold whether you are commissioning a website or a system the business runs
-        on.
+        {d.whySection.lead}
       </p>
     </div>
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        reasons.map((reason, i) => (
+        reasons[locale].map((reason, i) => (
           <article class="flex flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
             <span
               class="font-display inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-black bg-brand-lime text-base font-black tabular-nums text-black shadow-[3px_3px_0px_#0D0F12]"

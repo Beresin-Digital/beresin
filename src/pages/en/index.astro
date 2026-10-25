@@ -1,0 +1,45 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/sections/Hero.astro';
+import Marquee from '../../components/sections/Marquee.astro';
+import Services from '../../components/sections/Services.astro';
+import Clients from '../../components/sections/Clients.astro';
+import About from '../../components/sections/About.astro';
+import Portfolio from '../../components/sections/Portfolio.astro';
+import WhyChooseUs from '../../components/sections/WhyChooseUs.astro';
+import Partnership from '../../components/sections/Partnership.astro';
+import Articles from '../../components/sections/Articles.astro';
+import FormStatus from '../../components/FormStatus.astro';
+import PortfolioModal from '../../components/PortfolioModal.astro';
+import { listPublishedArticles } from '../../lib/articles';
+import { listActiveClients } from '../../lib/clients';
+import { listPublishedProjects } from '../../lib/projects';
+
+// Server-rendered so a publish in the admin appears immediately. The DB is only
+// touched at request time, so `pnpm build` still needs no database.
+const [articles, clients, projects] = await Promise.all([
+  listPublishedArticles('en'),
+  listActiveClients(),
+  listPublishedProjects(),
+]);
+
+const title = 'Digital Solutions & Development Partner | Beresin Digital';
+const description =
+  'Beresin Digital is a digital solutions and development partner. We design and build websites, mobile apps, custom web applications, IoT solutions, system integrations, and graphic design for businesses.';
+---
+
+<BaseLayout title={title} description={description} locale="en">
+  <Hero locale="en" />
+  <Marquee locale="en" />
+  <FormStatus locale="en" />
+  <Services locale="en" />
+  <Clients clients={clients} locale="en" />
+  <About locale="en" />
+  <Portfolio projects={projects} locale="en" />
+  <WhyChooseUs locale="en" />
+  <Partnership locale="en" />
+  <Articles articles={articles} locale="en" />
+  <PortfolioModal projects={projects} locale="en" />
+</BaseLayout>

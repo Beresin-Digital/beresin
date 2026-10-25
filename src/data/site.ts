@@ -5,6 +5,7 @@
  * Every unresolved value carries a `TODO(user)` marker so it is greppable:
  *   grep -rn "TODO(user)" src/
  */
+import { dicts, type Locale } from '../i18n';
 
 export const site = {
   /** Registered legal entity name. Used in the footer and Organization JSON-LD. */
@@ -39,8 +40,9 @@ export const site = {
    * right back down to the neighbourhood the street line just stopped
    * revealing.
    *
-   * `addressLine()` skips empty fields, so every page renders
-   * "Depok, Jawa Barat, Indonesia" and the JSON-LD `PostalAddress` simply omits
+   * `addressLine()` skips empty fields, so ID pages render
+   * "Depok, Jawa Barat, Indonesia" and EN pages render
+   * "Depok, West Java, Indonesia"; the JSON-LD `PostalAddress` simply omits
    * `streetAddress` and `postalCode` rather than emitting blanks.
    *
    * TODO(user): if the company moves into a real office, fill `street` (and its
@@ -105,9 +107,12 @@ export function socialLinks(): string[] {
 /**
  * One-line postal address, for display. The country is included because this is
  * the full form; the footer and legal notices use a deliberately shorter
- * "city, country" instead.
+ * "city, country" instead. Region and country names come from the locale
+ * dictionary, so ID pages read "Jawa Barat" where EN pages read "West Java".
  */
-export function addressLine(): string {
-  const { street, city, region, postalCode, countryName } = site.address;
-  return [street, city, region, postalCode, countryName].filter(Boolean).join(', ');
+export function addressLine(locale: Locale = 'en'): string {
+  const { street, city, postalCode } = site.address;
+  return [street, city, dicts[locale].site.region, postalCode, dicts[locale].site.country]
+    .filter(Boolean)
+    .join(', ');
 }
