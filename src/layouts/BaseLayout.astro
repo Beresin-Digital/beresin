@@ -18,6 +18,8 @@ interface Props {
   jsonLd?: object[];
   lang?: 'en' | 'id';
   locale?: Locale;
+  /** Passed through to SEO: false where no 1:1 hreflang pair exists. */
+  hreflang?: boolean;
   directory?: boolean;
 }
 
