@@ -95,7 +95,7 @@
           "type": "varchar(2)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'en'"
+          "default": "'id'"
         },
         "published_at": {
           "name": "published_at",

@@ -16,7 +16,7 @@ export type ArticleStatus = (typeof ARTICLE_STATUSES)[number];
 /**
  * Public languages an article can be published in. Slugs stay globally unique
  * across locales (see `slugTaken` in lib/articles.ts), so each locale's rows
- * simply carry their own slugs — there is no translation-pair linking.
+ * simply carry their own slugs. There is no translation-pair linking.
  */
 export const ARTICLE_LOCALES = ['id', 'en'] as const;
 export type ArticleLocale = (typeof ARTICLE_LOCALES)[number];
@@ -65,7 +65,7 @@ export const articles = pgTable(
      * 'id' instead. Public pages filter by this column, so each locale
      * only ever lists its own rows.
      */
-    locale: varchar('locale', { length: 2 }).notNull().default('en'),
+    locale: varchar('locale', { length: 2 }).notNull().default('id'),
     /** Null while draft; set on first publish, then left alone. */
     publishedAt: timestamp('published_at', { withTimezone: true }),
 
