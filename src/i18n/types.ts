@@ -158,6 +158,9 @@ export interface Dict {
   };
   portfolioModal: {
     closeLabel: string;
+    detailsLabel: string;
+    whatWeDid: string;
+    startProject: string;
   };
   notFound: {
     badge: string;
