@@ -5,15 +5,28 @@
  * The form is a plain POST with no JavaScript, so the endpoint reports the
  * outcome back through the query string (`?terkirim=1` or `?gagal=<field>`).
  * Both the homepage and /contact render this, so the copy lives in one place.
+ *
+ * The `?gagal=` tokens themselves stay Indonesian (`nama`, `telepon`, ...) —
+ * they are the endpoint's vocabulary, not display copy — and are mapped to
+ * the page locale's field labels here.
  */
+import { dicts, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const d = dicts[locale];
+
 const submitted = Astro.url.searchParams.get('terkirim') === '1';
 const failedField = Astro.url.searchParams.get('gagal');
 
-const fieldLabels: Record<string, string> = {
-  nama: 'full name',
-  telepon: 'WhatsApp / phone number',
-  email: 'email address',
-  pesan: 'project needs',
+const labelFor = (token: string): string => {
+  if (token === 'nama' || token === 'telepon' || token === 'email' || token === 'pesan') {
+    return d.formStatus.fields[token];
+  }
+  return d.formStatus.fields.required;
 };
 
 /**
@@ -22,10 +35,8 @@ const fieldLabels: Record<string, string> = {
  * was down *and* the on-disk fallback could not be written.
  */
 const reasons: Record<string, string> = {
-  'terlalu-sering':
-    'Too many attempts from this network. Please try again in a few minutes, or contact us directly on WhatsApp.',
-  sistem:
-    'Sorry, we could not save your message due to a technical issue. Please try again shortly, or contact us directly on WhatsApp.',
+  'terlalu-sering': d.formStatus.rateLimited,
+  sistem: d.formStatus.system,
 };
 
 const reason = failedField ? reasons[failedField] : undefined;
@@ -37,7 +48,7 @@ const visible = submitted || Boolean(failedField);
     <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" role="status" aria-live="polite">
       {submitted ? (
         <p class="rounded-2xl border-2 border-black bg-brand-lime px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
-          Thanks! We have received your message. The Beresin Digital team will get back to you.
+          {d.formStatus.success}
         </p>
       ) : reason ? (
         <p class="rounded-2xl border-2 border-black bg-white px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
@@ -45,8 +56,9 @@ const visible = submitted || Boolean(failedField);
         </p>
       ) : (
         <p class="rounded-2xl border-2 border-black bg-white px-6 py-4 text-sm font-extrabold text-black shadow-[4px_4px_0px_#0D0F12]">
-          Please check the{' '}
-          <strong>{fieldLabels[failedField!] ?? 'required'}</strong> field before sending.
+          {d.formStatus.checkBefore}
+          <strong>{labelFor(failedField!)}</strong>
+          {d.formStatus.checkAfter}
         </p>
       )}
     </div>

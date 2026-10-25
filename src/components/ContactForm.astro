@@ -3,23 +3,30 @@
  * Shared lead form, used both inside the consultation modal and on /contact.
  * The `idPrefix` prop keeps DOM ids unique when both render on the same page.
  *
- * Plain POST to /api/contact so it works without JavaScript.
+ * Plain POST to /api/contact so it works without JavaScript. The hidden
+ * `page_url` field carries `Astro.url.pathname`, so a form on an English page
+ * already posts back to that English page — the endpoint redirects to
+ * `page_url` unchanged, no endpoint change needed.
  */
+import { dicts, localizePath, type Locale } from '../i18n';
+
 interface Props {
   idPrefix: string;
   source: string;
   /** Rendered inside the modal, which already supplies its own heading. */
   compact?: boolean;
+  locale?: Locale;
 }
 
-const { idPrefix, source, compact = false } = Astro.props;
+const { idPrefix, source, compact = false, locale = 'en' } = Astro.props;
+const d = dicts[locale];
 const id = (field: string) => `${idPrefix}-${field}`;
 ---
 
 <form method="post" action="/api/contact" class="space-y-4">
   <!-- Honeypot: hidden from humans, irresistible to bots. -->
   <div class="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-    <label for={id('company_website')}>Do not fill</label>
+    <label for={id('company_website')}>{d.contactForm.honeypot}</label>
     <input
       type="text"
       id={id('company_website')}
@@ -34,7 +41,7 @@ const id = (field: string) => `${idPrefix}-${field}`;
 
   <div>
     <label for={id('name')} class="mb-1 block text-xs font-extrabold uppercase">
-      Full Name
+      {d.contactForm.nameLabel}
     </label>
     <input
       type="text"
@@ -43,14 +50,14 @@ const id = (field: string) => `${idPrefix}-${field}`;
       required
       maxlength="100"
       autocomplete="name"
-      placeholder="Your name"
+      placeholder={d.contactForm.namePlaceholder}
       class="w-full rounded-xl border border-gray-300 bg-brand-surface px-4 py-2.5 text-xs font-semibold focus:border-black focus:outline-none"
     />
   </div>
 
   <div>
     <label for={id('phone')} class="mb-1 block text-xs font-extrabold uppercase">
-      WhatsApp / Phone Number
+      {d.contactForm.phoneLabel}
     </label>
     <input
       type="tel"
@@ -60,14 +67,14 @@ const id = (field: string) => `${idPrefix}-${field}`;
       maxlength="20"
       autocomplete="tel"
       inputmode="tel"
-      placeholder="0812xxxxxxx"
+      placeholder={d.contactForm.phonePlaceholder}
       class="w-full rounded-xl border border-gray-300 bg-brand-surface px-4 py-2.5 text-xs font-semibold focus:border-black focus:outline-none"
     />
   </div>
 
   <div>
     <label for={id('email')} class="mb-1 block text-xs font-extrabold uppercase">
-      Email <span class="font-medium normal-case text-gray-500">(optional)</span>
+      {d.contactForm.emailLabel} <span class="font-medium normal-case text-gray-500">{d.contactForm.emailOptional}</span>
     </label>
     <input
       type="email"
@@ -75,21 +82,21 @@ const id = (field: string) => `${idPrefix}-${field}`;
       name="email"
       maxlength="254"
       autocomplete="email"
-      placeholder="name@company.com"
+      placeholder={d.contactForm.emailPlaceholder}
       class="w-full rounded-xl border border-gray-300 bg-brand-surface px-4 py-2.5 text-xs font-semibold focus:border-black focus:outline-none"
     />
   </div>
 
   <div>
     <label for={id('message')} class="mb-1 block text-xs font-extrabold uppercase">
-      Project Needs
+      {d.contactForm.messageLabel}
     </label>
     <textarea
       id={id('message')}
       name="message"
       rows={compact ? 3 : 5}
       maxlength="2000"
-      placeholder="Website / Custom Web App / Mobile App / Integration / IoT..."
+      placeholder={d.contactForm.messagePlaceholder}
       class="w-full rounded-xl border border-gray-300 bg-brand-surface p-3 text-xs font-semibold focus:border-black focus:outline-none"></textarea>
   </div>
 
@@ -97,11 +104,10 @@ const id = (field: string) => `${idPrefix}-${field}`;
     type="submit"
     class="font-mono w-full rounded-xl border border-black bg-brand-lime py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime-hover"
   >
-    Send Message &rarr;
+    {d.contactForm.submit}
   </button>
 
   <p class="text-[10px] leading-relaxed text-gray-500">
-    By submitting this form you agree to your data being processed in line with
-    our <a href="/privacy-policy" class="underline hover:text-black">Privacy Policy</a>.
+    {d.contactForm.privacyBefore}<a href={localizePath('/privacy-policy', locale)} class="underline hover:text-black">{d.contactForm.privacyLink}</a>{d.contactForm.privacyAfter}
   </p>
 </form>
