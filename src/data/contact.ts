@@ -88,7 +88,7 @@ export const locationFacts: Record<Locale, Assurance[]> = {
   id: [
     {
       label: 'Jam kerja',
-      value: 'Senin-Jumat, 09:00–18:00 WIB',
+      value: 'Senin-Jumat, 09:00-18:00 WIB',
     },
     {
       label: 'Zona waktu',
