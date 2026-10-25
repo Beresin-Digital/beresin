@@ -8,39 +8,42 @@ import PortfolioModal from '../components/PortfolioModal.astro';
 import { ArrowUpRight, Phone } from '@lucide/astro';
 import { listPublishedProjects } from '../lib/projects';
 import { site, whatsappLink } from '../data/site';
+import { dicts } from '../i18n';
 import { breadcrumbs } from '../lib/seo';
+
+const d = dicts.id;
 
 // Server-rendered: the published set is read per request, so an edit in the
 // admin shows up without a rebuild.
 const projects = await listPublishedProjects();
 
-const title = 'Portfolio — Websites, Apps & Digital Solutions | Beresin Digital';
+const title = 'Portofolio — Website, Aplikasi & Solusi Digital | Beresin Digital';
 const description =
-  'Selected work from Beresin Digital: company profile websites, education websites, and custom digital solutions. Delivered projects are shown as delivered; concept work is clearly labelled.';
+  'Karya pilihan dari Beresin Digital: website company profile, website pendidikan, dan solusi digital kustom. Proyek yang sudah diserahkan ditampilkan sebagai proyek yang sudah diserahkan; karya konsep diberi label dengan jelas.';
 
 const pageUrl = `${site.url}/portfolio`;
 
 const jsonLd = [
   breadcrumbs([
-    { name: 'Home', url: `${site.url}/` },
-    { name: 'Portfolio', url: pageUrl },
+    { name: 'Beranda', url: `${site.url}/` },
+    { name: 'Portofolio', url: pageUrl },
   ]),
 ];
 ---
 
-<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+<BaseLayout title={title} description={description} jsonLd={jsonLd} locale="id">
   <PageHeader
-    eyebrow="Portfolio"
-    title="Selected work"
-    lead="A sample of the solutions we build. We only present delivered projects as delivered — anything still at concept stage is labelled as such."
+    eyebrow="Portofolio"
+    title="Karya pilihan"
+    lead="Contoh solusi yang kami bangun. Kami hanya menampilkan proyek yang sudah diserahkan sebagai proyek yang sudah diserahkan, apa pun yang masih tahap konsep diberi label dengan jelas."
   />
 
   <section class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <!-- The page h1 ("Selected work") already names this list, so the section
+      <!-- The page h1 ("Karya pilihan") already names this list, so the section
            heading is visually hidden — it exists only to keep the outline
            h1 → h2 → h3 (the cards are h3) instead of jumping straight to h3. -->
-      <h2 class="sr-only">Project list</h2>
+      <h2 class="sr-only">Daftar proyek</h2>
       <!-- Masonry via CSS multi-column — the same technique (and the same
            column-major reading order) as /articles. ProjectCard's `masonry`
            variant drops the fixed 16:10 cover box so the cards keep their natural
@@ -48,18 +51,17 @@ const jsonLd = [
       {
         projects.length === 0 ? (
           <p class="rounded-2xl border-2 border-dashed border-gray-300 bg-brand-surface px-6 py-16 text-center text-sm font-medium text-gray-500">
-            No projects are published yet. Check back soon.
+            Belum ada proyek yang diterbitkan. Silakan kembali lagi nanti.
           </p>
         ) : (
           <div class="columns-1 gap-8 sm:columns-2 lg:columns-3">
-            {projects.map((project) => <ProjectCard project={project} variant="masonry" />)}
+            {projects.map((project) => <ProjectCard project={project} variant="masonry" locale="id" />)}
           </div>
         )
       }
 
       <p class="mt-10 max-w-2xl text-xs font-medium leading-relaxed text-gray-600 sm:text-sm">
-        Some engagements are under confidentiality agreements, so a few projects cannot be shown here.
-        If you would like to see work closer to your industry, ask us directly.
+        Sebagian kerja sama terikat perjanjian kerahasiaan, sehingga beberapa proyek tidak bisa ditampilkan di sini. Jika Anda ingin melihat karya yang lebih dekat dengan industri Anda, tanyakan langsung kepada kami.
       </p>
     </div>
   </section>
@@ -71,31 +73,30 @@ const jsonLd = [
       <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
         <div class="lg:col-span-8">
           <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
-            Next step
+            Langkah berikutnya
           </p>
           <h2
             class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
           >
-            Have a project in mind?
+            Punya proyek dalam pikiran?
           </h2>
           <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
-            Tell us what you need to build. We will tell you plainly whether we are the right fit, and
-            what the first step would look like.
+            Ceritakan apa yang perlu Anda bangun. Kami akan sampaikan dengan jelas apakah kami pilihan yang tepat, dan seperti apa langkah pertamanya.
           </p>
         </div>
 
         <div class="flex flex-col gap-3 lg:col-span-4">
           <button
             type="button"
-            data-open-modal="Discuss Your Project"
+            data-open-modal={d.modalSubjects.discussProject}
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
           >
-            Discuss Your Project
+            {d.modalSubjects.discussProject}
             <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
           </button>
 
           <a
-            href={whatsappLink('Hi Beresin Digital, I would like to discuss a digital project.')}
+            href={whatsappLink(d.waMessages.discussProject)}
             target="_blank"
             rel="noopener noreferrer"
             class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
@@ -108,5 +109,5 @@ const jsonLd = [
     </div>
   </section>
 
-  <PortfolioModal projects={projects} />
+  <PortfolioModal projects={projects} locale="id" />
 </BaseLayout>
