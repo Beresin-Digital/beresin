@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Principles from '../../components/sections/Principles.astro';
+import { Picture } from 'astro:assets';
+import { ArrowUpRight, Phone } from '@lucide/astro';
+import { images } from '../../assets/images/manifest';
+import { site, addressLine, whatsappLink } from '../../data/site';
+import { dicts, localizePath } from '../../i18n';
+
+const d = dicts.en;
+
+const title = 'About Us | Beresin Digital';
+const description =
+  'PT Beresin Urusan Digital is a digital solutions and development partner based in Depok, West Java — building websites, mobile apps, custom web applications, IoT solutions, system integrations, and graphic design for businesses and teams.';
+
+/**
+ * The company facts a prospective client or partner actually verifies. Kept as
+ * data so the strip and any future JSON-LD stay in sync with `site.ts`.
+ */
+const facts = [
+  { label: 'Legal entity', value: site.legalName },
+  { label: 'Address', value: addressLine('en') },
+  {
+    label: 'Email',
+    value: site.emailProcurement,
+    href: `mailto:${site.emailProcurement}`,
+  },
+  {
+    label: 'WhatsApp',
+    value: site.whatsappDisplay,
+    href: whatsappLink(),
+    external: true,
+  },
+] as const;
+---
+
+<BaseLayout title={title} description={description} locale="en">
+  <PageHeader
+    eyebrow="About Us"
+    title="Digital solutions, built around your business"
+    lead="A digital solutions and development partner — we build systems meant to be used every day, not just to look good in a presentation. Here is what we stand for and who we work with."
+  />
+
+  <!-- Positioning. Deliberately not the homepage About block: that section is
+       the teaser, this is the page, so the two must not be the same markup. -->
+  <section class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div class="lg:col-span-6">
+          <p class="mb-3 inline-flex items-center gap-2 font-mono text-xs font-extrabold uppercase tracking-widest">
+            <span class="rounded border border-black bg-brand-lime px-3 py-1 text-black shadow-[2px_2px_0px_#0D0F12]">
+              Who we are
+            </span>
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
+          >
+            We build digital solutions, not just websites.
+          </h2>
+
+          <div class="mt-5 space-y-4 text-sm font-medium leading-relaxed text-gray-700 sm:text-base">
+            <p>
+              PT Beresin Urusan Digital is a digital solutions and development partner based
+              in {site.address.city}, {d.site.region}. We help businesses build and grow their
+              digital presence and systems — from professional websites and applications to custom
+              systems shaped around how each business actually works.
+            </p>
+            <p>
+              Our clients are companies, education foundations, and agencies — teams that need their
+              systems to be genuinely used day to day, not just to pass at handover. That is why we
+              put process mapping and documentation up front, not at the end.
+            </p>
+            <p>
+              We also work as a development partner for agencies and internal teams that need the
+              build handled, under their brand or ours. Engagements often continue past launch, as a
+              long-term partner for the roadmap rather than a one-off vendor.
+            </p>
+          </div>
+
+          <a
+            href={localizePath('/services', 'en')}
+            class="font-mono mt-7 inline-flex items-center gap-2 rounded-full border border-black bg-white px-5 py-3 text-xs font-extrabold uppercase tracking-wider text-brand-dark shadow-[3px_3px_0px_#0D0F12] transition-colors hover:bg-brand-lime"
+          >
+            See our services
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </a>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="overflow-hidden rounded-3xl border-2 border-black bg-white shadow-[8px_8px_0px_#0D0F12]">
+            <Picture
+              src={images.heroTeam.src}
+              formats={['avif', 'webp']}
+              fallbackFormat="webp"
+              widths={[480, 720, 960]}
+              sizes="(min-width: 1024px) 48vw, 90vw"
+              alt={d.images.heroTeam}
+              loading="lazy"
+              decoding="async"
+              class="aspect-[3/2] h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Principles locale="en" />
+
+  <!-- Company facts. Kept compact: the four things someone actually checks
+       before engaging a vendor. NPWP is intentionally absent — the owner chose
+       not to publish it. -->
+  <section class="border-b border-gray-200 bg-brand-surface py-16 text-brand-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display text-2xl font-black uppercase tracking-tight text-brand-dark sm:text-3xl">
+        Company details
+      </h2>
+      <p class="mt-3 max-w-2xl text-xs font-medium leading-relaxed text-gray-700 sm:text-sm">
+        The details usually requested when engaging a vendor or partner.
+      </p>
+
+      <dl class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          facts.map((fact) => (
+            <div class="rounded-2xl border border-gray-200 bg-white p-5">
+              <dt class="font-mono text-[10px] font-extrabold uppercase tracking-widest text-gray-600">
+                {fact.label}
+              </dt>
+              <dd class="mt-2 text-sm font-extrabold leading-snug text-brand-dark [overflow-wrap:anywhere]">
+                {fact.href ? (
+                  <a
+                    href={fact.href}
+                    class="underline decoration-brand-lime decoration-2 underline-offset-2 hover:text-black"
+                    target={'external' in fact && fact.external ? '_blank' : undefined}
+                    rel={'external' in fact && fact.external ? 'noopener noreferrer' : undefined}
+                  >
+                    {fact.value}
+                  </a>
+                ) : (
+                  fact.value
+                )}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="border-b border-black bg-brand-dark py-16 text-white sm:py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <p class="font-mono mb-3 text-xs font-extrabold uppercase tracking-widest text-brand-lime">
+            Next step
+          </p>
+          <h2
+            class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          >
+            Want to see whether how we work fits?
+          </h2>
+          <p class="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+            Tell us about the project or the problem you are facing. We will tell you plainly if we
+            are not the right fit for what you need.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3 lg:col-span-4">
+          <button
+            type="button"
+            data-open-modal={d.modalSubjects.discussProject}
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
+          >
+            Free consultation
+            <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
+          </button>
+
+          <a
+            href={whatsappLink(d.waMessages.discussProject)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-mono inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
+          >
+            <Phone class="h-4 w-4" stroke-width={2.25} />
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
