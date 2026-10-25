@@ -17,7 +17,7 @@ const d = dicts.en;
 // admin shows up without a rebuild.
 const projects = await listPublishedProjects();
 
-const title = 'Portfolio — Websites, Apps & Digital Solutions | Beresin Digital';
+const title = 'Portfolio: Websites, Apps & Digital Solutions | Beresin Digital';
 const description =
   'Selected work from Beresin Digital: company profile websites, education websites, and custom digital solutions. Delivered projects are shown as delivered; concept work is clearly labelled.';
 
@@ -35,16 +35,16 @@ const jsonLd = [
   <PageHeader
     eyebrow="Portfolio"
     title="Selected work"
-    lead="A sample of the solutions we build. We only present delivered projects as delivered — anything still at concept stage is labelled as such."
+    lead="A sample of the solutions we build. We only present delivered projects as delivered. Anything still at concept stage is labelled as such."
   />
 
   <section class="border-b border-gray-200 bg-white py-16 text-brand-dark sm:py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- The page h1 ("Selected work") already names this list, so the section
-           heading is visually hidden — it exists only to keep the outline
+           heading is visually hidden: it exists only to keep the outline
            h1 → h2 → h3 (the cards are h3) instead of jumping straight to h3. -->
       <h2 class="sr-only">Project list</h2>
-      <!-- Masonry via CSS multi-column — the same technique (and the same
+      <!-- Masonry via CSS multi-column, the same technique (and the same
            column-major reading order) as /articles. ProjectCard's `masonry`
            variant drops the fixed 16:10 cover box so the cards keep their natural
            heights and pack without the gaps a grid row would leave. -->

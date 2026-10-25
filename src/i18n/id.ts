@@ -20,7 +20,7 @@ export const id: Dict = {
     articles: "Artikel",
     contact: "Kontak",
     menuAria: "Menu navigasi",
-    homeSr: "— beranda",
+    homeSr: ", beranda",
     getInTouch: "Hubungi Kami",
     chatWhatsapp: "Chat di WhatsApp",
   },
@@ -146,7 +146,7 @@ export const id: Dict = {
   principlesSection: {
     eyebrow: "Prinsip dan Cara Kami Bekerja",
     heading: "Cara kami bekerja.",
-    lead: "Enam hal yang berlaku di setiap proyek, apa pun ukurannya. Ini bukan sekadar nilai pajangan, Anda bisa menuntut semuanya dari kami.",
+    lead: "Enam hal yang berlaku di setiap proyek, apa pun ukurannya. Ini bukan sekadar nilai pajangan. Anda bisa menuntut semuanya dari kami.",
   },
   faqSection: {
     heading: "Pertanyaan yang sering diajukan.",

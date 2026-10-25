@@ -96,7 +96,7 @@ export const GET: APIRoute = async () => {
 
   // Static pages carry hreflang alternates: the ID URL, the EN URL, and
   // x-default pointing at the ID URL (Indonesian is the default locale).
-  // Article entries carry none — slugs are per-locale with no pair data, so a
+  // Article entries carry none. Slugs are per-locale with no pair data, so a
   // cross-link would be a guess, not a pair.
   const alternateLinks = (path: string): { hreflang: string; href: string }[] => {
     const idPath = path === '/en' ? '/' : path.replace(/^\/en\//, '/');

@@ -5,7 +5,7 @@
  *
  * Plain POST to /api/contact so it works without JavaScript. The hidden
  * `page_url` field carries `Astro.url.pathname`, so a form on an English page
- * already posts back to that English page — the endpoint redirects to
+ * already posts back to that English page: the endpoint redirects to
  * `page_url` unchanged, no endpoint change needed.
  */
 import { dicts, localizePath, type Locale } from '../i18n';

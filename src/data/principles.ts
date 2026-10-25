@@ -22,7 +22,7 @@ export const principles: Record<Locale, Principle[]> = {
     {
       title: 'We start from your process, not a template',
       description:
-        'Every project opens by mapping how you actually work — who uses the system, how the flow runs, and which part hurts the most. What we build follows your business, not the other way around.',
+        'Every project opens by mapping how you actually work: who uses the system, how the flow runs, and which part hurts the most. What we build follows your business, not the other way around.',
     },
     {
       title: 'Scope and cost in writing up front',
@@ -37,7 +37,7 @@ export const principles: Record<Locale, Principle[]> = {
     {
       title: 'You can run the system yourself',
       description:
-        'Admin panels are designed for non-technical staff, and every project closes with training and written documentation — so you are not dependent on us for day-to-day tasks.',
+        'Admin panels are designed for non-technical staff, and every project closes with training and written documentation, so you are not dependent on us for day-to-day tasks.',
     },
     {
       title: 'The code and assets are yours',
@@ -47,7 +47,7 @@ export const principles: Record<Locale, Principle[]> = {
     {
       title: 'Your data stays in Indonesia',
       description:
-        'Systems and data are stored on servers in the country. We also do not store visitors’ raw IP addresses — only an encrypted form, for security purposes, in line with the data-minimisation principle of the PDP Law.',
+        'Systems and data are stored on servers in the country. We also do not store visitors’ raw IP addresses, only an encrypted form, for security purposes, in line with the data-minimisation principle of the PDP Law.',
     },
   ],
   id: [

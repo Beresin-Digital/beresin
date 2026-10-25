@@ -7,7 +7,7 @@ export const prerender = false;
  * Exists so the English article-detail route has a real route to rewrite to
  * (`Astro.rewrite('/en/404')`) on an unknown or unpublished slug. The body
  * is shared with the root 404 page; only the locale is fixed to English here.
- * No hreflang links — the requested path is not a real page in either locale.
+ * No hreflang links: the requested path is not a real page in either locale.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NotFoundContent from '../../components/NotFoundContent.astro';

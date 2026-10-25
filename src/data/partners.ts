@@ -25,7 +25,7 @@ export const partnerTypes: Record<Locale, PartnerType[]> = {
     {
       title: 'Creative & branding agencies',
       description:
-        'You own the strategy and the identity; we handle the build so your client gets one seamless delivery.',
+        'You own the strategy and the identity; we handle the build so your client gets one delivery with no handoff gaps.',
       icon: 'palette',
     },
     {
@@ -51,7 +51,7 @@ export const partnerTypes: Record<Locale, PartnerType[]> = {
     {
       title: 'Agensi kreatif & branding',
       description:
-        'Anda memegang strategi dan identitasnya; kami menangani pembangunannya sehingga klien Anda mendapat satu serah terima yang mulus.',
+        'Anda memegang strategi dan identitasnya; kami menangani pembangunannya sehingga klien Anda mendapat satu serah terima tanpa celah.',
       icon: 'palette',
     },
     {

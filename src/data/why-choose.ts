@@ -18,7 +18,7 @@ export const reasons: Record<Locale, Reason[]> = {
     {
       title: 'Business-Oriented Solutions',
       description:
-        'We start from what the business needs the system to achieve, then choose the technology — not the other way around. Every decision is tied to a goal you can name.',
+        'We start from what the business needs the system to achieve, then choose the technology, not the other way around. Every decision is tied to a goal you can name.',
     },
     {
       title: 'Flexible Development Capabilities',

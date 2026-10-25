@@ -20,7 +20,7 @@ export const en: Dict = {
     articles: "Articles",
     contact: "Contact",
     menuAria: "Navigation menu",
-    homeSr: "— home",
+    homeSr: ", home",
     getInTouch: "Get in Touch",
     chatWhatsapp: "Chat on WhatsApp",
   },
@@ -105,7 +105,7 @@ export const en: Dict = {
   aboutSection: {
     eyebrow: "Who we are",
     heading: "Digital solutions, built around your business.",
-    lead: "Beresin Digital helps businesses build and grow their digital solutions — from professional websites to applications and custom systems. We pair clear design with dependable engineering, and deliver on a structured timeline.",
+    lead: "Beresin Digital helps businesses build and grow their digital solutions, from professional websites to applications and custom systems. We pair clear design with dependable engineering, and deliver on a structured timeline.",
     badges: [
       "Structured delivery & clear scope",
       "Trusted by businesses, schools & agencies",
@@ -116,7 +116,7 @@ export const en: Dict = {
   portfolioSection: {
     eyebrow: "Selected Work",
     heading: "Work we can show.",
-    lead: "A sample of the solutions we build. Concept work is labelled as such — we only present delivered projects as delivered.",
+    lead: "A sample of the solutions we build. Concept work is labelled as such. We only present delivered projects as delivered.",
     viewAll: "View all work",
   },
   whySection: {
@@ -127,7 +127,7 @@ export const en: Dict = {
   partnershipSection: {
     eyebrow: "Partnership",
     heading: "Let’s build together.",
-    lead: "Beyond direct clients, we work as a development partner for teams and agencies who need the build handled — under your brand or ours.",
+    lead: "Beyond direct clients, we work as a development partner for teams and agencies who need the build handled, under your brand or ours.",
     cta: "Discuss a Partnership",
   },
   articlesSection: {
@@ -146,7 +146,7 @@ export const en: Dict = {
   principlesSection: {
     eyebrow: "Principles & How We Work",
     heading: "How we work.",
-    lead: "Six things that hold on every project, whatever its size. These are not wall-poster values — you can hold us to all of them.",
+    lead: "Six things that hold on every project, whatever its size. These are not wall-poster values. You can hold us to all of them.",
   },
   faqSection: {
     heading: "Frequently asked questions.",

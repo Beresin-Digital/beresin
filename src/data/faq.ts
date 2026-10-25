@@ -36,7 +36,7 @@ export const faqItems: Record<Locale, FaqItem[]> = {
     {
       question: 'Where are our data and systems stored?',
       answer:
-        'On servers we lease in Indonesia, so your data does not leave Indonesian jurisdiction. We do not store visitors’ raw IP addresses — only an encrypted form (HMAC) for security purposes, in line with the data-minimisation principle of the PDP Law.',
+        'On servers we lease in Indonesia, so your data does not leave Indonesian jurisdiction. We do not store visitors’ raw IP addresses, only an encrypted form (HMAC) for security purposes, in line with the data-minimisation principle of the PDP Law.',
     },
     {
       question: 'Will our team be trained to manage the system?',
@@ -46,7 +46,7 @@ export const faqItems: Record<Locale, FaqItem[]> = {
     {
       question: 'Can you work with the systems and tools we already use?',
       answer:
-        'Usually, yes. We regularly integrate with existing tools — payment gateways, messaging, CRM, accounting, and internal systems — through APIs and documented integrations. If something cannot be connected cleanly, we will tell you before the project starts, not after.',
+        'Usually, yes. We regularly integrate with existing tools (payment gateways, messaging, CRM, accounting, and internal systems) through APIs and documented integrations. If something cannot be connected cleanly, we will tell you before the project starts, not after.',
     },
     {
       question: 'Are you willing to sign an NDA before technical discussions?',
@@ -58,7 +58,7 @@ export const faqItems: Record<Locale, FaqItem[]> = {
       // TODO(user): confirm the actual milestone split (e.g. 30/40/30) and whether
       // a deposit is required before kickoff, then state it here. Until then the
       // answer deliberately points at the proposal rather than inventing
-      // percentages — this string is rendered on the page AND published in
+      // percentages: this string is rendered on the page AND published in
       // FAQPage JSON-LD.
       answer:
         'Payment is made in stages following the progress of the work, not all up front. The terms and percentages are put in writing in the proposal so you can verify them before the project begins.',

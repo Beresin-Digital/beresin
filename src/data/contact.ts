@@ -25,7 +25,7 @@ export const responseSteps: Record<Locale, ResponseStep[]> = {
     {
       title: 'We read and review it',
       description:
-        'Your brief lands in a single inbox watched by the team — not a form nobody reads.',
+        'Your brief lands in a single inbox watched by the team, not a form nobody reads.',
     },
     {
       title: 'We reply within 1×24 working hours',
@@ -120,7 +120,7 @@ export const partnerAssurances: Record<Locale, Assurance[]> = {
     {
       label: 'Confidentiality',
       value:
-        'Willing to sign an NDA before technical discussions — send your draft, or we provide a standard one.',
+        'Willing to sign an NDA before technical discussions. Send your draft, or we provide a standard one.',
     },
     {
       label: 'Data location',

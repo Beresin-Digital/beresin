@@ -29,7 +29,7 @@ export const processSteps: Record<Locale, ProcessStep[]> = {
     {
       title: 'Proposal & Scope',
       description:
-        'The scope, the sequence of work, and the cost breakdown are put in writing — so there are no surprises midway or at handover.',
+        'The scope, the sequence of work, and the cost breakdown are put in writing, so there are no surprises midway or at handover.',
       output: 'Proposal & formal quote',
     },
     {
