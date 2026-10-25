@@ -93,6 +93,12 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           docker tag "beresin:$GITHUB_SHA" "ghcr.io/beresin-digital/beresin:staging-$GITHUB_SHA"
           docker push "ghcr.io/beresin-digital/beresin:staging-$GITHUB_SHA"
+      
+      - name: Debug OIDC claims (sementara)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
+        run: |
+          resp=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com")
+          echo "$resp" | python3 -c "import sys,json,base64; v=json.load(sys.stdin)['value']; p=v.split('.')[1]; p+='='*(-len(p)%4); print(base64.urlsafe_b64decode(p).decode())"
 
       - name: Configure AWS credentials (OIDC, no stored keys)
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging'
