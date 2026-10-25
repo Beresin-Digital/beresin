@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ConsultModal from '../components/ConsultModal.astro';
 import Analytics from '../components/Analytics.astro';
+import type { Locale } from '../i18n';
 
 interface Props {
   title: string;
@@ -16,14 +17,18 @@ interface Props {
   noindex?: boolean;
   jsonLd?: object[];
   lang?: 'en' | 'id';
+  locale?: Locale;
   directory?: boolean;
 }
 
 const props = Astro.props;
+// Pages pass `locale`; `lang` is kept as a fallback so older call sites keep
+// rendering. New pages pass `locale` explicitly.
+const locale: Locale = props.locale ?? props.lang ?? 'en';
 ---
 
 <!doctype html>
-<html lang={props.lang ?? 'en'}>
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,7 +46,7 @@ const props = Astro.props;
       crossorigin
     />
 
-    <SEO {...props} />
+    <SEO {...props} lang={locale} />
   </head>
 
   <body class="bg-white text-brand-dark antialiased">
@@ -49,17 +54,17 @@ const props = Astro.props;
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:border focus:border-black focus:bg-brand-lime focus:px-4 focus:py-2 focus:text-xs focus:font-black focus:uppercase focus:tracking-wider"
     >
-      {props.lang === 'id' ? 'Lewati ke konten utama' : 'Skip to main content'}
+      {locale === 'id' ? 'Lewati ke konten utama' : 'Skip to main content'}
     </a>
 
-    <Header />
+    <Header locale={locale} />
 
     <main id="main">
       <slot />
     </main>
 
-    <Footer />
-    {!props.directory && <ConsultModal />}
-    <Analytics lang={props.lang} />
+    <Footer locale={locale} />
+    {!props.directory && <ConsultModal locale={locale} />}
+    <Analytics lang={locale} />
   </body>
 </html>
