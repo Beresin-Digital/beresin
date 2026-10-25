@@ -4,20 +4,17 @@ import { ArrowUpRight } from '@lucide/astro';
 import { services } from '../../data/services';
 ---
 
-<section id="services" class="border-b border-black bg-brand-dark py-20 text-white">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section id="services" class="bg-white py-24 text-brand-dark">
+  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
     <div class="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
       <div>
-        <p
-          class="font-mono mb-3 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-brand-lime"
-        >
-          <svg class="h-4 w-4 fill-brand-lime" viewBox="0 0 24 24" aria-hidden="true">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          What we do
+        <p class="mb-4">
+          <span class="font-display rounded-full border-2 border-black bg-brand-dark px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-lime">
+            What we do
+          </span>
         </p>
         <h2
-          class="font-display max-w-2xl text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          class="font-display max-w-2xl text-3xl font-bold uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
           Websites, apps, integrations, and design built around your business.
         </h2>
@@ -26,37 +23,43 @@ import { services } from '../../data/services';
       <div>
         <a
           href="/services"
-          class="font-mono inline-block rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-white/20"
+          class="font-display inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-white px-6 py-3 text-xs font-bold uppercase tracking-wider text-black shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand-smoke hover:shadow-none"
         >
-          All services &rarr;
+          All services
+          <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
         </a>
       </div>
     </div>
 
-    <!-- Four equal services in a four-up grid (two-up from sm). At lg (1024) a
-         four-column grid squeezes the cards to ~222px, which forces 3-line
-         titles and 5-line descriptions; two-up there reads far better, so the
-         four-up layout only kicks in at xl. -->
+    <!-- Four service compartments. Two-up from sm; four-up only at xl, where a
+         four-column grid would squeeze cards to ~222px and force 3-line titles.
+         Cards alternate white/smoke so the grid reads as distinct compartments
+         on the white section background. -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {
-        services.map((service) => (
-          <article class="group flex flex-col justify-between space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-brand-lime">
+        services.map((service, i) => (
+          <article
+            class:list={[
+              'group flex flex-col justify-between space-y-6 rounded-3xl border-2 border-black p-6 shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+              i % 2 === 0 ? 'bg-white' : 'bg-brand-smoke',
+            ]}
+          >
             <div>
-              <div class="mb-4 flex items-center justify-between">
-                <h3 class="font-display text-xl font-black uppercase text-white transition-colors group-hover:text-brand-lime">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <h3 class="font-display text-xl font-bold uppercase leading-tight tracking-tight text-brand-dark">
                   {service.title}
                 </h3>
                 <span
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-lime font-bold text-black"
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-black bg-brand-lime text-black"
                   aria-hidden="true"
                 >
                   <ArrowUpRight class="h-5 w-5" stroke-width={2.5} />
                 </span>
               </div>
-              <p class="text-xs font-medium leading-relaxed text-gray-400">{service.description}</p>
+              <p class="text-xs font-medium leading-relaxed text-brand-muted sm:text-sm">{service.description}</p>
             </div>
 
-            <div class="aspect-[3/2] overflow-hidden rounded-2xl border border-white/10">
+            <div class="aspect-[3/2] overflow-hidden rounded-2xl border-2 border-black">
               <Picture
                 src={service.image.src}
                 formats={['avif', 'webp']}

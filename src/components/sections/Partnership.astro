@@ -3,10 +3,9 @@ import { ArrowUpRight, Building2, Code, Megaphone, Palette } from '@lucide/astro
 import { partnerTypes } from '../../data/partners';
 
 /**
- * "Partnership" — who we collaborate with.
+ * "Partnership": who we collaborate with.
  *
- * Dark band, echoing the Services section, so the homepage has a clear closing
- * pair before the Insight block. The icon set mirrors the clients marquee.
+ * Light bento compartments on cream. The icon set mirrors the clients marquee.
  */
 const icons = {
   'building-2': Building2,
@@ -20,32 +19,29 @@ function iconFor(name: string) {
 }
 ---
 
-<section id="partnership" class="border-b border-black bg-brand-dark py-20 text-white">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section id="partnership" class="bg-brand-surface py-24 text-brand-dark">
+  <div class="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
       <div class="lg:col-span-5">
-        <p
-          class="font-mono mb-3 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-brand-lime"
-        >
-          <svg class="h-4 w-4 fill-brand-lime" viewBox="0 0 24 24" aria-hidden="true">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          Partnership
+        <p class="mb-4">
+          <span class="font-display rounded-full border-2 border-black bg-brand-dark px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-brand-lime">
+            Partnership
+          </span>
         </p>
         <h2
-          class="font-display text-3xl font-black uppercase leading-none tracking-tight text-white sm:text-5xl"
+          class="font-display text-3xl font-bold uppercase leading-none tracking-tight text-brand-dark sm:text-5xl"
         >
           Let&rsquo;s build together.
         </h2>
-        <p class="mt-4 max-w-xl text-sm font-medium leading-relaxed text-gray-300 sm:text-base">
+        <p class="mt-4 max-w-xl text-sm font-medium leading-relaxed text-brand-muted sm:text-base">
           Beyond direct clients, we work as a development partner for teams and agencies who need
-          the build handled — under your brand or ours.
+          the build handled, under your brand or ours.
         </p>
 
         <button
           type="button"
           data-open-modal="Discuss a Partnership"
-          class="font-mono mt-7 inline-flex items-center gap-2 rounded-full border border-black bg-brand-lime px-6 py-3.5 text-xs font-black uppercase tracking-wider text-black shadow-[3px_3px_0px_#FFFFFF] transition-colors hover:bg-brand-lime-hover"
+          class="font-display mt-7 inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-brand-lime px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-black shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand-dark hover:text-brand-lime hover:shadow-none"
         >
           Discuss a Partnership
           <ArrowUpRight class="h-4 w-4" stroke-width={2.5} />
@@ -54,20 +50,25 @@ function iconFor(name: string) {
 
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:col-span-7">
         {
-          partnerTypes.map((partner) => {
+          partnerTypes.map((partner, i) => {
             const Icon = iconFor(partner.icon);
             return (
-              <article class="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:border-brand-lime">
+              <article
+                class:list={[
+                  'flex flex-col rounded-3xl border-2 border-black p-6 shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+                  i % 2 === 0 ? 'bg-white' : 'bg-brand-smoke',
+                ]}
+              >
                 <span
-                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-lime text-black"
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-black bg-brand-lime text-black"
                   aria-hidden="true"
                 >
                   <Icon class="h-5 w-5" stroke-width={2.25} />
                 </span>
-                <h3 class="font-display mt-4 text-base font-black uppercase leading-snug tracking-tight text-white">
+                <h3 class="font-display mt-4 text-base font-bold uppercase leading-snug tracking-tight text-brand-dark">
                   {partner.title}
                 </h3>
-                <p class="mt-2 text-xs font-medium leading-relaxed text-gray-400">
+                <p class="mt-2 text-xs font-medium leading-relaxed text-brand-muted sm:text-sm">
                   {partner.description}
                 </p>
               </article>
