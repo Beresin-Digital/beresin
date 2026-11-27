@@ -1,6 +1,8 @@
 ---
 export const prerender = false;
 
+import { getImage } from 'astro:assets';
+import { images } from '../assets/images/manifest';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
 import Marquee from '../components/sections/Marquee.astro';
@@ -28,9 +30,24 @@ const [articles, clients, projects] = await Promise.all([
 const title = 'Partner Solusi Digital & Pengembangan | Beresin Digital';
 const description =
   'Beresin Digital adalah partner solusi digital dan pengembangan. Kami merancang dan membangun website, aplikasi mobile, aplikasi web kustom, solusi IoT, integrasi sistem, dan desain grafis untuk bisnis.';
+
+// Preload the hero (LCP) image with the same widths/sizes the Hero's
+// `<Picture>` uses, so the preload and the `<img>` resolve to the same URLs
+// and the browser reuses the preloaded file instead of fetching twice.
+const heroPreload = await getImage({
+  src: images.heroTeam.src,
+  widths: [400, 600, 800, 1200],
+  formats: ['webp'],
+});
+const heroPreloadSizes = '(min-width: 768px) 45vw, 100vw';
 ---
 
-<BaseLayout title={title} description={description} locale="id">
+<BaseLayout
+  title={title}
+  description={description}
+  locale="id"
+  preloadImage={{ srcset: heroPreload.srcSet.attribute, sizes: heroPreloadSizes }}
+>
   <Hero locale="id" />
   <Marquee locale="id" />
   <FormStatus locale="id" />

@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Truck,
 } from '@lucide/astro';
-import { canonicalSrc } from '../lib/image-variants';
+import { thumbnailSrc } from '../lib/image-variants';
 import type { Client } from '../db/schema';
 
 /**
@@ -63,8 +63,9 @@ const Icon = icons[client.icon as keyof typeof icons] ?? Building2;
   {
     client.logo ? (
       <img
-        src={canonicalSrc(client.logo)}
+        src={thumbnailSrc(client.logo)}
         alt=""
+        width={40}
         height={40}
         loading="lazy"
         decoding="async"
