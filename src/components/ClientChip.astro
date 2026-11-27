@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Truck,
 } from '@lucide/astro';
-import { canonicalSrc } from '../lib/image-variants';
+import { logoSrcSet } from '../lib/image-variants';
 import type { Client } from '../db/schema';
 
 /**
@@ -55,6 +55,9 @@ const chipStyles = [
 ] as const;
 
 const Icon = icons[client.icon as keyof typeof icons] ?? Building2;
+
+/** Small-variant srcset for the logo (48/96/160/320 per DPR), when it has one. */
+const logo = client.logo ? logoSrcSet(client.logo) : null;
 ---
 
 <div
@@ -63,8 +66,11 @@ const Icon = icons[client.icon as keyof typeof icons] ?? Building2;
   {
     client.logo ? (
       <img
-        src={canonicalSrc(client.logo)}
+        src={logo?.src}
+        srcset={logo?.srcset || undefined}
+        sizes="40px"
         alt=""
+        width={40}
         height={40}
         loading="lazy"
         decoding="async"

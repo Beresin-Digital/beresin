@@ -19,6 +19,7 @@ COPY drizzle ./drizzle
 COPY src/lib/db-env.mjs ./src/lib/db-env.mjs
 COPY src/db/schema ./src/db/schema
 COPY scripts/seed-admin.mjs ./scripts/seed-admin.mjs
+COPY scripts/backfill-logo-variants.mjs ./scripts/backfill-logo-variants.mjs
 RUN mkdir uploads && chown node:node uploads
 USER node
 EXPOSE 4321

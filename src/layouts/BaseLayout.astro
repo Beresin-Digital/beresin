@@ -21,6 +21,13 @@ interface Props {
   /** Passed through to SEO: false where no 1:1 hreflang pair exists. */
   hreflang?: boolean;
   directory?: boolean;
+  /**
+   * LCP image preload: `{ srcset, sizes }` from `getImage`, rendered as a
+   * `<link rel="preload" as="image">` so the hero image starts loading while
+   * the head is parsed instead of waiting for the body. Only the homepages
+   * pass it — the hero is the LCP element there.
+   */
+  preloadImage?: { srcset: string; sizes: string };
 }
 
 const props = Astro.props;
@@ -47,6 +54,16 @@ const locale: Locale = props.locale ?? props.lang ?? 'en';
       type="font/woff2"
       crossorigin
     />
+
+    {props.preloadImage && (
+      <link
+        rel="preload"
+        as="image"
+        imagesrcset={props.preloadImage.srcset}
+        imagesizes={props.preloadImage.sizes}
+        fetchpriority="high"
+      />
+    )}
 
     <SEO {...props} lang={locale} />
   </head>
