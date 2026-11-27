@@ -1,6 +1,6 @@
 ---
 import { Image as ImageIcon } from '@lucide/astro';
-import { thumbnailSrc } from '../lib/image-variants';
+import { logoSrcSet } from '../lib/image-variants';
 
 /**
  * Client logo + name, shown on a portfolio card and in the project modal.
@@ -9,10 +9,11 @@ import { thumbnailSrc } from '../lib/image-variants';
  * dashed tile stands in, so the slot is visibly a placeholder rather than a
  * fabricated brand mark — the same honesty rule the clients table enforces.
  *
- * The logo is a fixed 28 px thumbnail, so it renders the smallest variant
- * (`thumbnailSrc`) rather than a `srcset`: responsive variants would be
- * wasted here, and no width is stored for a project's `clientLogo` to build
- * a ladder from.
+ * The logo is a fixed 28 px thumbnail, so it renders the logo srcset
+ * (`logoSrcSet`, 48/96/160/320 per DPR) rather than the largest variant —
+ * the same file the chip uses, so the browser downloads it once. No width is
+ * stored for a project's `clientLogo`, so the rungs are resolved from disk
+ * rather than derived from a stored width.
  */
 interface Props {
   name: string;
@@ -20,13 +21,18 @@ interface Props {
 }
 
 const { name, logo } = Astro.props;
+
+/** Small-variant srcset for the logo (48/96/160/320 per DPR), when it has one. */
+const logoSrc = logo ? logoSrcSet(logo) : null;
 ---
 
 <div class="flex items-center gap-2.5">
   {
     logo ? (
       <img
-        src={thumbnailSrc(logo)}
+        src={logoSrc?.src}
+        srcset={logoSrc?.srcset || undefined}
+        sizes="28px"
         alt=""
         width={28}
         height={28}
