@@ -39,6 +39,9 @@ export interface School {
   phone?: string;
   email?: string;
   website?: string;
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
   sourceProfileUrl?: string;
   sourceName: string;
   sourceUpdatedAt?: string;
@@ -71,6 +74,9 @@ export function normalizeSchool(raw: Record<string, unknown>, dataset: Dataset):
     phone: dataset.contactsApproved === true ? safePhone(raw.telepon) : undefined,
     email: dataset.contactsApproved === true ? safeEmail(raw.email) : undefined,
     website: safeWebsite(raw.website),
+    instagram: safeWebsite(raw.instagram),
+    facebook: safeWebsite(raw.facebook),
+    youtube: safeWebsite(raw.youtube),
     sourceProfileUrl: safeWebsite(prototype ? raw.dapodik : raw.profile_url),
     sourceName: dataset.sourceName,
     sourceUpdatedAt: clean(dataset.sourceUpdatedAt),
@@ -92,14 +98,14 @@ export function deduplicate(schools: School[]): { schools: School[]; duplicates:
 }
 
 export function applyCorrections(schools: School[], corrections: { npsn: string; reason: string; verifiedAt: string; fields: Record<string, unknown> }[]): number {
-  const allowedFields = new Set(['name', 'district', 'address', 'village', 'postalCode', 'accreditation', 'foundationName', 'phone', 'email', 'website']);
+  const allowedFields = new Set(['name', 'district', 'address', 'village', 'postalCode', 'accreditation', 'foundationName', 'phone', 'email', 'website', 'instagram', 'facebook', 'youtube']);
   const corrected = new Set<string>();
   for (const correction of corrections) {
     const school = schools.find(value => value.npsn === correction.npsn);
     if (!school || corrected.has(correction.npsn) || !clean(correction.reason) || !validDate(correction.verifiedAt)) throw new Error(`Koreksi tidak valid: ${correction.npsn}`);
     for (const [field, value] of Object.entries(correction.fields)) {
       if (!allowedFields.has(field)) throw new Error(`Field koreksi tidak diizinkan: ${field}`);
-      const normalized = field === 'phone' ? safePhone(value) : field === 'email' ? safeEmail(value) : field === 'website' ? safeWebsite(value) : clean(value);
+      const normalized = field === 'phone' ? safePhone(value) : field === 'email' ? safeEmail(value) : ['website', 'instagram', 'facebook', 'youtube'].includes(field) ? safeWebsite(value) : clean(value);
       if ((clean(value) && !normalized) || (field === 'name' && !normalized)) throw new Error(`Nilai koreksi tidak valid: ${correction.npsn}/${field}`);
       if (normalized && ['phone', 'email'].includes(field) && !school.contactsApproved) throw new Error(`Publikasi kontak koreksi belum disetujui: ${correction.npsn}`);
       Object.assign(school, { [field]: normalized });
