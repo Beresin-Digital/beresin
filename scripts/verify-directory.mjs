@@ -63,11 +63,11 @@ for (const school of directory.schools) {
   assert.ok(html.includes(`value="${base}${school.path}"`));
   if (school.phone || school.email || school.website) {
     assert.match(html, /href="#school-contact"/);
-    assert.ok(html.includes('Kontak di atas berasal dari dataset.'), school.npsn);
+    assert.ok(html.includes('Kontak di atas berasal dari dataset atau koreksi yang sudah diperiksa.'), school.npsn);
     assert.ok(!html.includes('Informasi kontak belum tersedia pada dataset.'), school.npsn);
   } else {
     assert.ok(!html.includes('href="#school-contact"'), school.npsn);
-    assert.ok(!html.includes('Kontak di atas berasal dari dataset.'), school.npsn);
+    assert.ok(!html.includes('Kontak di atas berasal dari dataset atau koreksi yang sudah diperiksa.'), school.npsn);
     assert.ok(html.includes('Informasi kontak belum tersedia pada dataset.'), school.npsn);
   }
   const blocks = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs)].map(match => JSON.parse(match[1]));

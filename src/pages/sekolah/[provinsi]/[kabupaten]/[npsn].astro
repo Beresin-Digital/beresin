@@ -16,18 +16,23 @@ const jsonLd = [{
   identifier: { '@type': 'PropertyValue', propertyID: 'NPSN', value: school.npsn },
   address: { '@type': 'PostalAddress', ...(school.address ? { streetAddress: school.address } : {}), addressLocality: school.regency, addressRegion: school.province, addressCountry: 'ID', ...(school.postalCode ? { postalCode: school.postalCode } : {}) },
   ...(school.phone ? { telephone: school.phone } : {}), ...(school.email ? { email: school.email } : {}),
-  ...(school.website ? { sameAs: [school.website] } : {}),
+  ...([school.website, school.instagram, school.facebook, school.youtube].some(Boolean) ? { sameAs: [school.website, school.instagram, school.facebook, school.youtube].filter(Boolean) } : {}),
 }];
-const consult = whatsappLink(`Halo Beresin Digital, saya ingin konsultasi website untuk ${school.name} (NPSN ${school.npsn}). Profil: ${url}`);
-const correction = whatsappLink(`Halo Beresin Digital, saya pengelola ${school.name} (NPSN ${school.npsn}) dan ingin mengajukan koreksi data profil. Profil: ${url}`);
+const consult = whatsappLink(`Halo Beresin Digital, saya menemukan profil ${school.name} di beresindigital.id dan ingin konsultasi website untuk sekolah ini (NPSN ${school.npsn}). Profil: ${url}`);
+const correction = whatsappLink(`Halo Beresin Digital, saya pengelola ${school.name} (NPSN ${school.npsn}) dan ingin mengajukan koreksi data profil yang saya lihat di beresindigital.id. Profil: ${url}`);
+const hasContact = Boolean(school.phone || school.email || school.website || school.instagram || school.facebook || school.youtube);
 ---
 <DirectoryLayout title={`${school.name} (NPSN ${school.npsn}) - ${school.regency}`} description={description} crumbs={[{ name: school.province, path: regionPath(school.provinceSlug) }, { name: school.regency, path: regionPath(school.provinceSlug, school.regencySlug) }, { name: school.name, path: school.path }]} jsonLd={jsonLd} event="school_profile_view" npsn={school.npsn} province={school.province} regency={school.regency} educationLevel={school.educationLevel}>
   <h1 class="directory-heading max-w-5xl">{school.name}</h1>
   <p class="directory-copy mt-3">{school.educationLevel} di {school.district && `${school.district}, `}{school.regency}, {school.province}.</p>
   <p data-profile-source class="mt-3 text-sm leading-relaxed text-brand-muted">{sourceLabel(school)}</p>
+  <div class="mt-5 max-w-3xl rounded-2xl border-2 border-brand-dark bg-brand-surface p-5">
+    <p class="text-base font-bold leading-relaxed">Halaman ini bukan website resmi {school.name}.</p>
+    <p class="mt-2 text-sm leading-relaxed text-gray-600">Ini profil direktori yang dikelola Beresin Digital. Untuk pendaftaran dan urusan sekolah, hubungi sekolah langsung.</p>
+  </div>
   <div data-profile-actions data-share-title={school.name} class="mt-5">
     <div class="flex flex-wrap gap-3">
-      {(school.phone || school.email || school.website) && <a href="#school-contact" class="directory-button directory-primary">Hubungi sekolah</a>}
+      {hasContact && <a href="#school-contact" class="directory-button directory-primary">Hubungi sekolah</a>}
       <button type="button" data-share-profile hidden class="directory-button bg-white hover:bg-brand-surface disabled:opacity-60">Bagikan profil</button>
       <button type="button" data-copy-profile hidden class="directory-button bg-white hover:bg-brand-surface disabled:opacity-60">Salin tautan</button>
     </div>
@@ -42,12 +47,15 @@ const correction = whatsappLink(`Halo Beresin Digital, saya pengelola ${school.n
     <div>
       <section class="rounded-2xl bg-brand-surface p-5 sm:p-6" aria-labelledby="school-contact">
         <h2 id="school-contact" tabindex="-1" class="directory-section-heading scroll-mt-24">Hubungi sekolah</h2>
-        {school.phone || school.email || school.website ? <div class="flex flex-wrap gap-3">
+        {hasContact ? <div class="flex flex-wrap gap-3">
           {school.phone && <a class="directory-button bg-white" href={`tel:${school.phone}`} data-directory-click="contact_school_click" data-cta-type="phone">Telepon {school.phone}</a>}
           {school.email && <a class="directory-button max-w-full break-all bg-white" href={`mailto:${school.email}`} data-directory-click="contact_school_click" data-cta-type="email">Email {school.email}</a>}
           {school.website && <a class="directory-button bg-white" href={school.website} target="_blank" rel="noopener noreferrer" data-directory-click="school_website_click">Buka website sekolah</a>}
+          {school.instagram && <a class="directory-button bg-white" href={school.instagram} target="_blank" rel="noopener noreferrer" data-directory-click="school_instagram_click">Instagram sekolah</a>}
+          {school.facebook && <a class="directory-button bg-white" href={school.facebook} target="_blank" rel="noopener noreferrer" data-directory-click="school_facebook_click">Facebook sekolah</a>}
+          {school.youtube && <a class="directory-button bg-white" href={school.youtube} target="_blank" rel="noopener noreferrer" data-directory-click="school_youtube_click">YouTube sekolah</a>}
         </div> : <p class="directory-copy">Informasi kontak belum tersedia pada dataset.</p>}
-        {(school.phone || school.email || school.website) && <p class="mt-4 text-sm leading-relaxed text-gray-600">Kontak di atas berasal dari dataset. Kami belum memverifikasi keaktifan setiap kontak; nomor telepon tidak otomatis merupakan nomor WhatsApp.</p>}
+        {hasContact && <p class="mt-4 text-sm leading-relaxed text-gray-600">Kontak di atas berasal dari dataset atau koreksi yang sudah diperiksa. Kami belum memverifikasi keaktifan setiap kontak; nomor telepon tidak otomatis merupakan nomor WhatsApp.</p>}
       </section>
       <section class="mt-8" aria-labelledby="school-facts">
         <h2 id="school-facts" class="directory-section-heading">Identitas dan lokasi</h2>
