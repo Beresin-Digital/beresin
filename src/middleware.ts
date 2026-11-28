@@ -62,6 +62,15 @@ function harden(response: Response): Response {
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
+  // /sekolah is intentionally ID-only (not part of the i18n locales): the
+  // English variant never existed as a page. Googlebot still probes
+  // /en/sekolah/* — 1,249 URLs 404ing in Search Console (Nov 2026) — so send
+  // them to the canonical ID page with a 301 instead of a 404. This runs
+  // before the admin guard and touches no session or database.
+  if (pathname === '/en/sekolah' || pathname.startsWith('/en/sekolah/')) {
+    return context.redirect(pathname.slice(3) + context.url.search, 301);
+  }
+
   // Public site — out before anything can reach for the database.
   if (!pathname.startsWith(ADMIN_PREFIX)) return next();
 
